@@ -127,7 +127,12 @@ class BackendData:
         return await self._read(user_id, "team_card_get")
 
     async def faq_search(self, user_id: str, text: str) -> list[dict]:
-        return list((await self._read(user_id, "team_faq_search", {"text": text})).get("items") or [])
+        items = list((await self._read(user_id, "team_faq_search", {"text": text})).get("items") or [])
+        for item in items:
+            source = item.get("source_path", "")
+            if source.startswith("/api/v1/faq/"):
+                item["source_path"] = self.base + source
+        return items
 
     async def access_catalog(self, user_id: str) -> list[dict]:
         return list((await self._read(user_id, "access_catalog_get")).get("items") or [])
@@ -164,3 +169,22 @@ class BackendData:
     async def publish_faq(self, user_id: str, faq_id: str, question_id: str) -> dict:
         body = {"id": faq_id, "question_id": question_id, "consent": True}
         return await self._rest("POST", "/api/v1/faq", user_id, body)
+
+    async def record_bot_answer(
+        self, user_id: str, question_id: str, text: str, answer: str, sources: list[str]
+    ) -> dict:
+        await self.create_question(user_id, question_id, text, "")
+        return await self._rest(
+            "POST",
+            "/api/v1/questions/" + quote(question_id, safe="") + "/bot-answer",
+            user_id,
+            {"text": answer, "sources": sources},
+        )
+
+    async def rate_bot_answer(self, user_id: str, question_id: str, helpful: bool) -> None:
+        await self._rest(
+            "PATCH",
+            "/api/v1/questions/" + quote(question_id, safe="") + "/bot-answer",
+            user_id,
+            {"helpful": helpful},
+        )

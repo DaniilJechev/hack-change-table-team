@@ -153,19 +153,19 @@
     "links": [
       {
         "service": "github",
-        "url": "https://example.invalid/github/demo-buddy/orders-onboarding/pull/45"
+        "url": "https://example.invalid/github/demo-buddy/orders-onboarding"
       },
       {
         "service": "jira",
-        "url": "https://example.invalid/jira/browse/ORD-118"
-      },
-      {
-        "service": "calendar",
-        "url": "https://example.invalid/calendar/event/demo-standup"
+        "url": "https://example.invalid/jira/projects/ORD"
       },
       {
         "service": "miro",
         "url": "https://example.invalid/miro/board/demo-board-orders"
+      },
+      {
+        "service": "calendar",
+        "url": "https://example.invalid/calendar/event/demo-standup"
       },
       {
         "service": "telegram",
@@ -190,7 +190,7 @@
         "id": "demo-orders-github",
         "instrument": "github",
         "name": "Репозиторий orders-onboarding",
-        "url": "https://example.invalid/github/demo-buddy/orders-onboarding/pull/45",
+        "url": "https://example.invalid/github/demo-buddy/orders-onboarding",
         "request_url": "https://example.invalid/team/demo-orders/requests/github",
         "owner_id": "demo-oleg",
         "roles": [
@@ -204,7 +204,7 @@
         "id": "demo-orders-jira",
         "instrument": "jira",
         "name": "Проект ORD",
-        "url": "https://example.invalid/jira/browse/ORD-118",
+        "url": "https://example.invalid/jira/projects/ORD",
         "request_url": "https://example.invalid/team/demo-orders/requests/jira",
         "owner_id": "demo-oleg",
         "roles": [

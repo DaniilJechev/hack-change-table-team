@@ -15,7 +15,7 @@ class AgentService:
         self.live = live
         self.chats: dict[str, int] = {}
         self.known: dict[str, Context] = {}
-        self.awaiting: dict[int, tuple[str, str]] = {}
+        self.awaiting: dict[int, tuple[str, str, Context]] = {}
 
     def runtime(self, context: Context) -> Runtime | None:
         if context.demo and context.session is not None and self.demo.active(context.session):
@@ -61,25 +61,34 @@ class AgentService:
             return ExecutorResponse(result="Передача вопросов сейчас недоступна."), []
         return await self.executors.team.escalate(kind, context, runtime)
 
+    def clear_demo(self, telegram_user: int) -> None:
+        key = f"demo-daniil:{telegram_user}"
+        self.awaiting.pop(telegram_user, None)
+        self.executors.access.previous.pop(key, None)
+        self.executors.team.pending.pop(key, None)
+        self.executors.team.deferred.pop(key, None)
+
     async def start_answer(self, question_id: str, context: Context, telegram_user: int) -> ExecutorResponse:
         runtime = self.runtime(context)
         if runtime is None:
             return ExecutorResponse(result="Ответы сейчас недоступны.")
-        answerer = context.user_id
-        if context.demo:
-            # Demo only: the presenter answers on behalf of the synthetic addressee.
-            try:
-                answerer = (await runtime.data.question(context.user_id, question_id))["assigned_to"]
-            except Exception:
-                return ExecutorResponse(result="Вопрос не найден.")
-        self.awaiting[telegram_user] = (question_id, answerer)
+        try:
+            record = await runtime.data.question(context.user_id, question_id)
+        except Exception:
+            return ExecutorResponse(result="Вопрос не найден.")
+        answerer = record["assigned_to"] if context.demo else context.user_id
+        if record["assigned_to"] != answerer:
+            return ExecutorResponse(result="Ответить может только адресат вопроса.")
+        self.awaiting[telegram_user] = (question_id, answerer, context)
         return ExecutorResponse(result="Напишите ответ одним сообщением — я передам его автору вопроса.")
 
     def is_answering(self, telegram_user: int) -> bool:
         return telegram_user in self.awaiting
 
     async def submit_answer(self, text: str, context: Context, telegram_user: int):
-        question_id, answerer = self.awaiting.pop(telegram_user)
+        question_id, answerer, original = self.awaiting.pop(telegram_user)
+        if context != original:
+            return [(context.user_id, ExecutorResponse(result="Контекст изменился. Откройте вопрос заново."))]
         runtime = self.runtime(context)
         if runtime is None:
             return [(answerer, ExecutorResponse(result="Ответы сейчас недоступны."))]

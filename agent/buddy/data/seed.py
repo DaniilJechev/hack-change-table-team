@@ -5,6 +5,7 @@ from collections.abc import Callable
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import quote
 
 from buddy.data.base import DataError
 
@@ -133,7 +134,7 @@ class SeedData:
     async def create_question(self, user_id: str, question_id: str, text: str, assigned_to: str) -> dict:
         user = self._user(user_id)
         target = self.users.get(assigned_to)
-        if target is None or target["team_id"] != user["team_id"] or not text.strip():
+        if (assigned_to and (target is None or target["team_id"] != user["team_id"])) or not text.strip():
             raise DataError("invalid")
         record = self.questions.setdefault(
             question_id,
@@ -193,7 +194,28 @@ class SeedData:
                 "answer": record["answer"],
                 "author_id": user_id,
                 "created_at": self._now(),
-                "source_path": "faq:" + faq_id,
+                "source_path": "https://example.invalid/team/"
+                + quote(record["team_id"], safe="")
+                + "/faq/"
+                + quote(faq_id, safe=""),
             },
         )
         return deepcopy(entry)
+
+    async def record_bot_answer(
+        self, user_id: str, question_id: str, text: str, answer: str, sources: list[str]
+    ) -> dict:
+        if not answer.strip() or not sources:
+            raise DataError("invalid")
+        await self.create_question(user_id, question_id, text, "")
+        record = self.questions[question_id]
+        if record.get("bot_answer") and (record["bot_answer"], record["bot_sources"]) != (answer, sources):
+            raise DataError("conflict")
+        record.update(bot_answer=answer, bot_sources=list(sources))
+        return deepcopy(record)
+
+    async def rate_bot_answer(self, user_id: str, question_id: str, helpful: bool) -> None:
+        record = self._question_for(user_id, question_id)
+        if record["user_id"] != user_id or not record.get("bot_answer"):
+            raise DataError("forbidden")
+        record["bot_helpful"] = helpful

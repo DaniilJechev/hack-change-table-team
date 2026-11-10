@@ -59,7 +59,7 @@ async def test_st2_demo_1_rt_07_telegram_flow_and_eight_buttons():
     app = Harness()
     try:
         assert "/demo" in (await app.send("/start")).text
-        assert "шаблонные" in (await app.send("/help")).text
+        assert "H2 работают" in (await app.send("/help")).text
         assert "Нужна привязка" in (await app.send("Что нового?")).text
         ask = await app.send("/ask")
         assert len(ask.reply_markup.inline_keyboard) == 8

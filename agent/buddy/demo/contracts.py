@@ -155,6 +155,16 @@ class AccessCatalog(DataModel):
         return self
 
 
+def access_urls(scenario: dict) -> dict[str, str]:
+    urls = {
+        name: scenario["resources"]["calendar" if name == "google_calendar" else name]["url"]
+        for name in INSTRUMENTS
+    }
+    urls["github"] = "https://example.invalid/github/" + scenario["resources"]["github"]["repo"]
+    urls["jira"] = "https://example.invalid/jira/projects/" + scenario["resources"]["jira"]["project"]
+    return urls
+
+
 def validate_seed(card: TeamCard, catalog: AccessCatalog, users: list[dict], scenario: dict) -> None:
     team_users = {user["user_id"] for user in users if user["team_id"] == card.team_id}
     people = {person.user_id for person in card.people}
@@ -162,9 +172,6 @@ def validate_seed(card: TeamCard, catalog: AccessCatalog, users: list[dict], sce
         raise ValueError("Seed belongs to another team")
     if any(item.owner_id not in people for item in catalog.objects):
         raise ValueError("Unknown catalog owner")
-    expected = {
-        name: scenario["resources"]["calendar" if name == "google_calendar" else name]["url"]
-        for name in INSTRUMENTS
-    }
+    expected = access_urls(scenario)
     if any(item.url != expected[item.instrument] for item in catalog.allowed):
         raise ValueError("Access object differs from demo scenario")

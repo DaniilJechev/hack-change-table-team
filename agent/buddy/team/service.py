@@ -7,7 +7,7 @@ import re
 import uuid
 
 from buddy.access.checker import payload
-from buddy.access.service import AccessService
+from buddy.access.service import TITLES, AccessService
 from buddy.data.base import DataError
 from buddy.executors.context import Context
 from buddy.mcp_hub.errors import MCPError
@@ -83,6 +83,8 @@ class TeamService:
                 return None
             if found:
                 item = found[0]
+                if not str(item.get("source_path", "")).startswith(("https://", "http://")):
+                    continue
                 return ExecutorResponse(
                     result=f"Ответ из FAQ команды на вопрос «{item['question']}»:\n{item['answer']}",
                     links=[item["source_path"]] if item["source_path"].startswith("http") else [],
@@ -109,6 +111,31 @@ class TeamService:
         return None
 
     async def answer(
+        self, case: str, params: dict, text: str, context: Context, runtime: Runtime
+    ) -> ExecutorResponse:
+        response = await self._answer_query(case, params, text, context, runtime)
+        if response.links:
+            question_id = "b-" + uuid.uuid4().hex[:16]
+            try:
+                await runtime.data.record_bot_answer(
+                    context.user_id,
+                    question_id,
+                    text.strip() or f"Вопрос о команде ({case})",
+                    response.result,
+                    response.links,
+                )
+            except DataError:
+                response.actions = [
+                    action for action in response.actions if not (action.data or "").startswith("rate:bot:")
+                ]
+            else:
+                for action in response.actions:
+                    if (action.data or "").startswith("rate:bot:"):
+                        mark = action.data.rsplit(":", 1)[-1]
+                        action.data = f"rate:bot:{question_id}:{mark}"
+        return response
+
+    async def _answer_query(
         self, case: str, params: dict, text: str, context: Context, runtime: Runtime
     ) -> ExecutorResponse:
         try:
@@ -221,9 +248,12 @@ class TeamService:
         rule = next((r for r in card.get("do_not_disturb", []) if r["person_id"] == person["user_id"]), None)
         if rule and not rule.get("direct_allowed", True):
             via = next((p["name"] for p in people if p["user_id"] == rule.get("via_id")), rule.get("via_id"))
-            text = f"Писать {person['name']} напрямую не принято: {rule['reason']}. Лучше через {via}."
+            text = (
+                f"{person['name']}: прямое обращение ограничено — {rule['reason']}. "
+                f"Контакт для согласования: {via}."
+            )
         else:
-            text = f"Можно писать {person['name']} напрямую — ограничений в правилах команды нет."
+            text = f"{person['name']}: прямое обращение разрешено, ограничений в правилах команды нет."
         return self._answer("team_q4", text, [person["contact_url"], card["source_url"]])
 
     async def _team_q5(self, params, question, card, context, runtime):
@@ -270,12 +300,16 @@ class TeamService:
         links = {item["service"]: item["url"] for item in card.get("links", [])}
         wanted = [service for service, keys in OBJECT_WORDS.items() if any(key in text for key in keys)]
         if not wanted:
-            lines = [f"{service}: {url}" for service, url in links.items()]
+            lines = [TITLES.get(INSTRUMENTS.get(service, service), service) for service in links]
             return self._answer("team_q8", "Ссылки команды:\n" + "\n".join(lines), list(links.values()))
         service = wanted[0]
         if service not in links:
             return await self._not_found(context, runtime, card, question)
-        response = self._answer("team_q8", f"Ссылка на {service}: {links[service]}", [links[service]])
+        response = self._answer(
+            "team_q8",
+            f"{TITLES.get(INSTRUMENTS.get(service, service), service)} — источник указан ниже.",
+            [links[service]],
+        )
         try:
             catalog = await runtime.data.access_catalog(context.user_id)
             only = {
@@ -327,6 +361,7 @@ class TeamService:
         note = ExecutorResponse(
             result=(
                 f"📩 Вопрос от {about}:\n«{pending['text']}»\n"
+                f"Текущая задача: {profile.get('current_task') or 'не указана'}.\n"
                 "Бот проверил карточку команды и FAQ — ответа нет."
             ),
             actions=[Action(label="Ответить", data="ans:" + question_id)],
@@ -376,10 +411,12 @@ class TeamService:
         return ExecutorResponse(result="Сохранено в FAQ команды. Спасибо!")
 
     async def rate(self, user_id: str, value: str, helpful: bool, runtime: Runtime) -> ExecutorResponse:
-        self.metrics["helpful" if helpful else "not_helpful"] += 1
-        if not value.startswith("bot:"):
-            try:
+        try:
+            if value.startswith("bot:"):
+                await runtime.data.rate_bot_answer(user_id, value.removeprefix("bot:"), helpful)
+            else:
                 await runtime.data.rate_question(user_id, value, helpful)
-            except DataError:
-                pass
+        except DataError:
+            return ExecutorResponse(result="Не удалось сохранить оценку. Откройте вопрос заново.")
+        self.metrics["helpful" if helpful else "not_helpful"] += 1
         return ExecutorResponse(result="Спасибо за оценку!")

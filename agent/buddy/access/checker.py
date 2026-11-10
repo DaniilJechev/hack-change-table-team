@@ -105,6 +105,42 @@ def contains(value, login: str) -> bool:
     return False
 
 
+def member_in_response(instrument: str, value, login: str) -> bool | None:
+    """Match only participant identity fields; unrelated text is not membership evidence."""
+    keys = {"github": "collaborators", "jira": "users", "miro": "roles", "google_calendar": "events"}
+    rows = (
+        value if isinstance(value, list) else value.get(keys[instrument]) if isinstance(value, dict) else None
+    )
+    if not isinstance(rows, list):
+        return None
+    needle = login.casefold()
+    for row in rows:
+        if not isinstance(row, dict):
+            return None
+        if instrument == "google_calendar":
+            if row.get("status") == "cancelled":
+                continue
+            attendees = row.get("attendees", [])
+            if not isinstance(attendees, list):
+                return None
+            if any(
+                isinstance(person, dict) and str(person.get("email", "")).casefold() == needle
+                for person in attendees
+            ):
+                return True
+        else:
+            fields = {
+                "github": ("login",),
+                "jira": ("accountId", "name", "key"),
+                "miro": ("user_id", "userId"),
+            }[instrument]
+            if row.get("active") is False:
+                continue
+            if any(isinstance(row.get(key), str) and row[key].casefold() == needle for key in fields):
+                return True
+    return False
+
+
 class AccessChecker:
     def __init__(self, gateway: Gateway, telegram: TelegramMembers, targets):
         self.gateway = gateway
@@ -127,6 +163,8 @@ class AccessChecker:
                 status = await self.telegram.status(int(target["chat_id"]), int(login))
             except ValueError:
                 return None
+            if status not in TELEGRAM_MEMBER | {"left", "kicked", "restricted"}:
+                return None
             return status in TELEGRAM_MEMBER
         calls = {
             "github": ("github", "list_repository_collaborators", ("owner", "repo"), {}),
@@ -140,8 +178,10 @@ class AccessChecker:
         arguments = {key: target[key] for key in keys}
         if instrument == "miro":
             arguments = {"contentItemId": target["board_id"]}
-        return contains(
-            payload(await self.gateway.call(case, server, tool, {**arguments, **extra}, user_id=user)), login
+        return member_in_response(
+            instrument,
+            payload(await self.gateway.call(case, server, tool, {**arguments, **extra}, user_id=user)),
+            login,
         )
 
     async def check(

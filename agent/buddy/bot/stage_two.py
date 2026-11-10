@@ -122,6 +122,8 @@ async def demo(message: Message, agent_service: AgentService):
     arguments = (message.text or "").split(maxsplit=1)
     action = arguments[1].strip() if len(arguments) == 2 else ""
     user = message.from_user.id
+    if action in {"reset", "off"} or (not action and not agent_service.demo.active(user)):
+        agent_service.clear_demo(user)
     before = None
     if action == "next" and agent_service.demo.active(user):
         # Baseline at the current step, so the next step reports only real changes (access_events).
@@ -152,7 +154,10 @@ async def route_text(
         notes = await agent_service.submit_answer(message.text or "", profile, message.from_user.id)
         missed = await deliver(message, agent_service, profile, notes)
         if missed:
-            await message.answer("Автор вопроса пока не открывал бота — ответ сохранён и придёт позже.")
+            await message.answer(
+                "Автор вопроса пока не открывал бота — ответ сохранён. "
+                "Автоматическая доставка пока не настроена."
+            )
         return
     if agent_service.router.llm is not None:
         await message.bot.send_chat_action(message.chat.id, "typing")
@@ -185,7 +190,10 @@ async def choose(
         reply, notes = await agent_service.escalate(value, profile)
         missed = await deliver(message, agent_service, profile, notes)
         if missed:
-            reply.result += "\nАдресат пока не открывал бота — вопрос сохранён и дождётся его."
+            reply.result += (
+                "\nАдресат пока не открывал бота — вопрос сохранён. "
+                "Автоматическая доставка пока не настроена."
+            )
         await send(message, profile, reply)
     elif kind == "ans":
         await send(message, profile, await agent_service.start_answer(value, profile, query.from_user.id))

@@ -81,7 +81,7 @@ async def help_command(
         text = (
             "/start — профиль, /ask — восемь типов вопросов, /demo — синтетический сценарий, "
             "/demo next — следующий шаг, /demo reset — сначала, /demo off — выход. "
-            "Распознавание запросов работает; ответы H0–H3 пока шаблонные."
+            "/access — доступы; вопросы H2 работают по данным команды. Бриф H0 и поиск H3 появятся позже."
         )
     await message.answer(text, reply_markup=menu())
 

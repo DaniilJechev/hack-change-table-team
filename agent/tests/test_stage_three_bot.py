@@ -126,7 +126,7 @@ async def test_st3_live_1_without_runtime_flows_degrade_safely():
             await app.callback(data)
             assert expected in app.session.sent[-1].text
         assert await app.service.monitor_all() == []
-        app.service.awaiting[42] = ("q-1", "demo-petr")
+        app.service.awaiting[42] = ("q-1", "demo-petr", app.service.known["demo-daniil"])
         await app.send("ответ без runtime")
         assert "не открывал бота" in app.session.sent[-1].text  # no runtime: addressee is unreachable
     finally:

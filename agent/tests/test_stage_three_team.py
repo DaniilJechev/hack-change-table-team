@@ -25,7 +25,8 @@ async def test_fr_h2_03_q1_responsible_area_with_source():
     response, *_ = await ask("team_q1", "Кто у нас по Kafka?", {"area": "Kafka"})
     assert "Пётр" in response.result
     assert response.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
-    assert [action.data for action in response.actions] == ["rate:bot:team_q1:1", "rate:bot:team_q1:0"]
+    assert response.actions[0].data.startswith("rate:bot:b-")
+    assert response.actions[0].data.endswith(":1") and response.actions[1].data.endswith(":0")
     listing, *_ = await ask("team_q1")
     assert "Кто за что отвечает" in listing.result and "Олег" in listing.result
 
@@ -53,9 +54,9 @@ async def test_fr_h2_03_q3_mentor_lead_first_contact():
 
 async def test_fr_h2_03_q4_direct_rules():
     petr, *_ = await ask("team_q4", "Можно написать Петру напрямую?", {"person": "Пётр"})
-    assert "напрямую не принято" in petr.result and "через Олег" in petr.result
+    assert "прямое обращение ограничено" in petr.result and "согласования: Олег" in petr.result
     anna, *_ = await ask("team_q4", "", {"person": "Анна"})
-    assert "Можно писать Анна напрямую" in anna.result
+    assert "Анна: прямое обращение разрешено" in anna.result
     unknown, *_ = await ask("team_q4", "", {"person": "Зинаида"})
     assert "Не знаю такого человека" in unknown.result
     empty, *_ = await ask("team_q4")
@@ -82,7 +83,7 @@ async def test_fr_h2_03_q7_stack_and_q8_links_with_access():
     stack, *_ = await ask("team_q7", "На чём пишем?")
     assert "Go, PostgreSQL, Kafka" in stack.result
     board, *_ = await ask("team_q8", "Где доска планирования?", {"object": "доска"})
-    assert "miro" in board.result and "Доступа пока нет" in board.result
+    assert "Miro" in board.result and "Доступа пока нет" in board.result
     assert board.actions[0].label == "Где запросить доступ"
     assert board.actions[1].data == "mark:demo-orders-miro"
     granted, *_ = await ask("team_q8", "", {"object": "доска"}, step=1)
@@ -112,7 +113,9 @@ async def test_fr_h2_05_fr_h2_06_why_question_escalation_answer_and_faq():
     assert again.result.startswith("Ответ из FAQ команды") and "шина событий" in again.result
     rated = await team.rate("demo-daniil", question_id, True, runtime)
     assert "Спасибо" in rated.result and (await runtime.data.question("demo-daniil", question_id))["helpful"]
-    await team.rate("demo-daniil", "bot:team_q1", False, runtime)
+    await team.rate(
+        "demo-daniil", again.actions[1].data.removeprefix("rate:").rsplit(":", 1)[0], False, runtime
+    )
     assert team.metrics == {"helpful": 1, "not_helpful": 1}
 
 

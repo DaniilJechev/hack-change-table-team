@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from buddy.demo.contracts import AccessCatalog, TeamCard, validate_seed
+from buddy.demo.contracts import AccessCatalog, TeamCard, access_urls, validate_seed
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTICE = "Синтетические учебные данные; не регламент и не реальные данные Авито."
@@ -17,8 +17,18 @@ LOGINS = {
         "google": "daniil@example.invalid",
         "telegram": "10001",
     },
-    "demo-anna": {"github": "demo-anna", "jira": "demo.anna", "miro": "demo-anna", "google": "anna@example.invalid"},
-    "demo-oleg": {"github": "demo-oleg", "jira": "demo.oleg", "miro": "demo-oleg", "google": "oleg@example.invalid"},
+    "demo-anna": {
+        "github": "demo-anna",
+        "jira": "demo.anna",
+        "miro": "demo-anna",
+        "google": "anna@example.invalid",
+    },
+    "demo-oleg": {
+        "github": "demo-oleg",
+        "jira": "demo.oleg",
+        "miro": "demo-oleg",
+        "google": "oleg@example.invalid",
+    },
     "demo-petr": {"github": "demo-petr", "jira": "demo.petr", "google": "petr@example.invalid"},
     "demo-kirill": {"github": "demo-kirill", "jira": "demo.kirill", "google": "kirill@example.invalid"},
 }
@@ -38,6 +48,7 @@ def build(root: Path = ROOT):
     def source(section):
         return "https://example.invalid/team/demo-orders/" + section
 
+    urls = access_urls(scenario)
     card = {
         "synthetic": True,
         "team_id": "demo-orders",
@@ -113,7 +124,10 @@ def build(root: Path = ROOT):
             "Google Calendar",
             "Telegram",
         ],
-        "links": [{"service": name, "url": item["url"]} for name, item in scenario["resources"].items()],
+        "links": [
+            {"service": ("calendar" if name == "google_calendar" else name), "url": urls[name]}
+            for name in ("github", "jira", "miro", "google_calendar", "telegram")
+        ],
         "faq": [],
     }
     titles = {
@@ -125,14 +139,13 @@ def build(root: Path = ROOT):
     }
     objects = []
     for name in titles:
-        server = "calendar" if name == "google_calendar" else name
         owner = "demo-anna" if name in {"google_calendar", "telegram"} else "demo-oleg"
         objects.append(
             {
                 "id": "demo-orders-" + name,
                 "instrument": name,
                 "name": titles[name],
-                "url": scenario["resources"][server]["url"],
+                "url": urls[name],
                 "request_url": source("requests/" + name),
                 "owner_id": owner,
                 "roles": ["intern", "mentor", "teamlead"],
@@ -163,14 +176,21 @@ def build(root: Path = ROOT):
     resources = scenario["resources"]
     owner, repo = resources["github"]["repo"].split("/")
     targets = {
-        "demo-orders-github": {"owner": owner, "repo": repo, "keywords": ["orders-onboarding", "репозитор", "github"]},
+        "demo-orders-github": {
+            "owner": owner,
+            "repo": repo,
+            "keywords": ["orders-onboarding", "репозитор", "github"],
+        },
         "demo-orders-jira": {"project_key": resources["jira"]["project"], "keywords": ["jira", "ord-"]},
         "demo-orders-miro": {"board_id": resources["miro"]["board_id"], "keywords": ["miro", "доск"]},
         "demo-orders-google_calendar": {
             **{key: value for key, value in scenario["calls"]["calendar"]["arguments"].items()},
             "keywords": ["стендап", "встреч", "календар"],
         },
-        "demo-orders-telegram": {"chat_id": resources["telegram"]["chat_id"], "keywords": ["чат", "telegram"]},
+        "demo-orders-telegram": {
+            "chat_id": resources["telegram"]["chat_id"],
+            "keywords": ["чат", "telegram"],
+        },
         "demo-orders-production": {"keywords": ["production"]},
     }
     outputs = {
