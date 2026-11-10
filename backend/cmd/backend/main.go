@@ -2,33 +2,30 @@ package main
 
 import (
 	"context"
-	"log/slog"
+	"log"
 	"net"
 	"os"
 	"os/signal"
 	"syscall"
 
-	"ai-buddy/backend/internal/server"
+	"github.com/DaniilJechev/hack-change-table-team/backend/internal/server"
 )
 
-func main() {
-	if err := run(context.Background(), os.Getenv("HTTP_ADDR")); err != nil {
-		slog.Error("backend stopped", "error", err)
-		os.Exit(1)
-	}
-}
-
-func run(ctx context.Context, address string) error {
-	ctx, stop := signal.NotifyContext(ctx, os.Interrupt, syscall.SIGTERM)
+func run(parent context.Context, addr string) error {
+	ctx, stop := signal.NotifyContext(parent, os.Interrupt, syscall.SIGTERM)
 	defer stop()
-	if address == "" {
-		address = ":8080"
+	if addr == "" {
+		addr = ":8080"
 	}
-	listener, err := net.Listen("tcp", address)
+	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		return err
 	}
+	return server.Serve(ctx, l)
+}
 
-	slog.Info("backend stub started", "address", listener.Addr().String())
-	return server.Serve(ctx, listener)
+func main() {
+	if err := run(context.Background(), os.Getenv("HTTP_ADDR")); err != nil {
+		log.Fatal(err)
+	}
 }

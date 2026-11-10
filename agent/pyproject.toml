@@ -1,26 +1,46 @@
 [build-system]
-requires = ["setuptools>=77,<83"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
 
 [project]
 name = "ai-buddy-agent"
-version = "0.0.0"
-description = "AI-buddy agent scaffold"
+version = "0.1.0"
+description = "AI-buddy stage-0 scaffold"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+  "aiogram>=3.22,<4",
+  "aiohttp>=3.11,<4",
+  "httpx>=0.28,<1",
+  "pydantic>=2.11,<3",
+  "pydantic-settings>=2.10,<3",
+]
 
 [project.optional-dependencies]
-dev = ["pytest==9.2.0", "pytest-cov==7.0.0"]
+dev = ["pytest>=8.4,<9", "pytest-asyncio>=1.2,<2", "pytest-cov>=6,<8", "ruff>=0.12,<1", "PyYAML>=6,<7"]
 
-[tool.setuptools.packages.find]
-include = ["buddy*"]
+[project.scripts]
+buddy = "buddy.__main__:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["buddy"]
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
 testpaths = ["tests"]
-pythonpath = ["."]
 
 [tool.coverage.run]
 source = ["buddy"]
 
 [tool.coverage.report]
+fail_under = 80.01
 show_missing = true
+
+[tool.ruff]
+target-version = "py312"
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["buddy"]

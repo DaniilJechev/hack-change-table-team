@@ -1,71 +1,51 @@
-SHELL := /bin/sh
 COMPOSE ?= docker compose
-PYTHON ?= $(if $(wildcard .venv/bin/python),$(CURDIR)/.venv/bin/python,python3)
-REPORTS_DIR := $(CURDIR)/reports
-OPENSPEC_VERSION := 1.17.0
+PYTHON ?= python
+GO ?= go
+UV ?= uv
+OPENSPEC ?= openspec
 
-.PHONY: help up down demo logs ps smoke dev test test-go test-agent cover cover-go cover-agent check-config validate-specs ingest record-fixtures
-
-help:
-	@echo 'up / demo       — собрать каркас и дождаться healthchecks'
-	@echo 'down / logs / ps — остановить / логи / состояние контейнеров'
-	@echo 'smoke           — проверить пять сервисов после up или demo'
-	@echo 'dev             — установить Python-зависимости для тестов в .venv'
-	@echo 'test / cover    — Go + Python; отчёты покрытия в reports/'
-	@echo 'check-config    — проверить Compose без запуска Docker daemon'
-	@echo 'validate-specs  — проверить OpenSpec (Node >= 22.12)'
-
+.PHONY: up demo down test cover smoke validate setup
 up:
-	$(COMPOSE) up --build --detach --wait --wait-timeout 180
+	$(COMPOSE) up --build -d --wait --wait-timeout 180
 
 demo:
-	DEMO_MODE=true $(COMPOSE) up --build --detach --wait --wait-timeout 180
+	$(COMPOSE) --env-file .env.example up --build -d --wait --wait-timeout 180
 
+# Named volumes сохраняются.
 down:
 	$(COMPOSE) down
 
+setup:
+	$(UV) sync --project agent --frozen --extra dev --python 3.12
+
+test:
+	cd backend && $(GO) test ./...
+	$(UV) run --project agent --frozen --extra dev pytest agent/tests
+
+cover:
+	$(PYTHON) scripts/check.py coverage
+
+smoke:
+	$(UV) run --project agent --frozen python -m buddy --smoke
+	$(PYTHON) infra/smoke.py --compose "$(COMPOSE)" $(SMOKE_ARGS)
+
+validate:
+	$(OPENSPEC) validate --all
+
+.PHONY: logs ps check-config validate-specs dev ingest record-fixtures
 logs:
 	$(COMPOSE) logs --follow
 
 ps:
 	$(COMPOSE) ps
 
-smoke:
-	COMPOSE="$(COMPOSE)" $(PYTHON) infra/smoke.py $(SMOKE_ARGS)
-
-dev:
-	python3 -m venv .venv
-	.venv/bin/python -m pip install -e './agent[dev]'
-
-test: test-go test-agent
-
-test-go:
-	cd backend && go test -race -cover ./...
-	cd backend && go vet ./...
-
-test-agent:
-	cd agent && $(PYTHON) -m pytest
-
-cover: cover-go cover-agent
-
-cover-go:
-	mkdir -p "$(REPORTS_DIR)/backend"
-	cd backend && go test -race -covermode=atomic -coverprofile="$(REPORTS_DIR)/backend/coverage.out" ./...
-	cd backend && go tool cover -html="$(REPORTS_DIR)/backend/coverage.out" -o "$(REPORTS_DIR)/backend/index.html"
-	cd backend && go tool cover -func="$(REPORTS_DIR)/backend/coverage.out" > "$(REPORTS_DIR)/backend/functions.txt"
-	@cat "$(REPORTS_DIR)/backend/functions.txt"
-	@awk '/^total:/ { found=1; if ($$3+0 <= 80) { print "Backend coverage must be > 80%"; exit 1 } } END { if (!found) exit 1 }' "$(REPORTS_DIR)/backend/functions.txt"
-
-cover-agent:
-	mkdir -p "$(REPORTS_DIR)/agent"
-	cd agent && $(PYTHON) -m pytest --cov=buddy --cov-report=term-missing --cov-report=xml:"$(REPORTS_DIR)/agent/coverage.xml" --cov-report=html:"$(REPORTS_DIR)/agent/html" --cov-fail-under=80.01
-
 check-config:
 	$(COMPOSE) config --quiet
 
-validate-specs:
-	OPENSPEC_TELEMETRY=0 npx --yes @fission-ai/openspec@$(OPENSPEC_VERSION) validate --all
+validate-specs: validate
+
+dev: setup
 
 ingest record-fixtures:
-	@echo '$@: будет реализовано Эмилем на следующих этапах; каркас не выполняет эту операцию.' >&2
+	@echo "$@: not implemented until the corresponding roadmap stage"
 	@exit 1

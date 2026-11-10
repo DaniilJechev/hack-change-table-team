@@ -9,10 +9,12 @@ import (
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/DaniilJechev/hack-change-table-team/backend/internal/api"
 )
 
 func TestNFR_HEALTH_1_HTTP(t *testing.T) {
-	service := httptest.NewServer(Handler())
+	service := httptest.NewServer(api.Handler())
 	defer service.Close()
 
 	for _, test := range []struct {
@@ -48,7 +50,7 @@ func TestNFR_HEALTH_1_HTTP(t *testing.T) {
 			if err := json.NewDecoder(response.Body).Decode(&body); err != nil {
 				t.Fatal(err)
 			}
-			if body["status"] != "ok" || body["service"] != "backend" || body["mode"] != "stub" {
+			if body["status"] != "ok" || body["service"] != "backend" || body["stage"] != "0" {
 				t.Fatalf("unexpected health: %v", body)
 			}
 		})

@@ -1,62 +1,78 @@
 # AI-buddy
 
-ИИ-наставник для стажёров в Telegram. Требования: [продукт](docs/1_PRODUCT.md), [архитектура](docs/2_ARCHITECTURE.md), [дорожная карта](docs/3_ROADMAP.md).
+Telegram-помощник для стажёров. Кейс Hack&Change 2026. Техническая часть **Этапа 0: каркас** реализована и проверена.
+H0–H3, привязка аккаунтов и MCP ещё не реализованы. Синтетические карточки не являются регламентами Авито.
 
-Сейчас реализован **каркас Этапа 0 — часть Ильи**: PostgreSQL 16 с pgvector, Redis 7, Grafana, Go-backend и Python-заглушка агента. Оба приложения отвечают только на `/health`, с `mode=stub`. Telegram-бот, LLM, MCP, хранение пользовательских данных и сценарии H0–H3 ещё не реализованы. Выбор LLM-провайдера и настоящий `/start` — часть Эмиля.
+## Запуск
 
-Полный согласованный план Ильи и дальнейшие этапы сохранены в [plans/ilya-backend-infra.md](plans/ilya-backend-infra.md). Спецификация каркаса: [scaffold](openspec/specs/scaffold/spec.md); выполненное изменение: [add-stage-zero-scaffold](openspec/changes/archive/2026-11-10-add-stage-zero-scaffold/proposal.md).
+Нужны Docker Engine с Compose v2 и GNU Make. Python/Go на хосте для контейнерного запуска не нужны.
 
-## Запуск каркаса
-
-Нужны Docker Engine с работающим daemon, Docker Compose v2+ и `make`. Токены внешних сервисов не нужны.
-
-```bash
+```sh
 make up
-make ps
-make smoke
-curl --fail http://localhost:8080/health
 ```
 
-`make up` собирает образы и ждёт успешных healthchecks всех пяти сервисов. Первый запуск скачивает образы и требует сети. Обычный `docker compose up --build` тоже поддерживается.
+На Windows без Make та же команда:
 
-`make smoke` дополнительно проверяет HTTP и JSON приложений, Grafana, `PING` Redis и SQL с типом `vector`. После `make demo` можно выполнить `make smoke SMOKE_ARGS=--demo`, чтобы также проверить флаг агента. CI использует те же команды.
-
-- Backend: <http://localhost:8080/health>.
-- Grafana: <http://localhost:3000>, локальный вход по умолчанию `admin` / `buddy-local`. Дашборды появятся на следующем этапе.
-- Agent проверяется внутри сети Compose на `http://agent:8081/health`; наружу его порт не опубликован.
-- PostgreSQL и Redis доступны только в сети Compose. Backend и Grafana опубликованы на `127.0.0.1`.
-
-Необязательные настройки можно задать в `.env`, скопировав `.env.example`. Поля в примере пустые; Compose использует локальные значения по умолчанию. Для БД это `buddy` / `buddy-local`, база `buddy`. Передача `LLM_PROVIDER`, `LLM_MODEL`, `LLM_API_KEY`, `EMBEDDINGS_MODEL` уже настроена, но заглушка не использует LLM. Реальные секреты хранить только в `.env`.
-
-```bash
-cp .env.example .env
-make demo    # тот же каркас с DEMO_MODE=true; полного демо H0–H3 пока нет
-make logs
-make down    # останавливает контейнеры, сохраняет данные
+```powershell
+docker compose up --build -d --wait --wait-timeout 180
 ```
 
-Данные PostgreSQL, Redis и Grafana сохраняются в named volumes. PostgreSQL применяет `infra/postgres/init.sql` только при первом создании БД. Изменение `POSTGRES_USER`, `POSTGRES_PASSWORD` или `POSTGRES_DB` в `.env` не перенастраивает уже существующий volume. `make down` данные не удаляет.
+Пять сервисов: PostgreSQL 16 + pgvector, Redis 7, Grafana, Go backend и Python agent.
+Порты доступны только локально: backend 8080, agent 8081, Grafana 3000.
+Проверки: `http://localhost:8080/health`, `http://localhost:8081/health`, `http://localhost:3000/api/health`.
+Grafana: пользователь buddy; локальный демо-пароль buddy_local_demo, если не переопределён в .env.
 
-Если порты заняты, задать `BACKEND_PORT` и `GRAFANA_PORT` в `.env`. Если `make up` не проходит, посмотреть `make ps` и `docker compose logs --tail=100`; при ошибке соединения с Docker socket проверить, запущен ли Docker daemon и есть ли права на него.
+Без `.env` каркас работает offline, без Telegram и без внешних аккаунтов. В контейнере:
 
-На Arch Linux после обновления ядра Docker может не стартовать из-за отсутствия модулей для ещё работающего старого ядра. Проверить `uname -r`, каталог `/usr/lib/modules/` и `journalctl -b -u docker.service`. Если версии не совпадают, требуется перезагрузка в установленное ядро; затем `sudo systemctl reset-failed docker.service docker.socket` и `sudo systemctl start docker`. Эти действия выполняются владельцем машины; Compose не меняет настройки ядра или firewall.
-
-## Разработка и проверки
-
-Нужны Go 1.27+, Python 3.12+ с `venv`; для OpenSpec — Node.js >= 22.12 и npm. Образы и Python-job CI используют Python 3.12.
-
-```bash
-make dev                 # Python-зависимости в локальной .venv
-make test                # go test -race -cover, go vet, pytest
-make cover               # отдельные отчёты, порог строго > 80 %
-make check-config        # проверка Compose без Docker daemon
-make validate-specs      # зафиксированная версия OpenSpec через npx
+```sh
+docker compose exec agent python -m buddy --smoke
 ```
 
-Отчёты: `reports/backend/index.html` и `reports/agent/html/index.html`. Go показывает покрытие операторов штатным `go test -cover`; Python — покрытие строк. Они не объединяются в один процент. Локальные отчёты исключены из Git; CI сохраняет их отдельными artifacts.
+Это проверка реального aiogram Dispatcher с фейковым транспортом и fake LLM; полный сценарий H0–H3 будет позже.
+`make demo` использует `.env.example` и не требует аккаунтов (переменные shell имеют приоритет в Compose).
 
-Backend можно запустить без Docker: `cd backend && go run ./cmd/backend`. Адрес задаётся `HTTP_ADDR`, по умолчанию `:8080`. `GET /health` проверяет живость процесса, подключения к БД на Этапе 0 ещё нет. При SIGINT/SIGTERM сервер завершает активные запросы с таймаутом 5 секунд.
+## Telegram и LLM
 
-Заглушка агента запускается командой `cd agent && python3 -m buddy` и слушает порт 8081. Она не делает сетевых запросов к Telegram, LLM или корпоративным сервисам. Эмиль заменит её своей реализацией.
+Скопируйте `.env.example` в `.env`, задайте `TELEGRAM_BOT_TOKEN` от @BotFather, перезапустите agent.
+Не запускайте второй polling-процесс для того же токена. Бот отвечает на `/start` и `/help`.
+Код после `/start` на Этапе 0 не создаёт привязку и не открывает данные команды.
 
-`make ingest` и `make record-fixtures` пока завершаются явной ошибкой: они относятся к следующим этапам.
+Выбран адаптер **OpenRouter**, модель по умолчанию в Compose `openrouter/auto`.
+Для live LLM задайте `DEMO_MODE=false`, `LLM_PROVIDER=openrouter`, `LLM_MODEL` и `LLM_API_KEY`.
+Для другого совместимого API: `LLM_PROVIDER=compatible` и `LLM_BASE_URL=https://ваш-сервис/v1`.
+Провайдер и модель читаются только из env. Секреты не коммитятся; `.env.example` содержит пустые секреты.
+В демо всегда используется FakeLLM; тесты не тратят API-бюджет. Ошибка или таймаут <=20 секунд возвращают шаблон.
+`/start` вообще не обращается к LLM. Модель эмбеддингов задана env, скачивание и RAG — Этап 4.
+
+## Тесты и покрытие
+
+Нужны Python 3.12, Go >=1.24, uv 0.9.5; для OpenSpec Node >=22.12.
+
+```sh
+make setup
+make test
+make cover
+make validate
+```
+
+Без Make: `uv sync --project agent --frozen --extra dev --python 3.12`, затем `python scripts/check.py coverage`.
+`uv.lock` фиксирует версии зависимостей. Python-тесты используют фейки и httpx MockTransport.
+Порог покрытия строго >80% отдельно для backend и agent; в CI проверяются также lint, OpenSpec и Compose.
+`make smoke` проверяет offline /start, здоровье пяти контейнеров, HTTP backend/agent/Grafana, PING Redis и SQL с типом vector. `SMOKE_ARGS=--demo` дополнительно проверяет DEMO_MODE.
+`make ps`, `make logs` и `make check-config` показывают состояние, логи и проверяют конфигурацию.
+`make down` останавливает сервисы, сохраняя тома с данными.
+`make ingest` и `make record-fixtures` завершаются явной ошибкой до реализации H3 и MCP.
+PostgreSQL применяет init.sql только на новом томе; изменение пароля в .env не меняет пароль существующей БД.
+
+## Структура и дальнейшая работа
+
+- `backend/` — Go HTTP /health, место для REST, buddy-mcp и миграций.
+- `agent/buddy/` — бот, конфигурация, схемы, LLM; пакеты под следующие этапы.
+- `infra/` — pgvector init и Grafana provisioning.
+- `seed/` — синтетические пользователи двух команд, карточка и черновой каталог.
+- `evals/survey.md` — готовая анкета для стажёров. Результаты пока не собраны.
+- `fixtures/`, `mcp/`, `data/playbook/` — место для данных следующих этапов.
+- `openspec/` — спецификации и изменения; `docs/` — продукт, архитектура, roadmap.
+
+Корпоративные сервисы — только чтение. Сейчас их инструменты вообще не подключены.
+Начните с AGENTS.md и трёх документов в docs/. Поведение сверяйте с openspec/specs/.

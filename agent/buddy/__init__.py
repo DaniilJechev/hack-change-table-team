@@ -1,1 +1,1 @@
-"""AI-buddy agent scaffold; product behavior is implemented separately."""
+"""AI-buddy: stage-0 scaffold."""

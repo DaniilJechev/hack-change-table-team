@@ -1,3 +1,3 @@
-module ai-buddy/backend
+module github.com/DaniilJechev/hack-change-table-team/backend
 
-go 1.27.0
+go 1.24.0

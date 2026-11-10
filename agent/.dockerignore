@@ -1,6 +1,5 @@
-__pycache__/
-.pytest_cache/
+**/__pycache__
+.venv
+.pytest_cache
 .coverage*
-*.egg-info/
-htmlcov/
-.venv/
+htmlcov
