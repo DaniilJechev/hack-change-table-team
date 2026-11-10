@@ -7,6 +7,7 @@
 import argparse
 import asyncio
 import json
+import os
 import shlex
 import subprocess
 from pathlib import Path
@@ -51,7 +52,11 @@ async def main():
         async with asyncio.timeout(45):
             if name == "github":
                 invocation = [*compose, "exec", "-T", "agent", "python", "/app/github_mcp.py"]
-                parameters = StdioServerParameters(command=invocation[0], args=invocation[1:])
+                # The SDK's default environment omits Compose interpolation variables.
+                # Match the environment used by the HTTP compose subprocesses below.
+                parameters = StdioServerParameters(
+                    command=invocation[0], args=invocation[1:], env=os.environ.copy()
+                )
                 async with stdio_client(parameters) as (read, write):
                     names = await inventory(read, write, expected[name])
             else:
