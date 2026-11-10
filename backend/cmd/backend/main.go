@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 
@@ -65,10 +66,37 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 			return errors.New("cannot open seed users file")
 		}
 		defer file.Close()
-		if err := database.Seed(startup, file); err != nil {
+		var documents [2]*os.File
+		for i, setting := range []struct{ env, path string }{
+			{"SEED_TEAM_CARD_PATH", filepath.Join(filepath.Dir(path), "team_cards", "demo-orders.yaml")},
+			{"SEED_ACCESS_CATALOG_PATH", filepath.Join(filepath.Dir(path), "access_catalog.yaml")},
+		} {
+			name := getenv(setting.env)
+			explicit := name != ""
+			if name == "" {
+				name = setting.path
+			}
+			document, err := os.Open(name)
+			if err != nil {
+				if !explicit && errors.Is(err, os.ErrNotExist) {
+					continue
+				}
+				return fmt.Errorf("cannot open %s seed document", setting.env)
+			}
+			defer document.Close()
+			documents[i] = document
+		}
+		var card, catalog io.Reader
+		if documents[0] != nil {
+			card = documents[0]
+		}
+		if documents[1] != nil {
+			catalog = documents[1]
+		}
+		if err := database.SeedData(startup, file, card, catalog); err != nil {
 			return fmt.Errorf("seed import failed: %w", err)
 		}
-		_, err = fmt.Fprintln(output, "Synthetic users imported")
+		_, err = fmt.Fprintln(output, "Synthetic users and team data imported")
 		return err
 	case "invite":
 		flags := flag.NewFlagSet("invite", flag.ContinueOnError)
@@ -88,7 +116,7 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 		_, err = fmt.Fprintln(output, code)
 		return err
 	default:
-		return run(ctx, getenv("HTTP_ADDR"), api.Handler(api.Identity{Store: database, ServiceKey: key}))
+		return run(ctx, getenv("HTTP_ADDR"), api.Application(database, key))
 	}
 }
 
