@@ -1,5 +1,5 @@
 # Miro
 
-Connection and OAuth setup belong to stage 1. No Miro tools are enabled in stage 0.
-Use a viewer account and enforce a read-only allowlist in the agent before connecting.
-Keep credentials in the root .env only.
+Подключение и OAuth настраиваются на Этапе 1. На Этапе 0 инструменты Miro не включены.
+Перед подключением нужен аккаунт с ролью viewer и белый список инструментов чтения на стороне агента.
+Учётные данные хранятся только в корневом .env.
