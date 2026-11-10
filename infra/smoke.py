@@ -39,11 +39,12 @@ def main() -> None:
         else [json.loads(line) for line in output.splitlines() if line.strip()]
     )
     expected = {"backend", "agent", "postgres", "redis", "grafana"}
-    check(
-        len(rows) == 5 and {row["Service"] for row in rows} == expected,
-        "Expected exactly five stage-zero containers",
-    )
+    names = {row["Service"] for row in rows}
+    check(expected <= names <= expected | {"mcp-atlassian", "google-calendar-mcp"},
+          "Expected five core containers and only configured optional MCP servers")
     for row in rows:
+        if row["Service"] not in expected:
+            continue  # Optional MCP servers have a separate make mcp-list check.
         check(
             row["State"] == "running" and row.get("Health") == "healthy",
             f"Service {row['Service']} is not running and healthy",

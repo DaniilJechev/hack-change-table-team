@@ -11,9 +11,13 @@ import (
 )
 
 // Serve takes ownership of listener and shuts down when ctx is cancelled.
-func Serve(ctx context.Context, listener net.Listener) error {
+func Serve(ctx context.Context, listener net.Listener, handlers ...http.Handler) error {
+	handler := api.Handler()
+	if len(handlers) > 0 {
+		handler = handlers[0]
+	}
 	server := &http.Server{
-		Handler:           api.Handler(),
+		Handler:           handler,
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,

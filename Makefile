@@ -19,7 +19,7 @@ setup:
 	$(UV) sync --project agent --frozen --extra dev --python 3.12
 
 test:
-	cd backend && $(GO) test ./...
+	$(PYTHON) infra/test_backend.py
 	$(UV) run --project agent --frozen --extra dev pytest agent/tests
 
 cover:
@@ -45,6 +45,26 @@ check-config:
 validate-specs: validate
 
 dev: setup
+
+.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list
+seed:
+	$(COMPOSE) exec -T backend backend seed
+
+invite:
+	$(COMPOSE) exec -T backend backend invite --user "$(USER_ID)" --ttl "$(or $(TTL),24h)"
+
+test-backend-integration:
+	$(PYTHON) infra/test_backend.py
+
+MCP_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.mcp.yml
+mcp-up:
+	$(MCP_COMPOSE) up --build -d --wait --wait-timeout 180 mcp-atlassian google-calendar-mcp
+
+mcp-down:
+	$(MCP_COMPOSE) stop mcp-atlassian google-calendar-mcp
+
+mcp-list:
+	$(UV) run --script infra/mcp_probe.py --compose "$(MCP_COMPOSE)"
 
 ingest record-fixtures:
 	@echo "$@: not implemented until the corresponding roadmap stage"
