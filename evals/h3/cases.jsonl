@@ -1,0 +1,35 @@
+{"id": "h3-in-01", "text": "Что такое Zero Bug Policy?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Мы работаем по Zero Bug Policy"}
+{"id": "h3-in-02", "text": "Кто отвечает за работоспособность системы после релиза?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Мы отвечаем за работоспособность своей системы"}
+{"id": "h3-in-03", "text": "Как быстро нужно делать код-ревью пулл-реквеста?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Мы относимся к чужому коду с уважением"}
+{"id": "h3-in-04", "text": "Можно ли писать бизнес-логику в хранимых процедурах?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md"}
+{"id": "h3-in-05", "text": "Почему нельзя катить непротестированный код?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Что не протестировано – то не работает. Что не работает – не катим"}
+{"id": "h3-in-06", "text": "Что делать с кодом, который стал не нужен?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Если что-то становится ненужным, мы это удаляем"}
+{"id": "h3-in-07", "text": "Почему мы избегаем жёсткой связанности сервисов?", "case": "playbook_qa", "in_corpus": true, "source": "development-principles.md", "section": "Мы избегаем жёсткой связанности (coupling)"}
+{"id": "h3-in-08", "text": "Что такое Live Site Review?", "case": "playbook_qa", "in_corpus": true, "source": "avito-developer-practice.md", "section": "Live Site Review (LSR)"}
+{"id": "h3-in-09", "text": "Что описывать в постмортеме инцидента?", "case": "playbook_qa", "in_corpus": true, "source": "avito-developer-practice.md", "section": "Что описываем в постмортем тикете"}
+{"id": "h3-in-10", "text": "Когда стоит идти в архитектурный комитет?", "case": "playbook_qa", "in_corpus": true, "source": "avito-developer-practice.md", "section": "Как понять, что стоит обратиться в архитектурный комитет?"}
+{"id": "h3-in-11", "text": "Что такое TDR?", "case": "playbook_qa", "in_corpus": true, "source": "tech_design_review.md", "section": "Что такое TDR"}
+{"id": "h3-in-12", "text": "Когда нужно делать tech design review?", "case": "playbook_qa", "in_corpus": true, "source": "tech_design_review.md", "section": "Когда стоит делать TDR"}
+{"id": "h3-in-13", "text": "Есть ли шаблон для TDR?", "case": "playbook_qa", "in_corpus": true, "source": "tech_design_review.md", "section": "Шаблон TDR"}
+{"id": "h3-in-14", "text": "Что такое соседское соглашение?", "case": "playbook_qa", "in_corpus": true, "source": "neighborhood-agreement.md", "section": "Цель"}
+{"id": "h3-in-15", "text": "Как вносить изменения в чужой функционал?", "case": "playbook_qa", "in_corpus": true, "source": "neighborhood-agreement.md", "section": "Правила внесения изменений в чужой функционал"}
+{"id": "h3-in-16", "text": "Какие ценности есть в Авито?", "case": "playbook_qa", "in_corpus": true, "source": "mission-and-values.md", "section": "В какие ценности мы верим?"}
+{"id": "h3-in-17", "text": "Какая миссия у Авито?", "case": "playbook_qa", "in_corpus": true, "source": "mission-and-values.md", "section": "Миссия"}
+{"id": "h3-in-18", "text": "Как в Авито ставят цели по OKR?", "case": "playbook_qa", "in_corpus": true, "source": "goal-setting.md", "section": "Целеполагание по OKR"}
+{"id": "h3-in-19", "text": "Как проходит performance review?", "case": "playbook_qa", "in_corpus": true, "source": "goal-setting.md", "section": "Как проходит performance review"}
+{"id": "h3-in-20", "text": "Что такое self-review?", "case": "playbook_qa", "in_corpus": true, "source": "goal-setting.md", "section": "1 этап — заполнение self-review"}
+{"id": "h3-in-21", "text": "Какие стажировки есть в Авито?", "case": "playbook_qa", "in_corpus": true, "source": "students.md", "section": "Стажировки в Авито"}
+{"id": "h3-in-22", "text": "Можно ли сходить на платную конференцию за счёт компании?", "case": "playbook_qa", "in_corpus": true, "source": "training-and-development.md", "section": "Посещение платных конференций, тренингов, курсов"}
+{"id": "h3-in-23", "text": "Проводятся ли в Авито хакатоны?", "case": "playbook_qa", "in_corpus": true, "source": "training-and-development.md", "section": "Хакатоны"}
+{"id": "h3-in-24", "text": "Какие уровни у инженеров?", "case": "playbook_qa", "in_corpus": true, "source": "developer-profile.md", "section": "Карьерная лестница"}
+{"id": "h3-in-25", "text": "Что ожидается от инженера уровня E1?", "case": "playbook_qa", "in_corpus": true, "source": "developer-profile.md", "section": "E1"}
+{"id": "h3-in-26", "text": "Чем занимается техлид?", "case": "playbook_qa", "in_corpus": true, "source": "techlead-profile.md", "section": "M1 Tech Lead"}
+{"id": "h3-in-27", "text": "Что такое юниты и кластеры?", "case": "playbook_qa", "in_corpus": true, "source": "structure.md", "section": "Юниты"}
+{"id": "h3-in-28", "text": "Зачем разработчикам платформа Avito PaaS?", "case": "playbook_qa", "in_corpus": true, "source": "avito-paas.md", "section": "Зачем платформа нужна разработчикам?"}
+{"id": "h3-in-29", "text": "Как работают с обращениями пользователей в SPT?", "case": "playbook_qa", "in_corpus": true, "source": "spt.md", "section": "SPT: работа с обращениями пользователей"}
+{"id": "h3-in-30", "text": "По какому процессу работают команды: Scrum?", "case": "playbook_qa", "in_corpus": true, "source": "processes-and-standards.md", "section": "Scrum"}
+{"id": "h3-out-01", "text": "Какой пароль от корпоративного Wi-Fi?", "case": "playbook_qa", "in_corpus": false, "source": null, "accept": ["playbook_qa", "clarify", "out_of_scope"]}
+{"id": "h3-out-02", "text": "Сколько дней отпуска положено стажёру?", "case": "playbook_qa", "in_corpus": false, "source": null, "accept": ["playbook_qa", "clarify", "out_of_scope"]}
+{"id": "h3-out-03", "text": "Какая зарплата у инженера E3?", "case": "playbook_qa", "in_corpus": false, "source": null, "accept": ["playbook_qa", "clarify", "out_of_scope"]}
+{"id": "h3-out-04", "text": "Как настроить VPN на ноутбуке?", "case": "playbook_qa", "in_corpus": false, "source": null, "accept": ["playbook_qa", "clarify", "out_of_scope"]}
+{"id": "h3-out-05", "text": "Когда следующий корпоратив?", "case": "playbook_qa", "in_corpus": false, "source": null, "accept": ["playbook_qa", "clarify", "out_of_scope"]}

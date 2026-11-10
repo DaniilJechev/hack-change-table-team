@@ -1,0 +1,9 @@
+{
+  "total": 40,
+  "routing_accuracy": 1.0,
+  "answer_accuracy": 1.0,
+  "answers_with_links": 1.0,
+  "failures": [],
+  "mode": "rules",
+  "synthetic": true
+}

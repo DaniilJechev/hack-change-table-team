@@ -59,12 +59,19 @@ class Link(DataModel):
     _url = field_validator("url")(object_url)
 
 
+class Stage(DataModel):
+    epic_key: str = Field(min_length=1)
+    source_url: str
+    _url = field_validator("source_url")(object_url)
+
+
 class TeamCard(DataModel):
     synthetic: Literal[True]
     team_id: str
     name: str
     notice: str = Field(min_length=1)
     source_url: str
+    stage: Stage
     people: list[Person] = Field(min_length=1)
     routing: list[Routing] = Field(min_length=1)
     do_not_disturb: list[ContactRule]

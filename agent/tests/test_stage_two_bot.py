@@ -65,7 +65,9 @@ async def test_st2_demo_1_rt_07_telegram_flow_and_eight_buttons():
         assert len(ask.reply_markup.inline_keyboard) == 8
         assert "синтетические" in (await app.send("/demo")).text
         assert "Сбор" in (await app.send("Что нового?")).text
-        assert "Шаг 2/2" in (await app.send("/demo next")).text
+        changed = await app.send("/demo next")
+        assert "Шаг 2/2" in app.session.sent[-2].text
+        assert "Miro" in changed.text and "появился" in changed.text  # FR-H1-07 access_events
         assert "последний" in (await app.send("/demo next")).text
         assert "Шаг 1/2" in (await app.send("/demo reset")).text
         assert "не менялась" in (await app.send("/demo off")).text
@@ -80,7 +82,7 @@ async def test_rt_04_callbacks_skip_router_and_rt_05_role_is_not_spoofable():
         await app.send("/demo")
         app.service.router.route = AsyncMock(side_effect=AssertionError("Router forbidden"))
         await app.callback("case:team_q1")
-        assert "Тип вопроса" in app.session.sent[-1].text
+        assert "Кто за что отвечает" in app.session.sent[-1].text
         await app.callback("case:interns_status")
         assert "только наставнику" in app.session.sent[-1].text
         await app.callback("case:write_code")
@@ -130,6 +132,6 @@ async def test_rt_03_clarification_and_mentor_buttons_are_explicit():
         result = await app.send("Напиши код сортировки")
         assert result.reply_markup.inline_keyboard[1][0].text == "Спросить наставника"
         await app.callback("mentor:contact")
-        assert "самостоятельно" in app.session.sent[-1].text
+        assert "Спросить наставника" in app.session.sent[-1].text
     finally:
         await app.bot.session.close()

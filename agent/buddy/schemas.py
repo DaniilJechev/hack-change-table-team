@@ -42,6 +42,16 @@ class Citation(Contract):
     source_id: str
 
 
+class Action(Contract):
+    """Inline button: either a short callback (≤ 64 bytes, Telegram limit) or an http(s) link."""
+
+    label: str = Field(min_length=1, max_length=64)
+    data: str | None = Field(default=None, max_length=64)
+    url: str | None = None
+
+
 class ExecutorResponse(Contract):
     result: str
     citations: list[Citation] = Field(default_factory=list)
+    actions: list[Action] = Field(default_factory=list)
+    links: list[str] = Field(default_factory=list)

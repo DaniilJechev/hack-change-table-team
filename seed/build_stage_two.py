@@ -9,6 +9,19 @@ from buddy.demo.contracts import AccessCatalog, TeamCard, validate_seed
 
 ROOT = Path(__file__).resolve().parents[1]
 NOTICE = "Синтетические учебные данные; не регламент и не реальные данные Авито."
+LOGINS = {
+    "demo-daniil": {
+        "github": "demo-daniil",
+        "jira": "demo.daniil",
+        "miro": "demo-daniil",
+        "google": "daniil@example.invalid",
+        "telegram": "10001",
+    },
+    "demo-anna": {"github": "demo-anna", "jira": "demo.anna", "miro": "demo-anna", "google": "anna@example.invalid"},
+    "demo-oleg": {"github": "demo-oleg", "jira": "demo.oleg", "miro": "demo-oleg", "google": "oleg@example.invalid"},
+    "demo-petr": {"github": "demo-petr", "jira": "demo.petr", "google": "petr@example.invalid"},
+    "demo-kirill": {"github": "demo-kirill", "jira": "demo.kirill", "google": "kirill@example.invalid"},
+}
 
 
 def build(root: Path = ROOT):
@@ -18,6 +31,9 @@ def build(root: Path = ROOT):
         users.append(
             {"user_id": "demo-petr", "display_name": "Пётр", "role": "mentor", "team_id": "demo-orders"}
         )
+    for user in users:
+        if user["user_id"] in LOGINS:
+            user["logins"] = LOGINS[user["user_id"]]
 
     def source(section):
         return "https://example.invalid/team/demo-orders/" + section
@@ -28,6 +44,7 @@ def build(root: Path = ROOT):
         "name": "Учебная команда заказов",
         "notice": NOTICE,
         "source_url": source("card"),
+        "stage": {"epic_key": "ORD-100", "source_url": scenario["resources"]["jira"]["epic_url"]},
         "people": [
             {
                 "user_id": "demo-daniil",
@@ -143,6 +160,19 @@ def build(root: Path = ROOT):
         "objects": objects,
     }
     validate_seed(TeamCard.model_validate(card), AccessCatalog.model_validate(catalog), users, scenario)
+    resources = scenario["resources"]
+    owner, repo = resources["github"]["repo"].split("/")
+    targets = {
+        "demo-orders-github": {"owner": owner, "repo": repo, "keywords": ["orders-onboarding", "репозитор", "github"]},
+        "demo-orders-jira": {"project_key": resources["jira"]["project"], "keywords": ["jira", "ord-"]},
+        "demo-orders-miro": {"board_id": resources["miro"]["board_id"], "keywords": ["miro", "доск"]},
+        "demo-orders-google_calendar": {
+            **{key: value for key, value in scenario["calls"]["calendar"]["arguments"].items()},
+            "keywords": ["стендап", "встреч", "календар"],
+        },
+        "demo-orders-telegram": {"chat_id": resources["telegram"]["chat_id"], "keywords": ["чат", "telegram"]},
+        "demo-orders-production": {"keywords": ["production"]},
+    }
     outputs = {
         "seed/users.yaml": {"users": users},
         "seed/team_cards/demo-orders.yaml": card,
@@ -156,6 +186,11 @@ def build(root: Path = ROOT):
         )
     data = root / "agent/buddy/demo/data"
     data.mkdir(parents=True, exist_ok=True)
+    # Runtime demo bundle: JSON only (PyYAML is a dev dependency of the agent).
+    bundle = {"users": users, "card": card, "catalog": catalog, "targets": targets}
+    (data / "seed.json").write_text(
+        json.dumps(bundle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+    )
     (data / "scenario.json").write_text(
         json.dumps(scenario, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )

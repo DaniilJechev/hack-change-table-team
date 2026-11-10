@@ -40,8 +40,10 @@ def main() -> None:
     )
     expected = {"backend", "agent", "postgres", "redis", "grafana"}
     names = {row["Service"] for row in rows}
-    check(expected <= names <= expected | {"mcp-atlassian", "google-calendar-mcp"},
-          "Expected five core containers and only configured optional MCP servers")
+    check(
+        expected <= names <= expected | {"mcp-atlassian", "google-calendar-mcp"},
+        "Expected five core containers and only configured optional MCP servers",
+    )
     for row in rows:
         if row["Service"] not in expected:
             continue  # Optional MCP servers have a separate make mcp-list check.

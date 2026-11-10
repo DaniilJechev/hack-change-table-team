@@ -1,0 +1,320 @@
+{
+  "users": [
+    {
+      "user_id": "demo-daniil",
+      "display_name": "Даниил",
+      "role": "intern",
+      "team_id": "demo-orders",
+      "mentor_id": "demo-anna",
+      "logins": {
+        "github": "demo-daniil",
+        "jira": "demo.daniil",
+        "miro": "demo-daniil",
+        "google": "daniil@example.invalid",
+        "telegram": "10001"
+      }
+    },
+    {
+      "user_id": "demo-anna",
+      "display_name": "Анна",
+      "role": "mentor",
+      "team_id": "demo-orders",
+      "logins": {
+        "github": "demo-anna",
+        "jira": "demo.anna",
+        "miro": "demo-anna",
+        "google": "anna@example.invalid"
+      }
+    },
+    {
+      "user_id": "demo-oleg",
+      "display_name": "Олег",
+      "role": "teamlead",
+      "team_id": "demo-orders",
+      "logins": {
+        "github": "demo-oleg",
+        "jira": "demo.oleg",
+        "miro": "demo-oleg",
+        "google": "oleg@example.invalid"
+      }
+    },
+    {
+      "user_id": "demo-kirill",
+      "display_name": "Кирилл",
+      "role": "intern",
+      "team_id": "demo-payments",
+      "logins": {
+        "github": "demo-kirill",
+        "jira": "demo.kirill",
+        "google": "kirill@example.invalid"
+      }
+    },
+    {
+      "user_id": "demo-petr",
+      "display_name": "Пётр",
+      "role": "mentor",
+      "team_id": "demo-orders",
+      "logins": {
+        "github": "demo-petr",
+        "jira": "demo.petr",
+        "google": "petr@example.invalid"
+      }
+    }
+  ],
+  "card": {
+    "synthetic": true,
+    "team_id": "demo-orders",
+    "name": "Учебная команда заказов",
+    "notice": "Синтетические учебные данные; не регламент и не реальные данные Авито.",
+    "source_url": "https://example.invalid/team/demo-orders/card",
+    "stage": {
+      "epic_key": "ORD-100",
+      "source_url": "https://example.invalid/jira/browse/ORD-100"
+    },
+    "people": [
+      {
+        "user_id": "demo-daniil",
+        "name": "Даниил",
+        "role": "Backend-стажёр",
+        "areas": [
+          "онбординг"
+        ],
+        "contact_url": "https://example.invalid/team/demo-orders/people/demo-daniil"
+      },
+      {
+        "user_id": "demo-anna",
+        "name": "Анна",
+        "role": "Наставник",
+        "areas": [
+          "онбординг",
+          "ревью"
+        ],
+        "contact_url": "https://example.invalid/team/demo-orders/people/demo-anna"
+      },
+      {
+        "user_id": "demo-oleg",
+        "name": "Олег",
+        "role": "Тимлид",
+        "areas": [
+          "orders-api",
+          "надёжность"
+        ],
+        "first_contact": true,
+        "contact_url": "https://example.invalid/team/demo-orders/people/demo-oleg"
+      },
+      {
+        "user_id": "demo-petr",
+        "name": "Пётр",
+        "role": "Инженер интеграций",
+        "areas": [
+          "Kafka",
+          "интеграции"
+        ],
+        "contact_url": "https://example.invalid/team/demo-orders/people/demo-petr"
+      }
+    ],
+    "routing": [
+      {
+        "situation": "упал staging",
+        "go_to": "#orders-duty",
+        "owner_id": "demo-oleg",
+        "wait_minutes": 30,
+        "then_id": "demo-oleg",
+        "source_url": "https://example.invalid/team/demo-orders/routing/staging"
+      },
+      {
+        "situation": "вопрос по Kafka",
+        "go_to": "Пётр",
+        "owner_id": "demo-petr",
+        "wait_minutes": 60,
+        "then_id": "demo-oleg",
+        "source_url": "https://example.invalid/team/demo-orders/routing/kafka"
+      }
+    ],
+    "do_not_disturb": [
+      {
+        "person_id": "demo-petr",
+        "direct_allowed": false,
+        "reason": "Вне учебного рабочего времени — через первый контакт",
+        "via_id": "demo-oleg"
+      }
+    ],
+    "tools": [
+      "Go",
+      "PostgreSQL",
+      "Kafka",
+      "Python",
+      "GitHub",
+      "Jira",
+      "Miro",
+      "Google Calendar",
+      "Telegram"
+    ],
+    "links": [
+      {
+        "service": "github",
+        "url": "https://example.invalid/github/demo-buddy/orders-onboarding/pull/45"
+      },
+      {
+        "service": "jira",
+        "url": "https://example.invalid/jira/browse/ORD-118"
+      },
+      {
+        "service": "calendar",
+        "url": "https://example.invalid/calendar/event/demo-standup"
+      },
+      {
+        "service": "miro",
+        "url": "https://example.invalid/miro/board/demo-board-orders"
+      },
+      {
+        "service": "telegram",
+        "url": "https://example.invalid/telegram/demo-orders"
+      }
+    ],
+    "faq": []
+  },
+  "catalog": {
+    "synthetic": true,
+    "notice": "Синтетические учебные данные; не регламент и не реальные данные Авито.",
+    "team_id": "demo-orders",
+    "instruments": [
+      "github",
+      "jira",
+      "miro",
+      "google_calendar",
+      "telegram"
+    ],
+    "objects": [
+      {
+        "id": "demo-orders-github",
+        "instrument": "github",
+        "name": "Репозиторий orders-onboarding",
+        "url": "https://example.invalid/github/demo-buddy/orders-onboarding/pull/45",
+        "request_url": "https://example.invalid/team/demo-orders/requests/github",
+        "owner_id": "demo-oleg",
+        "roles": [
+          "intern",
+          "mentor",
+          "teamlead"
+        ],
+        "forbidden": false
+      },
+      {
+        "id": "demo-orders-jira",
+        "instrument": "jira",
+        "name": "Проект ORD",
+        "url": "https://example.invalid/jira/browse/ORD-118",
+        "request_url": "https://example.invalid/team/demo-orders/requests/jira",
+        "owner_id": "demo-oleg",
+        "roles": [
+          "intern",
+          "mentor",
+          "teamlead"
+        ],
+        "forbidden": false
+      },
+      {
+        "id": "demo-orders-miro",
+        "instrument": "miro",
+        "name": "Доска планирования",
+        "url": "https://example.invalid/miro/board/demo-board-orders",
+        "request_url": "https://example.invalid/team/demo-orders/requests/miro",
+        "owner_id": "demo-oleg",
+        "roles": [
+          "intern",
+          "mentor",
+          "teamlead"
+        ],
+        "forbidden": false
+      },
+      {
+        "id": "demo-orders-google_calendar",
+        "instrument": "google_calendar",
+        "name": "Командные встречи",
+        "url": "https://example.invalid/calendar/event/demo-standup",
+        "request_url": "https://example.invalid/team/demo-orders/requests/google_calendar",
+        "owner_id": "demo-anna",
+        "roles": [
+          "intern",
+          "mentor",
+          "teamlead"
+        ],
+        "forbidden": false
+      },
+      {
+        "id": "demo-orders-telegram",
+        "instrument": "telegram",
+        "name": "Учебный командный чат",
+        "url": "https://example.invalid/telegram/demo-orders",
+        "request_url": "https://example.invalid/team/demo-orders/requests/telegram",
+        "owner_id": "demo-anna",
+        "roles": [
+          "intern",
+          "mentor",
+          "teamlead"
+        ],
+        "forbidden": false
+      },
+      {
+        "id": "demo-orders-production",
+        "instrument": "github",
+        "name": "Закрытая конфигурация production",
+        "url": "https://example.invalid/team/demo-orders/objects/production-config",
+        "owner_id": "demo-oleg",
+        "roles": [
+          "intern"
+        ],
+        "forbidden": true,
+        "reason": "Этот учебный объект запрещён роли Backend-стажёр."
+      }
+    ]
+  },
+  "targets": {
+    "demo-orders-github": {
+      "owner": "demo-buddy",
+      "repo": "orders-onboarding",
+      "keywords": [
+        "orders-onboarding",
+        "репозитор",
+        "github"
+      ]
+    },
+    "demo-orders-jira": {
+      "project_key": "ORD",
+      "keywords": [
+        "jira",
+        "ord-"
+      ]
+    },
+    "demo-orders-miro": {
+      "board_id": "demo-board-orders",
+      "keywords": [
+        "miro",
+        "доск"
+      ]
+    },
+    "demo-orders-google_calendar": {
+      "calendarId": "demo-orders-calendar",
+      "timeMin": "2026-11-11T00:00:00+03:00",
+      "timeMax": "2026-11-12T00:00:00+03:00",
+      "keywords": [
+        "стендап",
+        "встреч",
+        "календар"
+      ]
+    },
+    "demo-orders-telegram": {
+      "chat_id": -1001234567890,
+      "keywords": [
+        "чат",
+        "telegram"
+      ]
+    },
+    "demo-orders-production": {
+      "keywords": [
+        "production"
+      ]
+    }
+  }
+}

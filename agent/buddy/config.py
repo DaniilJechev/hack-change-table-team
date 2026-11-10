@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     embeddings_model: str = "intfloat/multilingual-e5-small"
     health_host: str = "0.0.0.0"
     health_port: int = Field(default=8081, ge=1, le=65535)
+    access_monitor_seconds: int = Field(default=3600, ge=60, le=86400)
 
     @model_validator(mode="after")
     def validate_live(self) -> "Settings":

@@ -20,6 +20,7 @@
       "epic_key": "ORD-100",
       "issue_key": "ORD-118",
       "url": "https://example.invalid/jira/browse/ORD-118",
+      "epic_url": "https://example.invalid/jira/browse/ORD-100",
       "live_status": "not_created"
     },
     "calendar": {

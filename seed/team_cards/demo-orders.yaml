@@ -3,6 +3,9 @@ team_id: demo-orders
 name: Учебная команда заказов
 notice: Синтетические учебные данные; не регламент и не реальные данные Авито.
 source_url: https://example.invalid/team/demo-orders/card
+stage:
+  epic_key: ORD-100
+  source_url: https://example.invalid/jira/browse/ORD-100
 people:
 - user_id: demo-daniil
   name: Даниил

@@ -4,19 +4,43 @@ users:
   role: intern
   team_id: demo-orders
   mentor_id: demo-anna
+  logins:
+    github: demo-daniil
+    jira: demo.daniil
+    miro: demo-daniil
+    google: daniil@example.invalid
+    telegram: '10001'
 - user_id: demo-anna
   display_name: Анна
   role: mentor
   team_id: demo-orders
+  logins:
+    github: demo-anna
+    jira: demo.anna
+    miro: demo-anna
+    google: anna@example.invalid
 - user_id: demo-oleg
   display_name: Олег
   role: teamlead
   team_id: demo-orders
+  logins:
+    github: demo-oleg
+    jira: demo.oleg
+    miro: demo-oleg
+    google: oleg@example.invalid
 - user_id: demo-kirill
   display_name: Кирилл
   role: intern
   team_id: demo-payments
+  logins:
+    github: demo-kirill
+    jira: demo.kirill
+    google: kirill@example.invalid
 - user_id: demo-petr
   display_name: Пётр
   role: mentor
   team_id: demo-orders
+  logins:
+    github: demo-petr
+    jira: demo.petr
+    google: petr@example.invalid
