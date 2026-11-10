@@ -9,6 +9,18 @@ jobs:
   tests:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_PASSWORD: ci_synthetic
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 3s --health-timeout 3s --health-retries 30
+    env:
+      TEST_DATABASE_URL: postgres://postgres:ci_synthetic@127.0.0.1:5432/postgres?sslmode=disable
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -29,7 +41,7 @@ jobs:
       - run: python scripts/check.py coverage
         env:
           GO_RACE: '1'
-      - run: uv run --project agent --frozen --extra dev ruff check --config agent/pyproject.toml agent scripts infra/smoke.py
+      - run: uv run --project agent --frozen --extra dev ruff check --config agent/pyproject.toml agent scripts infra
       - run: uv run --project agent --frozen python -m buddy --smoke
       - uses: actions/setup-node@v4
         with:
@@ -55,9 +67,31 @@ jobs:
       - run: python infra/smoke.py
       - run: docker compose exec -T postgres psql -U buddy -d buddy -Atc "SELECT extname FROM pg_extension WHERE extname='vector'"
       - run: docker compose exec -T agent python -m buddy --smoke
+      - run: make seed
       - run: docker compose --env-file .env.example up -d --wait --wait-timeout 180
       - run: python infra/smoke.py --demo
       - run: docker compose logs --no-color
         if: failure()
       - run: docker compose down
+        if: always()
+  mcp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Synthetic placeholders allow initialize/tools/list; no corporate tools are called.
+      GITHUB_PERSONAL_ACCESS_TOKEN: synthetic-not-a-token
+      JIRA_URL: https://example.atlassian.net
+      JIRA_USERNAME: synthetic@example.invalid
+      JIRA_API_TOKEN: synthetic-not-a-token
+      GOOGLE_SERVICE_ACCOUNT_JSON: '{"type":"service_account","client_email":"synthetic@example.invalid","private_key":"synthetic-not-a-key"}'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.5'
+      - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml up --build -d --wait --wait-timeout 180
+      - run: make mcp-list
+      - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml logs --no-color
+        if: failure()
+      - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml down
         if: always()

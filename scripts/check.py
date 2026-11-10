@@ -17,7 +17,10 @@ if __name__ == "__main__":
     go_test = [go, "test", "./...", "-coverprofile=coverage.out", "-covermode=atomic"]
     if os.environ.get("GO_RACE") == "1":
         go_test.append("-race")
-    run(go_test, ROOT / "backend")
+    if os.environ.get("TEST_DATABASE_URL"):
+        run(go_test, ROOT / "backend")
+    else:
+        run([sys.executable, "infra/test_backend.py"])
     report = subprocess.check_output(
         [go, "tool", "cover", "-func=coverage.out"], cwd=ROOT / "backend", text=True
     )
