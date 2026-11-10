@@ -41,7 +41,7 @@ openspec/    спецификации (OpenSpec)
 infra/       grafana, postgres init
 docs/        продуктовая документация
 ```
-Сейчас в репозитории есть только `docs/` и `openspec/`; остальное создаётся по `docs/3_ROADMAP.md`.
+Технический каркас Этапа 0 реализован: `backend/`, `agent/`, Compose, CI, seed и проверки. Текущий статус и ограничения — в `STAGE_0_VALIDATION.md`; следующие этапы выполняются по `docs/3_ROADMAP.md`.
 
 ## Стек
 - **Go** — `backend` (pgx, goose, официальный [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk)).

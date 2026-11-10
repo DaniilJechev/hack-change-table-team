@@ -8,6 +8,7 @@ permissions:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -21,8 +22,14 @@ jobs:
         with:
           version: '0.9.5'
       - run: uv sync --project agent --frozen --extra dev
+      - name: Go format and vet
+        run: |
+          test -z "$(gofmt -l backend)"
+          cd backend && go vet ./...
       - run: python scripts/check.py coverage
-      - run: uv run --project agent --frozen --extra dev ruff check agent scripts
+        env:
+          GO_RACE: '1'
+      - run: uv run --project agent --frozen --extra dev ruff check --config agent/pyproject.toml agent scripts infra/smoke.py
       - run: uv run --project agent --frozen python -m buddy --smoke
       - uses: actions/setup-node@v4
         with:
@@ -40,13 +47,16 @@ jobs:
             reports/python-coverage.xml
   compose:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - run: docker compose --env-file .env.example config --quiet
       - run: make up
-      - run: python scripts/compose_smoke.py
+      - run: python infra/smoke.py
       - run: docker compose exec -T postgres psql -U buddy -d buddy -Atc "SELECT extname FROM pg_extension WHERE extname='vector'"
       - run: docker compose exec -T agent python -m buddy --smoke
+      - run: docker compose --env-file .env.example up -d --wait --wait-timeout 180
+      - run: python infra/smoke.py --demo
       - run: docker compose logs --no-color
         if: failure()
       - run: docker compose down

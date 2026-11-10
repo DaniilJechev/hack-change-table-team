@@ -249,6 +249,7 @@ async def test_st0_infra_1_agent_start_and_shutdown(monkeypatch, telegram):
             else:
                 pytest.fail("agent health server did not start")
             assert response.status_code == 200
+            assert (await client.get(f"http://127.0.0.1:{port}/missing")).status_code == 404
             assert response.json()["mode"] == ("telegram" if telegram else "offline")
     finally:
         stop.set()

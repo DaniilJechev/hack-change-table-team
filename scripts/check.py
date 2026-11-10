@@ -14,10 +14,10 @@ def run(args, cwd=ROOT):
 
 if __name__ == "__main__":
     go, uv = os.environ.get("GO", "go"), os.environ.get("UV", "uv")
-    run(
-        [go, "test", "./...", "-coverprofile=coverage.out", "-covermode=atomic"],
-        ROOT / "backend",
-    )
+    go_test = [go, "test", "./...", "-coverprofile=coverage.out", "-covermode=atomic"]
+    if os.environ.get("GO_RACE") == "1":
+        go_test.append("-race")
+    run(go_test, ROOT / "backend")
     report = subprocess.check_output(
         [go, "tool", "cover", "-func=coverage.out"], cwd=ROOT / "backend", text=True
     )

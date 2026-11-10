@@ -32,6 +32,9 @@ services:
       GF_SECURITY_ADMIN_USER: buddy
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-buddy_local_demo}
       GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_ANALYTICS_REPORTING_ENABLED: 'false'
+      GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
+      GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: 'false'
     ports:
       - '127.0.0.1:${GRAFANA_PORT:-3000}:3000'
     volumes:
@@ -45,6 +48,7 @@ services:
       retries: 30
     restart: unless-stopped
   backend:
+    read_only: true
     build: ./backend
     environment:
       HTTP_ADDR: ':8080'
@@ -62,6 +66,8 @@ services:
       retries: 30
     restart: unless-stopped
   agent:
+    read_only: true
+    init: true
     build: ./agent
     environment:
       DEMO_MODE: ${DEMO_MODE:-true}

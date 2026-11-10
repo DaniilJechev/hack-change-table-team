@@ -1,6 +1,6 @@
 # AI-buddy
 
-Telegram-помощник для стажёров. Кейс Hack&Change 2026. Сейчас реализуется **Этап 0: каркас**.
+Telegram-помощник для стажёров. Кейс Hack&Change 2026. Техническая часть **Этапа 0: каркас** реализована и проверена.
 H0–H3, привязка аккаунтов и MCP ещё не реализованы. Синтетические карточки не являются регламентами Авито.
 
 ## Запуск
@@ -58,9 +58,11 @@ make validate
 Без Make: `uv sync --project agent --frozen --extra dev --python 3.12`, затем `python scripts/check.py coverage`.
 `uv.lock` фиксирует версии зависимостей. Python-тесты используют фейки и httpx MockTransport.
 Порог покрытия строго >80% отдельно для backend и agent; в CI проверяются также lint, OpenSpec и Compose.
-`make smoke` проверяет offline /start и HTTP endpoints уже поднятых сервисов.
+`make smoke` проверяет offline /start, здоровье пяти контейнеров, HTTP backend/agent/Grafana, PING Redis и SQL с типом vector. `SMOKE_ARGS=--demo` дополнительно проверяет DEMO_MODE.
+`make ps`, `make logs` и `make check-config` показывают состояние, логи и проверяют конфигурацию.
 `make down` останавливает сервисы, сохраняя тома с данными.
-`make ingest` и `make record-fixtures` добавятся вместе с H3 и MCP, на Этапе 0 они ещё не реализованы.
+`make ingest` и `make record-fixtures` завершаются явной ошибкой до реализации H3 и MCP.
+PostgreSQL применяет init.sql только на новом томе; изменение пароля в .env не меняет пароль существующей БД.
 
 ## Структура и дальнейшая работа
 

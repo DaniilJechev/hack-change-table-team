@@ -27,7 +27,25 @@ cover:
 
 smoke:
 	$(UV) run --project agent --frozen python -m buddy --smoke
-	$(PYTHON) scripts/compose_smoke.py
+	$(PYTHON) infra/smoke.py --compose "$(COMPOSE)" $(SMOKE_ARGS)
 
 validate:
 	$(OPENSPEC) validate --all
+
+.PHONY: logs ps check-config validate-specs dev ingest record-fixtures
+logs:
+	$(COMPOSE) logs --follow
+
+ps:
+	$(COMPOSE) ps
+
+check-config:
+	$(COMPOSE) config --quiet
+
+validate-specs: validate
+
+dev: setup
+
+ingest record-fixtures:
+	@echo "$@: not implemented until the corresponding roadmap stage"
+	@exit 1

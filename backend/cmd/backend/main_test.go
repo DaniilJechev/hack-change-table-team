@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/DaniilJechev/hack-change-table-team/backend/internal/server"
 )
 
 func TestST0_INFRA_1_GracefulShutdown(t *testing.T) {
@@ -16,7 +18,7 @@ func TestST0_INFRA_1_GracefulShutdown(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	done := make(chan error, 1)
-	go func() { done <- serve(ctx, l) }()
+	go func() { done <- server.Serve(ctx, l) }()
 	client := &http.Client{Timeout: time.Second}
 	response, err := client.Get("http://" + l.Addr().String() + "/health")
 	if err != nil {
@@ -56,7 +58,18 @@ func TestST0_INFRA_1_ServeClosedListener(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = l.Close()
-	if err := serve(context.Background(), l); err == nil {
+	if err := server.Serve(context.Background(), l); err == nil {
 		t.Fatal("expected closed listener error")
+	}
+}
+
+func TestNFR_BOOT_1_AddressAlreadyInUse(t *testing.T) {
+	listener, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listener.Close()
+	if err := run(context.Background(), listener.Addr().String()); err == nil {
+		t.Fatal("expected occupied port error")
 	}
 }
