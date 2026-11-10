@@ -89,7 +89,7 @@ def build(root: Path = ROOT) -> None:
     }
     seed = root / "seed/day_scenario.json"
     seed.parent.mkdir(parents=True, exist_ok=True)
-    seed.write_text(json.dumps(scenario, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    seed.write_text(json.dumps(scenario, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n")
     for step in scenario["steps"]:
         store = FixtureStore(root / "fixtures", step=step)
         payloads = {
@@ -176,13 +176,16 @@ def build(root: Path = ROOT) -> None:
             )
             + "\n",
             encoding="utf-8",
+            newline="\n",
         )
         # Synthetic generation is deterministic; real recording uses actual UTC capture time.
         for file in (root / "fixtures" / step).glob("*/*.json"):
             data = json.loads(file.read_text(encoding="utf-8"))
             if "captured_at" in data:
                 data["captured_at"] = FIXED_TIME
-            file.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+            file.write_text(
+                json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
+            )
 
 
 if __name__ == "__main__":
