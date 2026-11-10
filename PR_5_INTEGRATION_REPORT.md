@@ -53,7 +53,7 @@ PostgreSQL: **90.9%** покрытия; `go vet ./...` успешно. CI Иль
 - CI №42863283101: Compose и MCP — успешно; сквозная REST-привязка и официальное discovery — успешно.
 - В общем job этого запуска тесты и покрытие прошли, lint обнаружил неоднозначную сортировку импорта mcp. Исправлено явной классификацией SDK как внешней зависимости; в infra/mcp_probe.py изменён только порядок импортов.
 - Каталоги официальных серверов: mcp/discovery/{github,jira,calendar}.json, с версиями и ссылкой на CI. Подтверждены 7/5/6 инструментов соответственно. Проверка аргументов сценария по настоящим схемам добавлена в тесты.
-- Итоговый CI после правки lint: ожидается новый запуск.
+- CI после правки lint: https://github.com/DaniilJechev/hack-change-table-team/actions/runs/42864314802 — все три job (tests, compose, mcp) успешно; 102 теста агента, Go race и покрытие прошли.
 
 Приёмка seed/check_stage_one.py использует свежий проект buddy-stage1-acceptance*,
 seed, настоящий REST/PostgreSQL и настоящий диспетчер aiogram с OfflineSession.
