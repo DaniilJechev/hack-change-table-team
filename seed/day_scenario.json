@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "notice": "Синтетические данные учебного проекта; не регламент и не реальные данные Авито.",
+  "team_id": "demo-orders",
+  "user_ids": [
+    "demo-daniil",
+    "demo-anna",
+    "demo-oleg"
+  ],
+  "resources": {
+    "github": {
+      "repo": "demo-buddy/orders-onboarding",
+      "pull_number": 45,
+      "url": "https://example.invalid/github/demo-buddy/orders-onboarding/pull/45",
+      "live_status": "not_created"
+    },
+    "jira": {
+      "project": "ORD",
+      "epic_key": "ORD-100",
+      "issue_key": "ORD-118",
+      "url": "https://example.invalid/jira/browse/ORD-118",
+      "live_status": "not_created"
+    },
+    "calendar": {
+      "calendar_id": "demo-orders-calendar",
+      "event_id": "demo-standup",
+      "url": "https://example.invalid/calendar/event/demo-standup",
+      "live_status": "not_created"
+    },
+    "miro": {
+      "board_id": "demo-board-orders",
+      "url": "https://example.invalid/miro/board/demo-board-orders",
+      "live_status": "not_created"
+    },
+    "telegram": {
+      "chat_id": -1001234567890,
+      "url": "https://example.invalid/telegram/demo-orders",
+      "live_status": "not_created"
+    }
+  },
+  "calls": {
+    "github": {
+      "tool": "list_pull_requests",
+      "arguments": {
+        "owner": "demo-buddy",
+        "repo": "orders-onboarding",
+        "state": "open",
+        "perPage": 10
+      }
+    },
+    "jira": {
+      "tool": "jira_get_issue",
+      "arguments": {
+        "issue_key": "ORD-118"
+      }
+    },
+    "calendar": {
+      "tool": "list-events",
+      "arguments": {
+        "calendarId": "demo-orders-calendar",
+        "timeMin": "2026-11-11T00:00:00+03:00",
+        "timeMax": "2026-11-12T00:00:00+03:00"
+      }
+    },
+    "miro": {
+      "tool": "content_item_list_roles",
+      "arguments": {
+        "contentItemId": "demo-board-orders"
+      }
+    }
+  },
+  "steps": {
+    "step_1": "PR требует внимания; задача назначена; встреча перенесена; Miro ещё нет",
+    "step_2": "Появился доступ viewer к Miro"
+  }
+}
