@@ -1,10 +1,69 @@
 synthetic: true
 team_id: demo-orders
 name: Учебная команда заказов
-notice: Синтетическая карточка для демо, не регламент Авито.
+notice: Синтетические учебные данные; не регламент и не реальные данные Авито.
+source_url: https://example.invalid/team/demo-orders/card
 people:
-  - user_id: demo-anna
-    responsibility: Наставничество
-  - user_id: demo-oleg
-    responsibility: Технические решения команды
+- user_id: demo-daniil
+  name: Даниил
+  role: Backend-стажёр
+  areas:
+  - онбординг
+  contact_url: https://example.invalid/team/demo-orders/people/demo-daniil
+- user_id: demo-anna
+  name: Анна
+  role: Наставник
+  areas:
+  - онбординг
+  - ревью
+  contact_url: https://example.invalid/team/demo-orders/people/demo-anna
+- user_id: demo-oleg
+  name: Олег
+  role: Тимлид
+  areas:
+  - orders-api
+  - надёжность
+  first_contact: true
+  contact_url: https://example.invalid/team/demo-orders/people/demo-oleg
+- user_id: demo-petr
+  name: Пётр
+  role: Инженер интеграций
+  areas:
+  - Kafka
+  - интеграции
+  contact_url: https://example.invalid/team/demo-orders/people/demo-petr
+routing:
+- situation: упал staging
+  go_to: '#orders-duty'
+  owner_id: demo-oleg
+  wait_minutes: 30
+  then_id: demo-oleg
+  source_url: https://example.invalid/team/demo-orders/routing/staging
+- situation: вопрос по Kafka
+  go_to: Пётр
+  owner_id: demo-petr
+  wait_minutes: 60
+  then_id: demo-oleg
+  source_url: https://example.invalid/team/demo-orders/routing/kafka
+do_not_disturb:
+- person_id: demo-petr
+  direct_allowed: false
+  reason: Вне учебного рабочего времени — через первый контакт
+  via_id: demo-oleg
+tools:
+- Go
+- PostgreSQL
+- Kafka
+- Python
+- GitHub
+- Jira
+- Miro
+- Google Calendar
+- Telegram
+links:
+  github: https://example.invalid/github/demo-buddy/orders-onboarding/pull/45
+  jira: https://example.invalid/jira/browse/ORD-118
+  calendar: https://example.invalid/calendar/event/demo-standup
+  miro: https://example.invalid/miro/board/demo-board-orders
+  telegram: https://example.invalid/telegram/demo-orders
 faq: []

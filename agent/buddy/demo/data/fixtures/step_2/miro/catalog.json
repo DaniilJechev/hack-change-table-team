@@ -1,0 +1,27 @@
+{
+  "server": "miro",
+  "step": "step_2",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "tools": [
+    {
+      "name": "content_item_list_roles",
+      "description": "Synthetic test contract, not live discovery",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "contentItemId": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "contentItemId"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

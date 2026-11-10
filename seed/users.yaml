@@ -1,19 +1,22 @@
-# Синтетические персонажи. Telegram ID и одноразовые коды выдаёт backend позднее.
 users:
-  - user_id: demo-daniil
-    display_name: Даниил
-    role: intern
-    team_id: demo-orders
-    mentor_id: demo-anna
-  - user_id: demo-anna
-    display_name: Анна
-    role: mentor
-    team_id: demo-orders
-  - user_id: demo-oleg
-    display_name: Олег
-    role: teamlead
-    team_id: demo-orders
-  - user_id: demo-kirill
-    display_name: Кирилл
-    role: intern
-    team_id: demo-payments
+- user_id: demo-daniil
+  display_name: Даниил
+  role: intern
+  team_id: demo-orders
+  mentor_id: demo-anna
+- user_id: demo-anna
+  display_name: Анна
+  role: mentor
+  team_id: demo-orders
+- user_id: demo-oleg
+  display_name: Олег
+  role: teamlead
+  team_id: demo-orders
+- user_id: demo-kirill
+  display_name: Кирилл
+  role: intern
+  team_id: demo-payments
+- user_id: demo-petr
+  display_name: Пётр
+  role: mentor
+  team_id: demo-orders

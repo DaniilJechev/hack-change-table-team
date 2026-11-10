@@ -1,0 +1,17 @@
+{
+  "origin": "synthetic",
+  "not_live": true,
+  "method": "getChatMember",
+  "arguments": {
+    "chat_id": -1001234567890,
+    "user_id": 10001
+  },
+  "result": {
+    "status": "member",
+    "user": {
+      "id": 10001,
+      "first_name": "Демо",
+      "is_bot": false
+    }
+  }
+}

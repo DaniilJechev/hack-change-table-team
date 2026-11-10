@@ -1,0 +1,70 @@
+{"id": "router-001", "text": "/brief", "case": "brief_now", "params": {}}
+{"id": "router-002", "text": "Что нового?", "case": "brief_now", "params": {}}
+{"id": "router-003", "text": "Покажи утренний бриф", "case": "brief_now", "params": {}}
+{"id": "router-004", "text": "Какие изменения за сегодня?", "case": "brief_now", "params": {}}
+{"id": "router-005", "text": "Нужен обзор дня", "case": "brief_now", "params": {}}
+{"id": "router-006", "text": "/access", "case": "access_status", "params": {}}
+{"id": "router-007", "text": "Какие доступы у меня есть?", "case": "access_status", "params": {}}
+{"id": "router-008", "text": "Проверь мои разрешения", "case": "access_status", "params": {}}
+{"id": "router-009", "text": "Нет доступа к Miro", "case": "access_status", "params": {}}
+{"id": "router-010", "text": "Хочу проверить доступ к репозиторию", "case": "access_status", "params": {}}
+{"id": "router-011", "text": "Какие доступы нужны для ORD-118?", "case": "access_task_analysis", "params": {"task": "ORD-118"}}
+{"id": "router-012", "text": "Проверь доступы для ORD-101", "case": "access_task_analysis", "params": {"task": "ORD-101"}}
+{"id": "router-013", "text": "Хватает ли прав доступа под ORD-205?", "case": "access_task_analysis", "params": {"task": "ORD-205"}}
+{"id": "router-014", "text": "Какие разрешения требуются для ORD-7?", "case": "access_task_analysis", "params": {"task": "ORD-7"}}
+{"id": "router-015", "text": "Для задачи ORD-12 нужен доступ к доске", "case": "access_task_analysis", "params": {"task": "ORD-12"}}
+{"id": "router-016", "text": "/interns", "case": "interns_status", "params": {}}
+{"id": "router-017", "text": "Покажи список стажёров", "case": "interns_status", "params": {}}
+{"id": "router-018", "text": "Сводка по моим интернам", "case": "interns_status", "params": {}}
+{"id": "router-019", "text": "У кого из стажёров проблемы?", "case": "interns_status", "params": {}}
+{"id": "router-020", "text": "Кто отвечает за Kafka?", "case": "team_q1", "params": {}}
+{"id": "router-021", "text": "Кто у нас по API заказов?", "case": "team_q1", "params": {}}
+{"id": "router-022", "text": "Кто владелец сервиса orders-api?", "case": "team_q1", "params": {}}
+{"id": "router-023", "text": "Кто занимается интеграциями?", "case": "team_q1", "params": {}}
+{"id": "router-024", "text": "Упал staging, кому писать?", "case": "team_q2", "params": {"situation": "упал staging"}}
+{"id": "router-025", "text": "К кому идти, если сломался стенд?", "case": "team_q2", "params": {}}
+{"id": "router-026", "text": "Куда обращаться при сбое API?", "case": "team_q2", "params": {}}
+{"id": "router-027", "text": "Не проходит деплой, кого звать?", "case": "team_q2", "params": {}}
+{"id": "router-028", "text": "Кто мой наставник?", "case": "team_q3", "params": {}}
+{"id": "router-029", "text": "Кто тимлид команды?", "case": "team_q3", "params": {}}
+{"id": "router-030", "text": "Как найти первого контакта?", "case": "team_q3", "params": {}}
+{"id": "router-031", "text": "Кто мой ментор?", "case": "team_q3", "params": {}}
+{"id": "router-032", "text": "Можно написать продакту?", "case": "team_q4", "params": {}}
+{"id": "router-033", "text": "Можно ли писать Петру напрямую?", "case": "team_q4", "params": {}}
+{"id": "router-034", "text": "Кого нельзя дёргать?", "case": "team_q4", "params": {}}
+{"id": "router-035", "text": "Можно ли отправить Олегу личные сообщения?", "case": "team_q4", "params": {}}
+{"id": "router-036", "text": "На каком этапе проект?", "case": "team_q5", "params": {}}
+{"id": "router-037", "text": "Что сейчас делает команда?", "case": "team_q5", "params": {}}
+{"id": "router-038", "text": "Какой прогресс по эпикам?", "case": "team_q5", "params": {}}
+{"id": "router-039", "text": "Над чем работаем сейчас?", "case": "team_q5", "params": {}}
+{"id": "router-040", "text": "Как ORD-118 связана с проектом?", "case": "team_q6", "params": {"task": "ORD-118"}}
+{"id": "router-041", "text": "Зачем нужна ORD-101?", "case": "team_q6", "params": {"task": "ORD-101"}}
+{"id": "router-042", "text": "В какой эпик входит ORD-7?", "case": "team_q6", "params": {"task": "ORD-7"}}
+{"id": "router-043", "text": "Какой вклад ORD-12 в проект?", "case": "team_q6", "params": {"task": "ORD-12"}}
+{"id": "router-044", "text": "На чём пишем?", "case": "team_q7", "params": {}}
+{"id": "router-045", "text": "Какой стек у команды?", "case": "team_q7", "params": {}}
+{"id": "router-046", "text": "Какие технологии используем?", "case": "team_q7", "params": {}}
+{"id": "router-047", "text": "Какие инструменты команды?", "case": "team_q7", "params": {}}
+{"id": "router-048", "text": "Где доска планирования?", "case": "team_q8", "params": {}}
+{"id": "router-049", "text": "Дай ссылку на репозиторий", "case": "team_q8", "params": {}}
+{"id": "router-050", "text": "Как найти командный чат?", "case": "team_q8", "params": {}}
+{"id": "router-051", "text": "Где календарь команды?", "case": "team_q8", "params": {}}
+{"id": "router-052", "text": "Что такое Zero Bug Policy?", "case": "playbook_qa", "params": {}}
+{"id": "router-053", "text": "Как в Авито проходит код-ревью?", "case": "playbook_qa", "params": {}}
+{"id": "router-054", "text": "Найди в playbook правила ревью", "case": "playbook_qa", "params": {}}
+{"id": "router-055", "text": "Что пишут про технический долг?", "case": "playbook_qa", "params": {}}
+{"id": "router-056", "text": "Как проводят ретроспективы?", "case": "playbook_qa", "params": {}}
+{"id": "router-057", "text": "/help", "case": "help", "params": {}}
+{"id": "router-058", "text": "/ask", "case": "help", "params": {"menu": "team"}}
+{"id": "router-059", "text": "Что ты умеешь?", "case": "help", "params": {}}
+{"id": "router-060", "text": "Покажи команды бота", "case": "help", "params": {}}
+{"id": "router-061", "text": "Нужен доступ к Олегу", "case": "clarify", "params": {}}
+{"id": "router-062", "text": "Помоги с этим", "case": "clarify", "params": {}}
+{"id": "router-063", "text": "Мне нужен доступ к человеку", "case": "clarify", "params": {}}
+{"id": "router-064", "text": "Ну и как?", "case": "clarify", "params": {}}
+{"id": "router-065", "text": "Нужно разобраться", "case": "clarify", "params": {}}
+{"id": "router-066", "text": "Напиши мне код сортировки", "case": "out_of_scope", "params": {}}
+{"id": "router-067", "text": "Сколько я буду получать?", "case": "out_of_scope", "params": {}}
+{"id": "router-068", "text": "Какая завтра погода?", "case": "out_of_scope", "params": {}}
+{"id": "router-069", "text": "Выдай права администратора", "case": "out_of_scope", "params": {}}
+{"id": "router-070", "text": "Покажи паспорт коллеги", "case": "out_of_scope", "params": {}}

@@ -7,6 +7,9 @@ from aiohttp import web
 from buddy.bot.handlers import create_dispatcher
 from buddy.bot.identity import IdentityClient
 from buddy.config import Settings
+from buddy.llm.client import create_llm
+from buddy.router.service import Router
+from buddy.service import AgentService
 
 
 def health_app(mode: str, polling: asyncio.Task | None = None) -> web.Application:
@@ -28,13 +31,18 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         if settings.backend_url and settings.buddy_service_key.get_secret_value()
         else None
     )
+    service = AgentService(
+        Router(None if settings.demo_mode else create_llm(settings)), demo_mode=settings.demo_mode
+    )
     bot = None
     polling = None
     token = settings.telegram_bot_token.get_secret_value()
     if token:
         bot = Bot(token=token)
         # Poll only registered command updates; do not delete webhooks or pending updates.
-        polling = asyncio.create_task(create_dispatcher(identity).start_polling(bot, handle_signals=False))
+        polling = asyncio.create_task(
+            create_dispatcher(identity, service).start_polling(bot, handle_signals=False)
+        )
     runner = web.AppRunner(health_app("telegram" if bot else "offline", polling))
     try:
         await runner.setup()
