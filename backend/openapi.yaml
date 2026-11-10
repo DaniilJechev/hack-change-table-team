@@ -146,6 +146,37 @@ paths:
         schema:
           type: integer
           minimum: 1
+    post:
+      summary: Загрузка YAML-карточки своей команды наставником или тимлидом; строгая схема в README
+      security: &id002
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamCard'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/yaml:
+            schema:
+              type: string
+              maxLength: 1048576
   /api/v1/access-catalog:
     get:
       summary: Каталог своей команды для своей роли
@@ -705,6 +736,219 @@ paths:
         in: path
         required: true
         schema: *id001
+  /api/v1/flags:
+    get:
+      summary: Эффективные флаги своей команды (БД поверх env)
+      security: *id002
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamFlags'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/flags/{name}:
+    put:
+      summary: Изменение флага своей команды только тимлидом
+      security: *id002
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name: &id010
+                    type: string
+                  enabled:
+                    type: boolean
+                required:
+                - name
+                - enabled
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - enabled
+              properties:
+                enabled:
+                  type: boolean
+      parameters:
+      - name: name
+        in: path
+        required: true
+        schema:
+          type: string
+          enum: &id013
+          - access_monitoring
+          - team_escalation
+          - faq_publication
+  /api/v1/questions/{id}/bot-answer:
+    post:
+      summary: Сохранение неизменяемого ответа бота отдельно от ответа человека
+      security: *id002
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - text
+              - sources
+              properties:
+                text:
+                  type: string
+                  minLength: 1
+                  maxLength: 8000
+                sources:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                    maxLength: 2048
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+    patch:
+      summary: Оценка ответа бота автором вопроса, отдельно от оценки человека
+      security: *id002
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - helpful
+              properties:
+                helpful:
+                  type: boolean
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+  /api/v1/questions/{id}/escalate:
+    post:
+      summary: Назначить участника в существующем вопросе; повтор безопасен, переназначение запрещено
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - assigned_to
+              properties:
+                assigned_to:
+                  type: string
+                  minLength: 1
+                  maxLength: 128
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$
 components:
   securitySchemes:
     buddyKey:
@@ -725,19 +969,19 @@ components:
       - role
       - team_id
       properties:
-        user_id: &id002
+        user_id: &id003
           type: string
-        display_name: &id003
+        display_name: &id004
           type: string
-        role: &id004
+        role: &id005
           type: string
           enum:
           - intern
           - mentor
           - teamlead
-        team_id: &id005
+        team_id: &id006
           type: string
-        mentor_id: &id006
+        mentor_id: &id007
           type: string
     Error:
       type: object
@@ -761,8 +1005,13 @@ components:
               - unavailable
               - forbidden
               - conflict
+              - validation_error
             message:
               type: string
+            fields:
+              type: array
+              items:
+                $ref: '#/components/schemas/FieldError'
     UserProfile:
       type: object
       additionalProperties: false
@@ -774,11 +1023,11 @@ components:
       - logins
       - internship_week
       properties:
-        user_id: *id002
-        display_name: *id003
-        role: *id004
-        team_id: *id005
-        mentor_id: *id006
+        user_id: *id003
+        display_name: *id004
+        role: *id005
+        team_id: *id006
+        mentor_id: *id007
         logins:
           type: object
           additionalProperties:
@@ -855,7 +1104,7 @@ components:
       additionalProperties: false
       properties:
         object_id: *id001
-        requested_at: &id007
+        requested_at: &id008
           type: string
           format: date-time
       required:
@@ -896,14 +1145,14 @@ components:
     Snapshot:
       type: object
       additionalProperties: false
-      properties: &id009
+      properties: &id011
         id: *id001
         objects:
           type: array
           items:
             $ref: '#/components/schemas/AccessState'
-        created_at: *id007
-      required: &id010
+        created_at: *id008
+      required: &id012
       - id
       - objects
       - created_at
@@ -916,14 +1165,19 @@ components:
       - role
       - team_id
       - snapshot
+      - marks
       properties:
-        user_id: *id002
-        display_name: *id003
-        role: *id004
-        team_id: *id005
-        mentor_id: *id006
+        user_id: *id003
+        display_name: *id004
+        role: *id005
+        team_id: *id006
+        mentor_id: *id007
         snapshot:
           $ref: '#/components/schemas/NullableSnapshot'
+        marks:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessMark'
     BriefItem:
       type: object
       additionalProperties: false
@@ -960,7 +1214,7 @@ components:
           type: string
         after:
           type: string
-        created_at: *id007
+        created_at: *id008
       required:
       - id
       - source
@@ -997,12 +1251,12 @@ components:
           - draft
           - sent
           - failed
-        created_at: *id007
-        sent_at: &id008
+        created_at: *id008
+        sent_at: &id009
           type: string
           format: date-time
           nullable: true
-        read_at: *id008
+        read_at: *id009
       required:
       - id
       - items
@@ -1053,7 +1307,7 @@ components:
           - reply
         item_id:
           type: string
-        created_at: *id007
+        created_at: *id008
       required:
       - id
       - kind
@@ -1068,6 +1322,8 @@ components:
           minLength: 1
           maxLength: 8000
         assigned_to: *id001
+        context:
+          $ref: '#/components/schemas/QuestionContextInput'
       required:
       - id
       - text
@@ -1086,7 +1342,16 @@ components:
         helpful:
           type: boolean
           nullable: true
-        created_at: *id007
+        created_at: *id008
+        context:
+          $ref: '#/components/schemas/QuestionContext'
+        bot_answer: *id010
+        bot_sources:
+          type: array
+          items: *id010
+        bot_helpful:
+          type: boolean
+          nullable: true
       required:
       - id
       - user_id
@@ -1094,6 +1359,10 @@ components:
       - answer
       - helpful
       - created_at
+      - context
+      - bot_answer
+      - bot_sources
+      - bot_helpful
     AnswerInput:
       type: object
       additionalProperties: false
@@ -1137,7 +1406,7 @@ components:
         answer:
           type: string
         author_id: *id001
-        created_at: *id007
+        created_at: *id008
         source_path:
           type: string
       required:
@@ -1151,9 +1420,55 @@ components:
     NullableSnapshot:
       type: object
       additionalProperties: false
-      properties: *id009
-      required: *id010
+      properties: *id011
+      required: *id012
       nullable: true
+    FieldError:
+      type: object
+      required:
+      - field
+      - message
+      properties:
+        field: *id010
+        message: *id010
+    TeamFlags:
+      type: object
+      additionalProperties: false
+      required: *id013
+      properties:
+        access_monitoring:
+          type: boolean
+        team_escalation:
+          type: boolean
+        faq_publication:
+          type: boolean
+    QuestionContextInput:
+      type: object
+      additionalProperties: false
+      properties:
+        current_task: &id014
+          type: string
+          maxLength: 500
+        checked_sources: &id015
+          type: array
+          maxItems: 20
+          items:
+            type: string
+            minLength: 1
+            maxLength: 500
+    QuestionContext:
+      type: object
+      additionalProperties: false
+      properties:
+        current_task: *id014
+        checked_sources: *id015
+        team_id: *id010
+        internship_week:
+          type: integer
+          minimum: 1
+          nullable: true
+      description: Команда и неделя фиксируются backend при первом сохранении; для записей Этапа 2 контекст
+        может быть пустым.
   responses:
     Profile:
       description: Привязанный профиль из БД

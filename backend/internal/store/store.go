@@ -18,7 +18,10 @@ var (
 	ErrNotFound   = errors.New("user not found")
 )
 
-type Store struct{ db *sql.DB }
+type Store struct {
+	db           *sql.DB
+	flagDefaults map[string]bool
+}
 
 // Open never includes the DSN or driver error in its error messages.
 func Open(ctx context.Context, dsn string) (*Store, error) {

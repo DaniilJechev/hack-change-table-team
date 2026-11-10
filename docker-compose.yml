@@ -59,6 +59,9 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD:-buddy_local_demo}
       PGSSLMODE: disable
       BUDDY_SERVICE_KEY: ${BUDDY_SERVICE_KEY:-buddy_local_demo}
+      FEATURE_ACCESS_MONITORING: ${FEATURE_ACCESS_MONITORING:-true}
+      FEATURE_TEAM_ESCALATION: ${FEATURE_TEAM_ESCALATION:-true}
+      FEATURE_FAQ_PUBLICATION: ${FEATURE_FAQ_PUBLICATION:-true}
     volumes:
       - ./seed:/seed:ro
     ports:

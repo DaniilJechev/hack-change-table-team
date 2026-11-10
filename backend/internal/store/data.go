@@ -237,7 +237,8 @@ func (s *Store) LatestSnapshot(ctx context.Context, actor Profile) (Snapshot, er
 
 type Intern struct {
 	Profile
-	Snapshot *Snapshot `json:"snapshot"`
+	Snapshot *Snapshot    `json:"snapshot"`
+	Marks    []AccessMark `json:"marks"`
 }
 
 func (s *Store) Interns(ctx context.Context, actor Profile) ([]Intern, error) {
@@ -246,7 +247,9 @@ func (s *Store) Interns(ctx context.Context, actor Profile) ([]Intern, error) {
 	}
 	rows, err := s.db.QueryContext(ctx, `SELECT `+profileColumns+`,
  (SELECT jsonb_build_object('id',snapshot_id,'objects',objects,'created_at',created_at)
- FROM access_snapshots WHERE user_id=users.user_id ORDER BY sequence DESC LIMIT 1)
+ FROM access_snapshots WHERE user_id=users.user_id ORDER BY sequence DESC LIMIT 1),
+ coalesce((SELECT jsonb_agg(jsonb_build_object('object_id',object_id,'requested_at',requested_at) ORDER BY object_id)
+ FROM access_marks WHERE user_id=users.user_id AND team_id=users.team_id),'[]'::jsonb)
  FROM users WHERE team_id=$1 AND role='intern' AND ($2='teamlead' OR mentor_id=$3) ORDER BY user_id`, actor.TeamID, actor.Role, actor.UserID)
 	if err != nil {
 		return nil, err
@@ -255,14 +258,17 @@ func (s *Store) Interns(ctx context.Context, actor Profile) ([]Intern, error) {
 	out := []Intern{}
 	for rows.Next() {
 		var p Intern
-		var raw []byte
-		if err := rows.Scan(&p.UserID, &p.DisplayName, &p.Role, &p.TeamID, &p.MentorID, &raw); err != nil {
+		var raw, marks []byte
+		if err := rows.Scan(&p.UserID, &p.DisplayName, &p.Role, &p.TeamID, &p.MentorID, &raw, &marks); err != nil {
 			return nil, err
 		}
 		if raw != nil {
 			if err := json.Unmarshal(raw, &p.Snapshot); err != nil {
 				return nil, err
 			}
+		}
+		if err := json.Unmarshal(marks, &p.Marks); err != nil {
+			return nil, err
 		}
 		out = append(out, p)
 	}
