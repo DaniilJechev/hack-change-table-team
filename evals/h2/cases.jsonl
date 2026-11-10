@@ -1,0 +1,40 @@
+{"id": "h2-q1-1", "text": "Кто у нас по Kafka?", "case": "team_q1", "expect": "Пётр"}
+{"id": "h2-q1-2", "text": "Кто отвечает за ревью?", "case": "team_q1", "expect": "Анна"}
+{"id": "h2-q1-3", "text": "Кто занимается надёжностью?", "case": "team_q1", "expect": "Олег"}
+{"id": "h2-q1-4", "text": "Кто знает про интеграции?", "case": "team_q1", "expect": "Пётр"}
+{"id": "h2-q1-5", "text": "Кто отвечает за orders-api?", "case": "team_q1", "expect": "Олег"}
+{"id": "h2-q2-1", "text": "Упал staging, кому писать?", "case": "team_q2", "expect": "#orders-duty"}
+{"id": "h2-q2-2", "text": "Что делать, если упал staging?", "case": "team_q2", "expect": "#orders-duty"}
+{"id": "h2-q2-3", "text": "К кому идти с вопросом по Kafka?", "case": "team_q2", "expect": "Пётр"}
+{"id": "h2-q2-4", "text": "Сломался CI, к кому идти?", "case": "team_q2", "expect": "первый контакт — Олег"}
+{"id": "h2-q2-5", "text": "Куда обращаться, если упал staging?", "case": "team_q2", "expect": "#orders-duty"}
+{"id": "h2-q3-1", "text": "Кто мой наставник?", "case": "team_q3", "expect": "наставник — Анна"}
+{"id": "h2-q3-2", "text": "Кто тимлид команды?", "case": "team_q3", "expect": "Тимлид — Олег"}
+{"id": "h2-q3-3", "text": "Кто первый контакт?", "case": "team_q3", "expect": "Первый контакт в неожиданных ситуациях — Олег"}
+{"id": "h2-q3-4", "text": "Кто мой ментор?", "case": "team_q3", "expect": "наставник — Анна"}
+{"id": "h2-q3-5", "text": "Кто руководитель команды?", "case": "team_q3", "expect": "Тимлид — Олег"}
+{"id": "h2-q4-1", "text": "Можно написать Петру напрямую?", "case": "team_q4", "expect": "Контакт для согласования: Олег"}
+{"id": "h2-q4-2", "text": "Можно писать Анне напрямую?", "case": "team_q4", "expect": "Анна: прямое обращение разрешено"}
+{"id": "h2-q4-3", "text": "Стоит ли дёргать Олега?", "case": "team_q4", "expect": "Олег: прямое обращение разрешено"}
+{"id": "h2-q4-4", "text": "Можно написать Петру в личку?", "case": "team_q4", "expect": "Контакт для согласования: Олег"}
+{"id": "h2-q4-5", "text": "Можно побеспокоить Анну в личные сообщения?", "case": "team_q4", "expect": "Анна: прямое обращение разрешено"}
+{"id": "h2-q5-1", "text": "На каком этапе проект?", "case": "team_q5", "expect": "ORD-100"}
+{"id": "h2-q5-2", "text": "Что сейчас делает команда?", "case": "team_q5", "expect": "ORD-100"}
+{"id": "h2-q5-3", "text": "Какой прогресс по эпику?", "case": "team_q5", "expect": "готово 6 из 11"}
+{"id": "h2-q5-4", "text": "Над чем работает команда?", "case": "team_q5", "expect": "ORD-100"}
+{"id": "h2-q5-5", "text": "Какой статус проекта?", "case": "team_q5", "expect": "ORD-100"}
+{"id": "h2-q6-1", "text": "Зачем нужна ORD-118?", "case": "team_q6", "expect": "часть эпика ORD-100"}
+{"id": "h2-q6-2", "text": "Как ORD-118 связана с проектом?", "case": "team_q6", "expect": "часть эпика ORD-100"}
+{"id": "h2-q6-3", "text": "Частью какого эпика является ORD-118?", "case": "team_q6", "expect": "часть эпика ORD-100"}
+{"id": "h2-q6-4", "text": "Какой вклад ORD-118 в проект?", "case": "team_q6", "expect": "часть эпика ORD-100"}
+{"id": "h2-q6-5", "text": "Зачем мне делать ORD-118?", "case": "team_q6", "expect": "часть эпика ORD-100"}
+{"id": "h2-q7-1", "text": "На чём пишем?", "case": "team_q7", "expect": "PostgreSQL"}
+{"id": "h2-q7-2", "text": "Какой у нас стек?", "case": "team_q7", "expect": "PostgreSQL"}
+{"id": "h2-q7-3", "text": "Какие технологии использует команда?", "case": "team_q7", "expect": "Kafka"}
+{"id": "h2-q7-4", "text": "Какая база данных у команды?", "case": "team_q7", "expect": "PostgreSQL"}
+{"id": "h2-q7-5", "text": "Чем пользуемся в команде?", "case": "team_q7", "expect": "Go"}
+{"id": "h2-q8-1", "text": "Где доска планирования?", "case": "team_q8", "expect": "Miro"}
+{"id": "h2-q8-2", "text": "Где наш репозиторий?", "case": "team_q8", "expect": "GitHub"}
+{"id": "h2-q8-3", "text": "Дай ссылку на чат команды", "case": "team_q8", "expect": "Telegram"}
+{"id": "h2-q8-4", "text": "Где найти календарь команды?", "case": "team_q8", "expect": "Google Calendar"}
+{"id": "h2-q8-5", "text": "Где открыть проект Jira?", "case": "team_q8", "expect": "Jira"}

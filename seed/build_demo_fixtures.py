@@ -7,6 +7,18 @@ from buddy.mcp_hub.fixtures import FixtureStore
 
 ROOT = Path(__file__).resolve().parents[1]
 FIXED_TIME = "2026-11-10T12:00:00+00:00"
+# Stage-3 checks reuse official runtime discovery schemas; results stay synthetic.
+OFFICIAL = {
+    ("github", "list_repository_collaborators"): "mcp/discovery/github.json",
+    ("jira", "jira_search_assignable_users"): "mcp/discovery/jira.json",
+}
+
+
+def official_tool(server: str, name: str) -> dict:
+    catalog = json.loads((ROOT / OFFICIAL[(server, name)]).read_text(encoding="utf-8"))
+    return next(tool for tool in catalog["tools"] if tool["name"] == name)
+
+
 NOTICE = "Синтетические данные учебного проекта; не регламент и не реальные данные Авито."
 
 
@@ -57,6 +69,7 @@ def build(root: Path = ROOT) -> None:
             "epic_key": "ORD-100",
             "issue_key": "ORD-118",
             "url": "https://example.invalid/jira/browse/ORD-118",
+            "epic_url": "https://example.invalid/jira/browse/ORD-100",
         },
         "calendar": {
             "calendar_id": "demo-orders-calendar",
@@ -110,6 +123,10 @@ def build(root: Path = ROOT) -> None:
                 "assignee": "demo-daniil",
                 "team_id": "demo-orders",
                 "summary": "Учебная проверка заказов",
+                "description": (
+                    "Добавить фильтр по статусу в репозитории orders-onboarding, сверить план на доске "
+                    "планирования в Miro и обсудить на стендапе. Конфигурацию production-config не менять."
+                ),
                 "url": resources["jira"]["url"],
             },
             "calendar": {
@@ -121,6 +138,11 @@ def build(root: Path = ROOT) -> None:
                         "previous_start": "2026-11-11T09:30:00+03:00",
                         "htmlLink": resources["calendar"]["url"],
                         "task": "ORD-118",
+                        "attendees": [
+                            {"email": "anna@example.invalid", "responseStatus": "accepted"},
+                            {"email": "oleg@example.invalid", "responseStatus": "accepted"},
+                            {"email": "daniil@example.invalid", "responseStatus": "needsAction"},
+                        ],
                     }
                 ]
             },
@@ -131,6 +153,40 @@ def build(root: Path = ROOT) -> None:
                     *([{"user_id": "demo-daniil", "role": "viewer"}] if step == "step_2" else []),
                 ],
             },
+        }
+        extras = {
+            "github": [
+                (
+                    official_tool("github", "list_repository_collaborators"),
+                    {"owner": "demo-buddy", "repo": "orders-onboarding"},
+                    {
+                        "collaborators": [
+                            {"login": "demo-anna", "role_name": "maintain"},
+                            {"login": "demo-oleg", "role_name": "admin"},
+                            {"login": "demo-daniil", "role_name": "write"},
+                        ]
+                    },
+                )
+            ],
+            "jira": [
+                (
+                    official_tool("jira", "jira_search_assignable_users"),
+                    {"query": "demo.daniil", "project_key": "ORD"},
+                    {"users": [{"name": "demo.daniil", "displayName": "Даниил (демо)", "active": True}]},
+                ),
+                (
+                    None,
+                    {"issue_key": "ORD-100"},
+                    {
+                        "key": "ORD-100",
+                        "issue_type": "Epic",
+                        "summary": "Фильтры в новом API",
+                        "team_id": "demo-orders",
+                        "progress": {"done": 6, "total": 11},
+                        "url": resources["jira"]["epic_url"],
+                    },
+                ),
+            ],
         }
         for server, example in examples.items():
             tool = {
@@ -144,7 +200,8 @@ def build(root: Path = ROOT) -> None:
                 },
                 "annotations": {"readOnlyHint": True},
             }
-            store.save_catalog(server, [tool], origin="synthetic")
+            extra_tools = [item[0] for item in extras.get(server, []) if item[0] is not None]
+            store.save_catalog(server, [tool, *extra_tools], origin="synthetic")
             result = {
                 "isError": False,
                 "content": [
@@ -157,6 +214,16 @@ def build(root: Path = ROOT) -> None:
                 ],
             }
             store.save(server, example["tool"], example["arguments"], result, origin="synthetic")
+            for definition, arguments, payload in extras.get(server, []):
+                name = example["tool"] if definition is None else definition["name"]
+                text = json.dumps({"synthetic": True, "notice": NOTICE, **payload}, ensure_ascii=False)
+                store.save(
+                    server,
+                    name,
+                    arguments,
+                    {"isError": False, "content": [{"type": "text", "text": text}]},
+                    origin="synthetic",
+                )
         telegram = root / "fixtures" / step / "telegram"
         telegram.mkdir(parents=True, exist_ok=True)
         (telegram / "getChatMember.json").write_text(

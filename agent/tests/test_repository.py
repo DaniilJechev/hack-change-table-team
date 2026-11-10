@@ -11,7 +11,9 @@ ROOT = Path(__file__).resolve().parents[2]
 
 def test_st0_qa_1_synthetic_seed_contracts():
     users = yaml.safe_load((ROOT / "seed/users.yaml").read_text(encoding="utf-8"))["users"]
-    profiles = [UserProfile(**{k: v for k, v in u.items() if k != "mentor_id"}) for u in users]
+    profiles = [
+        UserProfile(**{k: v for k, v in u.items() if k not in {"mentor_id", "logins"}}) for u in users
+    ]
     assert len({u.user_id for u in profiles}) == len(profiles)
     assert {u.role for u in profiles} == {"intern", "mentor", "teamlead"}
     assert len({u.team_id for u in profiles}) == 2

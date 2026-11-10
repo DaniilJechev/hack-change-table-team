@@ -59,12 +59,19 @@ class Link(DataModel):
     _url = field_validator("url")(object_url)
 
 
+class Stage(DataModel):
+    epic_key: str = Field(min_length=1)
+    source_url: str
+    _url = field_validator("source_url")(object_url)
+
+
 class TeamCard(DataModel):
     synthetic: Literal[True]
     team_id: str
     name: str
     notice: str = Field(min_length=1)
     source_url: str
+    stage: Stage
     people: list[Person] = Field(min_length=1)
     routing: list[Routing] = Field(min_length=1)
     do_not_disturb: list[ContactRule]
@@ -148,6 +155,16 @@ class AccessCatalog(DataModel):
         return self
 
 
+def access_urls(scenario: dict) -> dict[str, str]:
+    urls = {
+        name: scenario["resources"]["calendar" if name == "google_calendar" else name]["url"]
+        for name in INSTRUMENTS
+    }
+    urls["github"] = "https://example.invalid/github/" + scenario["resources"]["github"]["repo"]
+    urls["jira"] = "https://example.invalid/jira/projects/" + scenario["resources"]["jira"]["project"]
+    return urls
+
+
 def validate_seed(card: TeamCard, catalog: AccessCatalog, users: list[dict], scenario: dict) -> None:
     team_users = {user["user_id"] for user in users if user["team_id"] == card.team_id}
     people = {person.user_id for person in card.people}
@@ -155,9 +172,6 @@ def validate_seed(card: TeamCard, catalog: AccessCatalog, users: list[dict], sce
         raise ValueError("Seed belongs to another team")
     if any(item.owner_id not in people for item in catalog.objects):
         raise ValueError("Unknown catalog owner")
-    expected = {
-        name: scenario["resources"]["calendar" if name == "google_calendar" else name]["url"]
-        for name in INSTRUMENTS
-    }
+    expected = access_urls(scenario)
     if any(item.url != expected[item.instrument] for item in catalog.allowed):
         raise ValueError("Access object differs from demo scenario")

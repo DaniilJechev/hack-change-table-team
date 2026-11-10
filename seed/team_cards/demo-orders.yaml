@@ -3,6 +3,9 @@ team_id: demo-orders
 name: Учебная команда заказов
 notice: Синтетические учебные данные; не регламент и не реальные данные Авито.
 source_url: https://example.invalid/team/demo-orders/card
+stage:
+  epic_key: ORD-100
+  source_url: https://example.invalid/jira/browse/ORD-100
 people:
 - user_id: demo-daniil
   name: Даниил
@@ -62,13 +65,13 @@ tools:
 - Telegram
 links:
 - service: github
-  url: https://example.invalid/github/demo-buddy/orders-onboarding/pull/45
+  url: https://example.invalid/github/demo-buddy/orders-onboarding
 - service: jira
-  url: https://example.invalid/jira/browse/ORD-118
-- service: calendar
-  url: https://example.invalid/calendar/event/demo-standup
+  url: https://example.invalid/jira/projects/ORD
 - service: miro
   url: https://example.invalid/miro/board/demo-board-orders
+- service: calendar
+  url: https://example.invalid/calendar/event/demo-standup
 - service: telegram
   url: https://example.invalid/telegram/demo-orders
 faq: []

@@ -52,6 +52,9 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 		return err
 	}
 	defer database.Close()
+	if err := database.ConfigureFlagDefaults(getenv); err != nil {
+		return err
+	}
 	if err := database.Migrate(startup); err != nil {
 		return errors.New("database migration failed")
 	}

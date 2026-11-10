@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import os
 from copy import deepcopy
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -71,6 +72,9 @@ def seed():
 
 
 def test_st2_data_1_seed_contracts_and_bundle_are_consistent(tmp_path):
+    # The generated SHA-256 fixture filenames exceed MAX_PATH under deep Windows worktrees.
+    if os.name == "nt":
+        tmp_path = Path("\\\\?\\" + str(tmp_path.resolve()))
     card, catalog, users, scenario = seed()
     validate_seed(TeamCard.model_validate(card), AccessCatalog.model_validate(catalog), users, scenario)
     assert len(catalog["objects"]) == 6

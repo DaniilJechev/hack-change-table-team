@@ -1,12 +1,12 @@
-"""Stage-two execution boundary. Business executors are intentionally not implemented."""
+"""Execution boundary: H1/H2 business executors (stage 3) and templates for not yet implemented cases."""
 
 import re
-from dataclasses import dataclass
-from typing import Literal, Protocol
+from typing import Protocol
 from urllib.parse import urlsplit
 
 from pydantic import ValidationError
 
+from buddy.executors.context import Context
 from buddy.mcp_hub.errors import ToolDenied
 from buddy.mcp_hub.policy import READ_TOOLS, permitted
 from buddy.router.service import CASES
@@ -23,14 +23,6 @@ TEAM_MENU = (
     ("team_q8", "Где найти объект?"),
 )
 SCHEDULED = ("brief_render", "access_events")
-
-
-@dataclass(frozen=True)
-class Context:
-    user_id: str
-    team_id: str
-    role: Literal["intern", "mentor", "teamlead"]
-    demo: bool = False
 
 
 class Gateway(Protocol):
@@ -150,10 +142,34 @@ def render(result: ExecutorResponse, sources: dict[str, str]) -> str:
 class Registry:
     cases = frozenset((*CASES, *SCHEDULED))
 
-    async def execute(self, case: str, params: dict, context: Context) -> ExecutorResponse:
+    def __init__(self):
+        # Imported lazily: business services depend on the context module, not on this registry.
+        from buddy.access.service import AccessService
+        from buddy.team.service import TeamService
+
+        self.access = AccessService()
+        self.team = TeamService(self.access)
+
+    async def execute(
+        self, case: str, params: dict, context: Context, runtime=None, text: str = ""
+    ) -> ExecutorResponse:
         case = case if case in self.cases else "out_of_scope"
         if case == "interns_status" and context.role == "intern":
             return ExecutorResponse(result="Сводка стажёров доступна только наставнику или тимлиду.")
+        if runtime is None:
+            return template(case, params)
+        if case == "access_status":
+            return await self.access.status(context, runtime)
+        if case == "access_task_analysis":
+            return await self.access.task(context, runtime, params.get("task", ""))
+        if case == "interns_status":
+            return await self.access.interns(context, runtime)
+        if case == "access_events":
+            return await self.access.monitor(context, runtime) or ExecutorResponse(
+                result="Изменений в доступах нет."
+            )
+        if case.startswith("team_q"):
+            return await self.team.answer(case, params, text, context, runtime)
         return template(case, params)
 
     async def run_tools(self, case: str, context: Context, gateway: Gateway, calls: list[dict]):
@@ -165,6 +181,12 @@ class Registry:
                 break
         return template(case if case in self.cases else "out_of_scope"), scope.audit
 
-    async def trigger(self, case: str, context: Context) -> ExecutorResponse:
-        # Used by callbacks and the future scheduler; no Router dependency.
-        return await self.execute(case, {}, context)
+    async def trigger(self, case: str, context: Context, runtime=None) -> ExecutorResponse:
+        # Used by callbacks and the scheduler; no Router dependency.
+        return await self.execute(case, {}, context, runtime)
+
+
+def format_response(response: ExecutorResponse) -> str:
+    """Links are appended by code; executors never put URLs into their text."""
+    links = list(dict.fromkeys(response.links))
+    return response.result + ("\nИсточники:\n" + "\n".join(links) if links else "")

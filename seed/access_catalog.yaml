@@ -11,7 +11,7 @@ objects:
 - id: demo-orders-github
   instrument: github
   name: Репозиторий orders-onboarding
-  url: https://example.invalid/github/demo-buddy/orders-onboarding/pull/45
+  url: https://example.invalid/github/demo-buddy/orders-onboarding
   request_url: https://example.invalid/team/demo-orders/requests/github
   owner_id: demo-oleg
   roles:
@@ -22,7 +22,7 @@ objects:
 - id: demo-orders-jira
   instrument: jira
   name: Проект ORD
-  url: https://example.invalid/jira/browse/ORD-118
+  url: https://example.invalid/jira/projects/ORD
   request_url: https://example.invalid/team/demo-orders/requests/jira
   owner_id: demo-oleg
   roles:

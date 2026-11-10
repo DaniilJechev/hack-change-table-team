@@ -60,6 +60,8 @@ def decide(text: str) -> RouteDecision:
         if task_id:
             return RouteDecision(case="access_task_analysis", params={"task": task_id})
         return RouteDecision(case="access_status")
+    if "чуж" in value and any(word in value for word in ("функционал", "код")):
+        return RouteDecision(case="playbook_qa", params={"query": text})  # neighborhood agreement
     if any(word in value for word in ("бриф", "что нового", "изменил", "изменени", "обновлени", "обзор дня")):
         return RouteDecision(case="brief_now")
     if task_id and any(word in value for word in ("связ", "зачем", "эпик", "проект", "часть", "вклад")):
@@ -77,6 +79,37 @@ def decide(text: str) -> RouteDecision:
             "технический долг",
             "ретроспектив",
             "on-call",
+            # Playbook topics (H3 evals, stage 3): engineering practices, processes, career.
+            "bug policy",
+            "tdr",
+            "tech design",
+            "live site",
+            "постмортем",
+            "инцидент",
+            "архитектурн",
+            "соседск",
+            "ценност",
+            "миссия",
+            "okr",
+            "performance review",
+            "self-review",
+            "стажировк",
+            "конференц",
+            "хакатон",
+            "уровни у инженер",
+            "инженера уровня",
+            "техлид",
+            "юнит",
+            "кластер",
+            "paas",
+            "spt",
+            "обращения пользовател",
+            "scrum",
+            "хранимых процедур",
+            "связанност",
+            "протестирован",
+            "стал не нужен",
+            "работоспособност",
         )
     ):
         return RouteDecision(case="playbook_qa", params={"query": text})
@@ -167,4 +200,7 @@ def decide(text: str) -> RouteDecision:
         for word in ("помощь", "что умеешь", "что ты умеешь", "возможности", "привет", "команды бота")
     ):
         return RouteDecision(case="help")
+    if any(word in value for word in ("почему", "зачем", "для чего")):
+        # Rationale about the team's choices: FAQ first, otherwise the responsible person (stage 3, H2).
+        return RouteDecision(case="team_q7")
     return RouteDecision(case="clarify", params={"options": TEAM_CHOICES})
