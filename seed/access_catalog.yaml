@@ -1,0 +1,10 @@
+synthetic: true
+notice: Учебный каталог, не инструкция по получению реальных доступов Авито.
+team_id: demo-orders
+instruments:
+  - github
+  - jira
+  - miro
+  - google_calendar
+  - telegram
+objects: []

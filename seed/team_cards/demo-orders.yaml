@@ -1,0 +1,10 @@
+synthetic: true
+team_id: demo-orders
+name: Учебная команда заказов
+notice: Синтетическая карточка для демо, не регламент Авито.
+people:
+  - user_id: demo-anna
+    responsibility: Наставничество
+  - user_id: demo-oleg
+    responsibility: Технические решения команды
+faq: []
