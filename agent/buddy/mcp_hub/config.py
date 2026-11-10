@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from pathlib import Path
 from typing import Literal
 from urllib.parse import urlsplit
@@ -21,6 +23,8 @@ class ServerConfig(BaseModel):
     args: list[str] = Field(default_factory=list)
     env: dict[str, SecretStr] = Field(default_factory=dict, repr=False)
     token: SecretStr = SecretStr("")
+    username: SecretStr = SecretStr("")
+    password: SecretStr = SecretStr("")
     timeout: float = Field(default=15, gt=0, le=60)
     oauth: bool = False
 
@@ -38,12 +42,25 @@ class ServerConfig(BaseModel):
 
 
 def load_servers(env_file: Path) -> dict[str, ServerConfig]:
-    # Deliberately read only the explicit local file, not unrelated account credentials.
-    values = dotenv_values(env_file) if env_file.exists() else {}
+    # Only documented configuration keys are consumed; never borrow gh CLI credentials.
+    values = dict(dotenv_values(env_file, interpolate=False)) if env_file.exists() else {}
+    prefixes = ("GITHUB_", "JIRA_", "GCAL_", "MIRO_", "MCP_ATLASSIAN_", "MCP_CALENDAR_")
+    values.update({key: value for key, value in os.environ.items() if key.startswith(prefixes)})
+    for canonical, alias in (("JIRA_MCP_URL", "MCP_ATLASSIAN_URL"), ("GCAL_MCP_URL", "MCP_CALENDAR_URL")):
+        if alias in os.environ and canonical not in os.environ:
+            values[canonical] = os.environ[alias]
+    values["JIRA_MCP_URL"] = values.get("JIRA_MCP_URL") or values.get("MCP_ATLASSIAN_URL")
+    values["GCAL_MCP_URL"] = values.get("GCAL_MCP_URL") or values.get("MCP_CALENDAR_URL")
+    if not values.get("GITHUB_MCP_COMMAND") and Path("/app/github_mcp.py").is_file():
+        values["GITHUB_MCP_COMMAND"] = sys.executable
+        values["GITHUB_MCP_ARGS"] = '["/app/github_mcp.py"]'
     result = {}
     prefixes = {"github": "GITHUB", "jira": "JIRA", "calendar": "GCAL", "miro": "MIRO"}
     for name, prefix in prefixes.items():
         kwargs = {"name": name, "url": values.get(prefix + "_MCP_URL") or ""}
+        if name == "jira":
+            kwargs["username"] = SecretStr(values.get("JIRA_USERNAME") or "")
+            kwargs["password"] = SecretStr(values.get("JIRA_API_TOKEN") or "")
         token = values.get(prefix + "_MCP_TOKEN") or ""
         kwargs["token"] = SecretStr(token)
         command = values.get(prefix + "_MCP_COMMAND")

@@ -50,6 +50,11 @@ class Hub:
         self.fixtures = fixtures
         secrets = list(fixtures.secrets)
         for config in servers.values():
+            secrets.extend(
+                value.get_secret_value()
+                for value in (config.username, config.password)
+                if value.get_secret_value()
+            )
             token = config.token.get_secret_value()
             if token:
                 secrets.append(token)

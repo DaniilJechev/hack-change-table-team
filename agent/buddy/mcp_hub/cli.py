@@ -3,6 +3,7 @@
 import argparse
 import asyncio
 import json
+import os
 from pathlib import Path
 
 from dotenv import dotenv_values
@@ -17,7 +18,10 @@ from buddy.mcp_hub.oauth import EnvTokenStorage, browser_flow, configured_secret
 def build_hub(args) -> Hub:
     values = dotenv_values(args.env_file, interpolate=False) if args.env_file.exists() else {}
     demo = not args.live
-    record = args.record or str(values.get("RECORD_MODE", "false")).lower() == "true"
+    record = (
+        args.record
+        or str(os.environ.get("RECORD_MODE", values.get("RECORD_MODE", "false"))).lower() == "true"
+    )
     configs = load_servers(args.env_file)
     auth = {}
     if not demo and configs["miro"].oauth:

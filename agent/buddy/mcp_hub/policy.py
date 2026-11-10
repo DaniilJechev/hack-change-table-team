@@ -4,6 +4,7 @@ from buddy.mcp_hub.errors import ToolDenied
 READ_TOOLS = {
     "github": frozenset(
         {
+            "get_me",
             "list_pull_requests",
             "search_pull_requests",
             "pull_request_read",

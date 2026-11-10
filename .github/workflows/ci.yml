@@ -78,6 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
+      COMPOSE_PROJECT_NAME: buddy-stage1-acceptance-ci
       # Synthetic placeholders allow initialize/tools/list; no corporate tools are called.
       GITHUB_PERSONAL_ACCESS_TOKEN: synthetic-not-a-token
       JIRA_URL: https://example.atlassian.net
@@ -91,6 +92,11 @@ jobs:
           version: '0.9.5'
       - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml up --build -d --wait --wait-timeout 180
       - run: make mcp-list
+      - run: python seed/check_stage_one.py --project buddy-stage1-acceptance-ci
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage-one-official-discovery
+          path: mcp/discovery/*.json
       - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml logs --no-color
         if: failure()
       - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml down
