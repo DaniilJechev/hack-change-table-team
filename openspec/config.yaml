@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Проект: AI-buddy — ИИ-наставник для стажёров Авито (кейс Hack&Change 2026).
+  Интерфейс: Telegram-бот. Пользователь — стажёр; наставник и тимлид — дополнительные роли.
+  Гипотезы MVP: H0 утренний бриф (Google Calendar, Git/GitHub, Jira), H1 мониторинг доступов
+  (GitHub, Jira, Miro, Google Calendar, Telegram; только чтение), H2 «кто есть кто» (8 типов вопросов),
+  H3 RAG по AvitoTech Playbook.
+  Архитектура: agent (Python: aiogram, Router + Executor, MCP-клиенты, RAG на pgvector),
+  backend (Go: REST + собственный MCP-сервер buddy-mcp, PostgreSQL), готовые MCP-серверы
+  github-mcp-server, mcp-atlassian, google-calendar-mcp, официальный Miro MCP.
+  Принципы: агент только читает корпоративные сервисы; у каждого пункта и ответа есть ссылка на источник;
+  LLM-провайдер задаётся через env; демо-режим на статичных фикстурах без внешних аккаунтов.
+  Требования к сдаче: покрытие тестами > 80 % (Go и Python), локальные действия < 1 с,
+  только синтетические данные. ID требований (FR-H0-01 и т. п.) совпадают с именами тестов.
+  Документация: docs/1_PRODUCT.md, docs/2_ARCHITECTURE.md, docs/3_ROADMAP.md.
+
+rules:
+  specs:
+    - Каждое требование начинается с ID (FR-…, NFR-…, RT-…) и содержит SHALL или MUST.
+    - У каждого требования есть хотя бы один сценарий WHEN/THEN.
+    - Сценарии пишутся на русском и используют тестовые данные из seed (Даниил, Анна, Олег, ORD-118 и т. д.).
