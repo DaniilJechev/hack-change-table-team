@@ -56,7 +56,7 @@ Ruff и форматирование проходят. Проверены так
 
 LLM-ветка проверена FakeLLM и AsyncMock: валидный/невалидный JSON, неизвестный кейс, попытка передачи полномочий, timeout, исключение и отмена. Запросов к реальному LLM API не было. Явный `--mode llm` подготовлен только в evals; его запуск не выполнялся. Telegram-тесты работают через настоящий aiogram Dispatcher и OfflineSession без сети.
 
-Проверка CI будет добавлена после завершения pipeline PR.
+CI кода: https://github.com/DaniilJechev/hack-change-table-team/actions/runs/42875555276 — tests, compose и mcp успешно. Включены Go race, PostgreSQL, проверка покрытия, Ruff, offline smoke, OpenSpec, запуск образа агента с пакетными демо-данными и сквозная REST-привязка. Контейнеры CI временные и не содержат Telegram-токена. Go-код не изменён; порог покрытия backend проверен CI.
 
 ## 6. Что принято, а что исключено
 
@@ -68,4 +68,4 @@ LLM-ветка проверена FakeLLM и AsyncMock: валидный/нев�
 
 По отдельному указанию пользователя контейнер ai-buddy-agent-1 остановлен; проверено status=exited, running=false, restarting=false. Самостоятельно он не запускался после остановки. Остальные локальные сервисы не останавливались и не перезапускались. CI использует отдельные временные контейнеры без Telegram-токена.
 
-Работа публикуется отдельным PR из codex/stage-2-emil-daniil. Слияние в main в текущем поручении не запрошено. Спецификации нового поведения оформлены через OpenSpec change stage-2-emil-daniil.
+Работа опубликована в PR №6: https://github.com/DaniilJechev/hack-change-table-team/pull/6 из codex/stage-2-emil-daniil. Слияние в main в текущем поручении не запрошено. Спецификации нового поведения оформлены через OpenSpec change stage-2-emil-daniil, после приёмки изменение архивировано в specs/agent-foundation.
