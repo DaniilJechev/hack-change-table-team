@@ -1,0 +1,22 @@
+{
+  "server": "github",
+  "tool": "list_pull_requests",
+  "arguments": {
+    "owner": "demo-buddy",
+    "repo": "orders-onboarding",
+    "state": "open",
+    "perPage": 10
+  },
+  "step": "step_1",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"pull_requests\": [{\"number\": 45, \"state\": \"open\", \"title\": \"Учебный ORD-118\", \"html_url\": \"https://example.invalid/github/demo-buddy/orders-onboarding/pull/45\", \"requested_reviewers\": [\"demo-anna\"]}]}"
+      }
+    ]
+  }
+}
