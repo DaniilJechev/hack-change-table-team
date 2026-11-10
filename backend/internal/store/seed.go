@@ -33,12 +33,19 @@ func (s *Store) Seed(ctx context.Context, source io.Reader) error {
 		return err
 	}
 	defer tx.Rollback()
+	if err := seedProfiles(ctx, tx, input.Users); err != nil {
+		return err
+	}
+	return tx.Commit()
+}
+
+func seedProfiles(ctx context.Context, tx *sql.Tx, users []Profile) error {
 	// Serialize seed writes so concurrent imports cannot invalidate this cross-row check.
 	// Reads remain available; binding writes wait until this short import completes.
 	if _, err := tx.ExecContext(ctx, `LOCK TABLE users IN SHARE ROW EXCLUSIVE MODE`); err != nil {
 		return err
 	}
-	for _, user := range input.Users {
+	for _, user := range users {
 		if _, err := tx.ExecContext(ctx, `INSERT INTO teams(team_id) VALUES ($1) ON CONFLICT DO NOTHING`, user.TeamID); err != nil {
 			return err
 		}
@@ -61,7 +68,7 @@ func (s *Store) Seed(ctx context.Context, source io.Reader) error {
 	}
 	// Validate stored dependents too: a partial seed may demote their mentor.
 	var dependentID string
-	err = tx.QueryRowContext(ctx, `SELECT dependent.user_id FROM users AS dependent
+	err := tx.QueryRowContext(ctx, `SELECT dependent.user_id FROM users AS dependent
 		LEFT JOIN users AS mentor ON mentor.user_id = dependent.mentor_id
 		WHERE dependent.mentor_id IS NOT NULL
 		  AND (mentor.user_id IS NULL OR mentor.role <> 'mentor' OR mentor.team_id <> dependent.team_id)
@@ -72,7 +79,7 @@ func (s *Store) Seed(ctx context.Context, source io.Reader) error {
 	if !errors.Is(err, sql.ErrNoRows) {
 		return err
 	}
-	return tx.Commit()
+	return nil
 }
 
 func validateSeed(users []Profile) error {

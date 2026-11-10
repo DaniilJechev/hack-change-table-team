@@ -68,6 +68,8 @@ jobs:
       - run: docker compose exec -T postgres psql -U buddy -d buddy -Atc "SELECT extname FROM pg_extension WHERE extname='vector'"
       - run: docker compose exec -T agent python -m buddy --smoke
       - run: make seed
+      - name: Agent reads our real buddy-mcp
+        run: make buddy-check
       - run: docker compose --env-file .env.example up -d --wait --wait-timeout 180
       - run: python infra/smoke.py --demo
       - run: docker compose logs --no-color

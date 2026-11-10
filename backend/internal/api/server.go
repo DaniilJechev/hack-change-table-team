@@ -2,8 +2,6 @@ package api
 
 import (
 	"context"
-	"crypto/sha256"
-	"crypto/subtle"
 	"encoding/json"
 	"errors"
 	"io"
@@ -11,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/DaniilJechev/hack-change-table-team/backend/internal/auth"
 	"github.com/DaniilJechev/hack-change-table-team/backend/internal/store"
 )
 
@@ -52,20 +51,7 @@ func Handler(identity ...Identity) http.Handler {
 }
 
 func (id Identity) authorize(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if id.ServiceKey == "" {
-			failure(w, 503, "unavailable", "Сервис временно недоступен")
-			return
-		}
-		expected, supplied := sha256.Sum256([]byte(id.ServiceKey)), sha256.Sum256([]byte(r.Header.Get("X-Buddy-Key")))
-		if subtle.ConstantTimeCompare(expected[:], supplied[:]) != 1 {
-			failure(w, 401, "unauthorized", "Требуется авторизация сервиса")
-			return
-		}
-		ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-		defer cancel()
-		next.ServeHTTP(w, r.WithContext(ctx))
-	})
+	return auth.Service(id.ServiceKey, next)
 }
 
 func (id Identity) bind(w http.ResponseWriter, r *http.Request) {
@@ -114,6 +100,10 @@ func (id Identity) profile(w http.ResponseWriter, r *http.Request) {
 
 func storeError(w http.ResponseWriter, err error) {
 	switch {
+	case errors.Is(err, store.ErrInvalid):
+		invalidRequest(w)
+	case errors.Is(err, store.ErrForbidden):
+		failure(w, 403, "forbidden", "Доступ запрещён")
 	case errors.Is(err, store.ErrInvitation):
 		failure(w, 400, "invalid_invitation", "Код не подошёл, спроси наставника")
 	case errors.Is(err, store.ErrConflict):

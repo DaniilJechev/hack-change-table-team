@@ -46,9 +46,12 @@ validate-specs: validate
 
 dev: setup
 
-.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list
+.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list buddy-check
 seed:
 	$(COMPOSE) exec -T backend backend seed
+
+buddy-check:
+	$(PYTHON) infra/buddy_probe.py --compose "$(COMPOSE)"
 
 invite:
 	$(COMPOSE) exec -T backend backend invite --user "$(USER_ID)" --ttl "$(or $(TTL),24h)"

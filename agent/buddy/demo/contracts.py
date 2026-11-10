@@ -53,6 +53,12 @@ class ContactRule(DataModel):
     via_id: str
 
 
+class Link(DataModel):
+    service: str = Field(min_length=1)
+    url: str
+    _url = field_validator("url")(object_url)
+
+
 class TeamCard(DataModel):
     synthetic: Literal[True]
     team_id: str
@@ -63,7 +69,7 @@ class TeamCard(DataModel):
     routing: list[Routing] = Field(min_length=1)
     do_not_disturb: list[ContactRule]
     tools: list[str] = Field(min_length=1)
-    links: dict[str, str]
+    links: list[Link] = Field(min_length=1)
     faq: list[dict]
     _url = field_validator("source_url")(object_url)
 
@@ -78,28 +84,38 @@ class TeamCard(DataModel):
         for rule in self.do_not_disturb:
             if rule.person_id not in ids or rule.via_id not in ids:
                 raise ValueError("Unknown contact rule person")
-        for value in self.links.values():
-            object_url(value)
+        services = [link.service for link in self.links]
+        if len(services) != len(set(services)):
+            raise ValueError("Duplicate link services")
         return self
 
 
+Role = Literal["intern", "mentor", "teamlead"]
+
+
 class AccessObject(DataModel):
-    object_id: str
+    """Backend catalog object (backend/internal/store CatalogObject)."""
+
+    id: str = Field(min_length=1)
     instrument: Instrument
-    external_id: str
-    title: str
+    name: str = Field(min_length=1)
     url: str
-    request_url: str
+    request_url: str = ""
     owner_id: str
-    instructions: str
-    allowed: bool
+    roles: list[Role] = Field(min_length=1)
+    forbidden: bool = False
     reason: str = ""
-    _urls = field_validator("url", "request_url")(object_url)
+    _url = field_validator("url")(object_url)
 
     @model_validator(mode="after")
     def denial_reason(self):
-        if not self.allowed and not self.reason:
-            raise ValueError("Forbidden objects need an explanation")
+        if len(self.roles) != len(set(self.roles)):
+            raise ValueError("Duplicate roles")
+        if self.forbidden:
+            if not self.reason:
+                raise ValueError("Forbidden objects need an explanation")
+        else:
+            object_url(self.request_url)
         return self
 
 
@@ -107,24 +123,28 @@ class AccessCatalog(DataModel):
     synthetic: Literal[True]
     notice: str
     team_id: str
-    role: Literal["backend-intern"]
     instruments: list[Instrument]
     objects: list[AccessObject]
-    forbidden_objects: list[AccessObject]
+
+    @property
+    def allowed(self) -> list[AccessObject]:
+        return [item for item in self.objects if not item.forbidden]
+
+    @property
+    def forbidden(self) -> list[AccessObject]:
+        return [item for item in self.objects if item.forbidden]
 
     @model_validator(mode="after")
     def complete(self):
         if len(self.instruments) != 5 or set(self.instruments) != INSTRUMENTS:
             raise ValueError("Exactly five instruments required")
-        if len(self.objects) != 5 or {item.instrument for item in self.objects} != INSTRUMENTS:
+        allowed = self.allowed
+        if len(allowed) != 5 or {item.instrument for item in allowed} != INSTRUMENTS:
             raise ValueError("One base object per instrument required")
-        all_objects = self.objects + self.forbidden_objects
-        if len({item.object_id for item in all_objects}) != len(all_objects):
+        if len({item.id for item in self.objects}) != len(self.objects):
             raise ValueError("Duplicate access objects")
-        if any(item.allowed for item in self.forbidden_objects) or any(
-            not item.allowed for item in self.objects
-        ):
-            raise ValueError("Base and forbidden objects must be separated")
+        if any("intern" not in item.roles for item in self.objects):
+            raise ValueError("Every object must be described for the intern role")
         return self
 
 
@@ -133,14 +153,11 @@ def validate_seed(card: TeamCard, catalog: AccessCatalog, users: list[dict], sce
     people = {person.user_id for person in card.people}
     if card.team_id != catalog.team_id or card.team_id != scenario["team_id"] or not people <= team_users:
         raise ValueError("Seed belongs to another team")
-    if any(item.owner_id not in people for item in catalog.objects + catalog.forbidden_objects):
+    if any(item.owner_id not in people for item in catalog.objects):
         raise ValueError("Unknown catalog owner")
     expected = {
-        "github": scenario["resources"]["github"]["repo"],
-        "jira": scenario["resources"]["jira"]["project"],
-        "miro": scenario["resources"]["miro"]["board_id"],
-        "google_calendar": scenario["resources"]["calendar"]["calendar_id"],
-        "telegram": str(scenario["resources"]["telegram"]["chat_id"]),
+        name: scenario["resources"]["calendar" if name == "google_calendar" else name]["url"]
+        for name in INSTRUMENTS
     }
-    if any(item.external_id != expected[item.instrument] for item in catalog.objects):
+    if any(item.url != expected[item.instrument] for item in catalog.allowed):
         raise ValueError("Access object differs from demo scenario")

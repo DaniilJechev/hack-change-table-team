@@ -1,7 +1,6 @@
 synthetic: true
 notice: Синтетические учебные данные; не регламент и не реальные данные Авито.
 team_id: demo-orders
-role: backend-intern
 instruments:
 - github
 - jira
@@ -9,65 +8,67 @@ instruments:
 - google_calendar
 - telegram
 objects:
-- object_id: demo-orders-github
+- id: demo-orders-github
   instrument: github
-  external_id: demo-buddy/orders-onboarding
-  title: Репозиторий orders-onboarding
+  name: Репозиторий orders-onboarding
   url: https://example.invalid/github/demo-buddy/orders-onboarding/pull/45
   request_url: https://example.invalid/team/demo-orders/requests/github
   owner_id: demo-oleg
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: true
-- object_id: demo-orders-jira
+  roles:
+  - intern
+  - mentor
+  - teamlead
+  forbidden: false
+- id: demo-orders-jira
   instrument: jira
-  external_id: ORD
-  title: Проект ORD
+  name: Проект ORD
   url: https://example.invalid/jira/browse/ORD-118
   request_url: https://example.invalid/team/demo-orders/requests/jira
   owner_id: demo-oleg
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: true
-- object_id: demo-orders-miro
+  roles:
+  - intern
+  - mentor
+  - teamlead
+  forbidden: false
+- id: demo-orders-miro
   instrument: miro
-  external_id: demo-board-orders
-  title: Доска планирования
+  name: Доска планирования
   url: https://example.invalid/miro/board/demo-board-orders
   request_url: https://example.invalid/team/demo-orders/requests/miro
   owner_id: demo-oleg
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: true
-- object_id: demo-orders-google_calendar
+  roles:
+  - intern
+  - mentor
+  - teamlead
+  forbidden: false
+- id: demo-orders-google_calendar
   instrument: google_calendar
-  external_id: demo-orders-calendar
-  title: Командные встречи
+  name: Командные встречи
   url: https://example.invalid/calendar/event/demo-standup
   request_url: https://example.invalid/team/demo-orders/requests/google_calendar
   owner_id: demo-anna
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: true
-- object_id: demo-orders-telegram
+  roles:
+  - intern
+  - mentor
+  - teamlead
+  forbidden: false
+- id: demo-orders-telegram
   instrument: telegram
-  external_id: '-1001234567890'
-  title: Учебный командный чат
+  name: Учебный командный чат
   url: https://example.invalid/telegram/demo-orders
   request_url: https://example.invalid/team/demo-orders/requests/telegram
   owner_id: demo-anna
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: true
-forbidden_objects:
-- object_id: demo-orders-production
+  roles:
+  - intern
+  - mentor
+  - teamlead
+  forbidden: false
+- id: demo-orders-production
   instrument: github
-  external_id: demo-buddy/production-config
-  title: Закрытая конфигурация production
+  name: Закрытая конфигурация production
   url: https://example.invalid/team/demo-orders/objects/production-config
-  request_url: https://example.invalid/team/demo-orders/requests/github
   owner_id: demo-oleg
-  instructions: 'Учебный сценарий: попросите владельца добавить вас; бот не меняет
-    права.'
-  allowed: false
+  roles:
+  - intern
+  forbidden: true
   reason: Этот учебный объект запрещён роли Backend-стажёр.
