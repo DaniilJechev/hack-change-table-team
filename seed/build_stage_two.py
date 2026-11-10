@@ -96,7 +96,7 @@ def build(root: Path = ROOT):
             "Google Calendar",
             "Telegram",
         ],
-        "links": {name: item["url"] for name, item in scenario["resources"].items()},
+        "links": [{"service": name, "url": item["url"]} for name, item in scenario["resources"].items()],
         "faq": [],
     }
     titles = {
@@ -106,47 +106,41 @@ def build(root: Path = ROOT):
         "google_calendar": "Командные встречи",
         "telegram": "Учебный командный чат",
     }
-    ids = {
-        "github": scenario["resources"]["github"]["repo"],
-        "jira": "ORD",
-        "miro": "demo-board-orders",
-        "google_calendar": "demo-orders-calendar",
-        "telegram": str(scenario["resources"]["telegram"]["chat_id"]),
-    }
     objects = []
     for name in titles:
         server = "calendar" if name == "google_calendar" else name
         owner = "demo-anna" if name in {"google_calendar", "telegram"} else "demo-oleg"
         objects.append(
             {
-                "object_id": "demo-orders-" + name,
+                "id": "demo-orders-" + name,
                 "instrument": name,
-                "external_id": ids[name],
-                "title": titles[name],
+                "name": titles[name],
                 "url": scenario["resources"][server]["url"],
                 "request_url": source("requests/" + name),
                 "owner_id": owner,
-                "instructions": "Учебный сценарий: попросите владельца добавить вас; бот не меняет права.",
-                "allowed": True,
+                "roles": ["intern", "mentor", "teamlead"],
+                "forbidden": False,
             }
         )
-    forbidden = {
-        **objects[0],
-        "object_id": "demo-orders-production",
-        "external_id": "demo-buddy/production-config",
-        "title": "Закрытая конфигурация production",
-        "url": source("objects/production-config"),
-        "allowed": False,
-        "reason": "Этот учебный объект запрещён роли Backend-стажёр.",
-    }
+    objects.append(
+        {
+            "id": "demo-orders-production",
+            "instrument": "github",
+            "name": "Закрытая конфигурация production",
+            "url": source("objects/production-config"),
+            "owner_id": "demo-oleg",
+            "roles": ["intern"],
+            "forbidden": True,
+            "reason": "Этот учебный объект запрещён роли Backend-стажёр.",
+        }
+    )
+    # Format matches backend/internal/store CatalogObject (strict KnownFields parser).
     catalog = {
         "synthetic": True,
         "notice": NOTICE,
         "team_id": "demo-orders",
-        "role": "backend-intern",
         "instruments": list(titles),
         "objects": objects,
-        "forbidden_objects": [forbidden],
     }
     validate_seed(TeamCard.model_validate(card), AccessCatalog.model_validate(catalog), users, scenario)
     outputs = {
