@@ -16,6 +16,29 @@ import (
 func DataHandler(data *store.Store, key string) http.Handler {
 	mux := http.NewServeMux()
 	actor := auth.Actor
+	mux.HandleFunc("GET /api/v1/flags", func(w http.ResponseWriter, r *http.Request) {
+		v, e := data.Flags(r.Context(), actor(r.Context()))
+		result(w, v, e)
+	})
+	mux.HandleFunc("PUT /api/v1/flags/{name}", func(w http.ResponseWriter, r *http.Request) {
+		var input struct {
+			Enabled *bool `json:"enabled"`
+		}
+		if !decode(w, r, &input) {
+			return
+		}
+		if input.Enabled == nil {
+			invalidRequest(w)
+			return
+		}
+		e := data.SetFlag(r.Context(), actor(r.Context()), r.PathValue("name"), *input.Enabled)
+		result(w, map[string]any{"name": r.PathValue("name"), "enabled": *input.Enabled}, e)
+	})
+	mux.HandleFunc("POST /api/v1/team-card", func(w http.ResponseWriter, r *http.Request) {
+		r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+		v, e := data.UploadTeamCard(r.Context(), actor(r.Context()), r.Body)
+		result(w, v, e)
+	})
 	mux.HandleFunc("GET /api/v1/profile", func(w http.ResponseWriter, r *http.Request) {
 		v, e := data.UserProfile(r.Context(), actor(r.Context()))
 		result(w, v, e)
@@ -110,15 +133,54 @@ func DataHandler(data *store.Store, key string) http.Handler {
 			ID         string `json:"id"`
 			Text       string `json:"text"`
 			AssignedTo string `json:"assigned_to,omitempty"`
+			Context    struct {
+				CurrentTask    string   `json:"current_task"`
+				CheckedSources []string `json:"checked_sources"`
+			} `json:"context"`
 		}
 		if !decode(w, r, &input) {
 			return
 		}
-		v, e := data.SaveQuestion(r.Context(), actor(r.Context()), store.Question{ID: input.ID, Text: input.Text, AssignedTo: input.AssignedTo})
+		v, e := data.SaveQuestion(r.Context(), actor(r.Context()), store.Question{ID: input.ID, Text: input.Text, AssignedTo: input.AssignedTo, Context: store.QuestionContext{CurrentTask: input.Context.CurrentTask, CheckedSources: input.Context.CheckedSources}})
 		result(w, v, e)
 	})
 	mux.HandleFunc("GET /api/v1/questions/{id}", func(w http.ResponseWriter, r *http.Request) {
 		v, e := data.Question(r.Context(), actor(r.Context()), r.PathValue("id"))
+		result(w, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/questions/{id}/escalate", func(w http.ResponseWriter, r *http.Request) {
+		var input struct {
+			AssignedTo string `json:"assigned_to"`
+		}
+		if !decode(w, r, &input) {
+			return
+		}
+		v, e := data.EscalateQuestion(r.Context(), actor(r.Context()), r.PathValue("id"), input.AssignedTo)
+		result(w, v, e)
+	})
+	mux.HandleFunc("POST /api/v1/questions/{id}/bot-answer", func(w http.ResponseWriter, r *http.Request) {
+		var input struct {
+			Text    string   `json:"text"`
+			Sources []string `json:"sources"`
+		}
+		if !decode(w, r, &input) {
+			return
+		}
+		v, e := data.SaveBotAnswer(r.Context(), actor(r.Context()), r.PathValue("id"), input.Text, input.Sources)
+		result(w, v, e)
+	})
+	mux.HandleFunc("PATCH /api/v1/questions/{id}/bot-answer", func(w http.ResponseWriter, r *http.Request) {
+		var input struct {
+			Helpful *bool `json:"helpful"`
+		}
+		if !decode(w, r, &input) {
+			return
+		}
+		if input.Helpful == nil {
+			invalidRequest(w)
+			return
+		}
+		v, e := data.RateBotAnswer(r.Context(), actor(r.Context()), r.PathValue("id"), *input.Helpful)
 		result(w, v, e)
 	})
 	mux.HandleFunc("POST /api/v1/questions/{id}/answer", func(w http.ResponseWriter, r *http.Request) {
@@ -168,6 +230,11 @@ func DataHandler(data *store.Store, key string) http.Handler {
 	return auth.Service(key, auth.User(data, mux))
 }
 func result(w http.ResponseWriter, value any, err error) {
+	var validation *store.ValidationError
+	if errors.As(err, &validation) {
+		respond(w, 400, map[string]any{"error": map[string]any{"code": "validation_error", "message": "Карточка не прошла проверку", "fields": validation.Fields}})
+		return
+	}
 	if errors.Is(err, store.ErrConflict) {
 		failure(w, 409, "conflict", "Запись конфликтует с сохранёнными данными")
 		return
