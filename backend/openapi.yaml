@@ -1,11 +1,11 @@
 openapi: 3.0.3
 info:
-  title: AI-buddy Backend · Вход
-  version: 0.1.0
+  title: AI-buddy Backend · Вход и наши данные
+  version: 0.2.0
 servers:
-  - url: http://backend:8080
+- url: http://backend:8080
 security:
-  - buddyKey: []
+- buddyKey: []
 paths:
   /health:
     get:
@@ -33,7 +33,10 @@ paths:
             schema:
               type: object
               additionalProperties: false
-              required: [code, telegram_user_id, telegram_chat_id]
+              required:
+              - code
+              - telegram_user_id
+              - telegram_chat_id
               properties:
                 code:
                   type: string
@@ -63,13 +66,13 @@ paths:
     get:
       summary: Найти связанный профиль по Telegram ID
       parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int64
-            minimum: 1
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+          minimum: 1
       responses:
         '200':
           $ref: '#/components/responses/Profile'
@@ -81,42 +84,1076 @@ paths:
           $ref: '#/components/responses/Error'
         '503':
           $ref: '#/components/responses/Error'
+  /api/v1/profile:
+    get:
+      summary: Свой профиль, логины, тимлид и неделя стажировки
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/team-card:
+    get:
+      summary: Карточка своей команды, текущая или конкретная версия
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TeamCard'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: section
+        in: query
+        required: false
+        schema:
+          type: string
+      - name: version
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+  /api/v1/access-catalog:
+    get:
+      summary: Каталог своей команды для своей роли
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CatalogObject'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: object
+        in: query
+        required: false
+        schema:
+          type: array
+          items: &id001
+            type: string
+            pattern: ^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$
+  /api/v1/access-marks:
+    get:
+      summary: Свои отметки «я запросил»
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AccessMark'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/access-marks/{object}:
+    put:
+      summary: Отметить запрос доступа без изменения первоначальной даты; тело пустое
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccessMark'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: object
+        in: path
+        required: true
+        schema: *id001
+  /api/v1/access-snapshots:
+    post:
+      summary: Сохранить снимок своих доступов
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SnapshotInput'
+  /api/v1/access-snapshots/latest:
+    get:
+      summary: Последний снимок своих доступов
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Snapshot'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/interns:
+    get:
+      summary: Свои стажёры наставника или стажёры команды тимлида
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Intern'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/briefs:
+    post:
+      summary: Создать неизменяемые пункты брифа в статусе draft
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brief'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BriefInput'
+  /api/v1/briefs/{id}:
+    get:
+      summary: Свой бриф по ID
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brief'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+    patch:
+      summary: Подтвердить отправку или ошибку доставки; sent не понижается
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Brief'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BriefStatusInput'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+  /api/v1/briefs/{id}/events:
+    post:
+      summary: Событие доставленного брифа; click требует item_id
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefEvent'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BriefEventInput'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+  /api/v1/questions:
+    post:
+      summary: Свой вопрос с необязательным адресатом той же команды
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionInput'
+  /api/v1/questions/{id}:
+    get:
+      summary: Вопрос, доступный его автору и адресату
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+    patch:
+      summary: Оценить собственный вопрос
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RatingInput'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+  /api/v1/questions/{id}/answer:
+    post:
+      summary: Ответ назначенного адресата; сохранённый ответ неизменяемый
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnswerInput'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
+  /api/v1/faq:
+    post:
+      summary: Публикация своего сохранённого ответа с явным согласием
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FAQ'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FAQInput'
+    get:
+      summary: Поиск по буквальной подстроке в FAQ своей команды, до 20 результатов
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FAQ'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: text
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 500
+  /api/v1/faq/{id}:
+    get:
+      summary: Запись FAQ своей команды
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя или разрешённой ему команды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FAQ'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema: *id001
 components:
   securitySchemes:
     buddyKey:
       type: apiKey
       in: header
       name: X-Buddy-Key
+    buddyUser:
+      type: apiKey
+      in: header
+      name: X-Buddy-User
   schemas:
     Profile:
       type: object
       additionalProperties: false
-      required: [user_id, display_name, role, team_id]
+      required:
+      - user_id
+      - display_name
+      - role
+      - team_id
       properties:
-        user_id:
+        user_id: &id002
           type: string
-        display_name:
+        display_name: &id003
           type: string
-        role:
+        role: &id004
           type: string
-          enum: [intern, mentor, teamlead]
-        team_id:
+          enum:
+          - intern
+          - mentor
+          - teamlead
+        team_id: &id005
           type: string
-        mentor_id:
+        mentor_id: &id006
           type: string
     Error:
       type: object
-      required: [error]
+      required:
+      - error
       properties:
         error:
           type: object
-          required: [code, message]
+          required:
+          - code
+          - message
           properties:
             code:
               type: string
-              enum: [invalid_request, invalid_invitation, unauthorized, not_found, binding_conflict, unavailable]
+              enum:
+              - invalid_request
+              - invalid_invitation
+              - unauthorized
+              - not_found
+              - binding_conflict
+              - unavailable
+              - forbidden
+              - conflict
             message:
               type: string
+    UserProfile:
+      type: object
+      additionalProperties: false
+      required:
+      - user_id
+      - display_name
+      - role
+      - team_id
+      - logins
+      - internship_week
+      properties:
+        user_id: *id002
+        display_name: *id003
+        role: *id004
+        team_id: *id005
+        mentor_id: *id006
+        logins:
+          type: object
+          additionalProperties:
+            type: string
+        teamlead_id:
+          type: string
+        internship_week:
+          type: integer
+          nullable: true
+          minimum: 1
+    TeamCard:
+      type: object
+      additionalProperties: false
+      properties:
+        team_id:
+          type: string
+        version:
+          type: integer
+          format: int64
+        document:
+          type: object
+          additionalProperties: true
+        source_path:
+          type: string
+      required:
+      - team_id
+      - version
+      - document
+      - source_path
+    CatalogObject:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        instrument:
+          type: string
+          enum:
+          - github
+          - jira
+          - miro
+          - google_calendar
+          - telegram
+        name:
+          type: string
+        url:
+          type: string
+          format: uri
+        request_url:
+          type: string
+          format: uri
+        owner_id: *id001
+        roles:
+          type: array
+          items:
+            type: string
+            enum:
+            - intern
+            - mentor
+            - teamlead
+        forbidden:
+          type: boolean
+        reason:
+          type: string
+      required:
+      - id
+      - instrument
+      - name
+      - url
+      - owner_id
+      - roles
+      - forbidden
+    AccessMark:
+      type: object
+      additionalProperties: false
+      properties:
+        object_id: *id001
+        requested_at: &id007
+          type: string
+          format: date-time
+      required:
+      - object_id
+      - requested_at
+    AccessState:
+      type: object
+      additionalProperties: false
+      properties:
+        object_id: *id001
+        status:
+          type: string
+          enum:
+          - granted
+          - missing
+          - requested
+          - stale
+          - forbidden
+        error:
+          type: string
+          maxLength: 256
+      required:
+      - object_id
+      - status
+    SnapshotInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        objects:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/AccessState'
+      required:
+      - id
+      - objects
+    Snapshot:
+      type: object
+      additionalProperties: false
+      properties: &id009
+        id: *id001
+        objects:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccessState'
+        created_at: *id007
+      required: &id010
+      - id
+      - objects
+      - created_at
+    Intern:
+      type: object
+      additionalProperties: false
+      required:
+      - user_id
+      - display_name
+      - role
+      - team_id
+      - snapshot
+      properties:
+        user_id: *id002
+        display_name: *id003
+        role: *id004
+        team_id: *id005
+        mentor_id: *id006
+        snapshot:
+          $ref: '#/components/schemas/NullableSnapshot'
+    BriefItem:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        source:
+          type: string
+          enum:
+          - github
+          - jira
+          - google_calendar
+        type:
+          type: string
+          minLength: 1
+          maxLength: 128
+        title:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        url:
+          type: string
+          format: uri
+          pattern: ^https?://
+        priority_class:
+          type: string
+          enum:
+          - blocker
+          - people
+          - deadline
+          - information
+        related_task:
+          type: string
+        before:
+          type: string
+        after:
+          type: string
+        created_at: *id007
+      required:
+      - id
+      - source
+      - type
+      - title
+      - url
+      - priority_class
+      - created_at
+    BriefInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        items:
+          type: array
+          maxItems: 100
+          items:
+            $ref: '#/components/schemas/BriefItem'
+      required:
+      - id
+      - items
+    Brief:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/BriefItem'
+        status:
+          type: string
+          enum:
+          - draft
+          - sent
+          - failed
+        created_at: *id007
+        sent_at: &id008
+          type: string
+          format: date-time
+          nullable: true
+        read_at: *id008
+      required:
+      - id
+      - items
+      - status
+      - created_at
+      - sent_at
+      - read_at
+    BriefStatusInput:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+          - sent
+          - failed
+      required:
+      - status
+    BriefEventInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        kind:
+          type: string
+          enum:
+          - read
+          - click
+          - positive
+          - negative
+          - reply
+        item_id: *id001
+      required:
+      - id
+      - kind
+    BriefEvent:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        kind:
+          type: string
+          enum:
+          - read
+          - click
+          - positive
+          - negative
+          - reply
+        item_id:
+          type: string
+        created_at: *id007
+      required:
+      - id
+      - kind
+      - created_at
+    QuestionInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        text:
+          type: string
+          minLength: 1
+          maxLength: 8000
+        assigned_to: *id001
+      required:
+      - id
+      - text
+    Question:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        user_id: *id001
+        text:
+          type: string
+        assigned_to:
+          type: string
+        answer:
+          type: string
+        helpful:
+          type: boolean
+          nullable: true
+        created_at: *id007
+      required:
+      - id
+      - user_id
+      - text
+      - answer
+      - helpful
+      - created_at
+    AnswerInput:
+      type: object
+      additionalProperties: false
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 8000
+      required:
+      - text
+    RatingInput:
+      type: object
+      additionalProperties: false
+      properties:
+        helpful:
+          type: boolean
+      required:
+      - helpful
+    FAQInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        question_id: *id001
+        consent:
+          type: boolean
+          enum:
+          - true
+      required:
+      - id
+      - question_id
+      - consent
+    FAQ:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id001
+        question_id: *id001
+        question:
+          type: string
+        answer:
+          type: string
+        author_id: *id001
+        created_at: *id007
+        source_path:
+          type: string
+      required:
+      - id
+      - question_id
+      - question
+      - answer
+      - author_id
+      - created_at
+      - source_path
+    NullableSnapshot:
+      type: object
+      additionalProperties: false
+      properties: *id009
+      required: *id010
+      nullable: true
   responses:
     Profile:
       description: Привязанный профиль из БД
