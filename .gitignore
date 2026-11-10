@@ -36,3 +36,14 @@ venv/
 
 # Claude Code
 .claude/settings.local.json
+
+# Local toolchains, reports and caches
+.tools/
+.cache/
+.docker-local/
+.coverage*
+coverage*.xml
+coverage*.out
+htmlcov/
+.ruff_cache/
+reports/
