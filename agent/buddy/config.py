@@ -9,6 +9,8 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore", hide_input_in_errors=True
     )
 
+    backend_url: str = ""
+    buddy_service_key: SecretStr = SecretStr("")
     demo_mode: bool = True
     telegram_bot_token: SecretStr = SecretStr("")
     llm_provider: Literal["fake", "openrouter", "compatible"] = "fake"
@@ -22,6 +24,8 @@ class Settings(BaseSettings):
 
     @model_validator(mode="after")
     def validate_live(self) -> "Settings":
+        if bool(self.backend_url) != bool(self.buddy_service_key.get_secret_value()):
+            raise ValueError("BACKEND_URL and BUDDY_SERVICE_KEY must be configured together")
         if not self.demo_mode:
             if not self.telegram_bot_token.get_secret_value():
                 raise ValueError("Live mode requires TELEGRAM_BOT_TOKEN")

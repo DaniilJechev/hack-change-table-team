@@ -5,6 +5,7 @@ from aiogram import Bot
 from aiohttp import web
 
 from buddy.bot.handlers import create_dispatcher
+from buddy.bot.identity import IdentityClient
 from buddy.config import Settings
 
 
@@ -22,13 +23,18 @@ def health_app(mode: str, polling: asyncio.Task | None = None) -> web.Applicatio
 
 
 async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
+    identity = (
+        IdentityClient(settings.backend_url, settings.buddy_service_key.get_secret_value())
+        if settings.backend_url and settings.buddy_service_key.get_secret_value()
+        else None
+    )
     bot = None
     polling = None
     token = settings.telegram_bot_token.get_secret_value()
     if token:
         bot = Bot(token=token)
         # Poll only registered command updates; do not delete webhooks or pending updates.
-        polling = asyncio.create_task(create_dispatcher().start_polling(bot, handle_signals=False))
+        polling = asyncio.create_task(create_dispatcher(identity).start_polling(bot, handle_signals=False))
     runner = web.AppRunner(health_app("telegram" if bot else "offline", polling))
     try:
         await runner.setup()
@@ -50,3 +56,5 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         if bot is not None:
             await bot.session.close()
         await runner.cleanup()
+        if identity is not None:
+            await identity.close()

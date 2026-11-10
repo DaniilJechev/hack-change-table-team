@@ -1,0 +1,38 @@
+{
+  "server": "github",
+  "step": "step_2",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "tools": [
+    {
+      "name": "list_pull_requests",
+      "description": "Synthetic test contract, not live discovery",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "owner": {
+            "type": "string"
+          },
+          "repo": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "perPage": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "owner",
+          "repo"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

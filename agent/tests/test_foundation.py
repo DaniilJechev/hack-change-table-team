@@ -226,6 +226,8 @@ async def test_st0_infra_1_agent_start_and_shutdown(monkeypatch, telegram):
     settings = config(
         health_host="127.0.0.1",
         health_port=port,
+        backend_url="http://backend",
+        buddy_service_key="synthetic-service-key",
         telegram_bot_token="123456:LOCAL_TEST_TOKEN" if telegram else "",
     )
     polling = AsyncMock(side_effect=lambda *args, **kwargs: None)
