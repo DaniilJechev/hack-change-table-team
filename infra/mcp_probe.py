@@ -12,10 +12,9 @@ import shlex
 import subprocess
 from pathlib import Path
 
+from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp.client.streamable_http import streamablehttp_client
-
-from mcp import ClientSession, StdioServerParameters
 
 ROOT = Path(__file__).resolve().parents[1]
 

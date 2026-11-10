@@ -46,3 +46,5 @@ select = ["E", "F", "I", "UP"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["buddy"]
+# The repository mcp/ directory contains config, not a Python package.
+known-third-party = ["mcp"]

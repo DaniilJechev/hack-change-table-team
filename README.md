@@ -98,7 +98,7 @@ Router/Executors, /demo next, бизнес-сценарии H0–H3 и backend �
 
 ### Привязка Telegram (Этап 1)
 
-После запуска backend выполните `make seed`, затем `make invite USER=demo-daniil`.
+После запуска backend выполните `make seed`, затем `make invite USER_ID=demo-daniil`.
 Передайте выданный одноразовый код адресату приватно. В личном чате бот принимает
 `/start <код>`, повторный `/start` загружает профиль из backend. Роль и команда
 определяются сервером; групповые сообщения не активируют приглашение.
