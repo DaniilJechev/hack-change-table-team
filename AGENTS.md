@@ -41,7 +41,7 @@ openspec/    спецификации (OpenSpec)
 infra/       grafana, postgres init
 docs/        продуктовая документация
 ```
-Технический каркас Этапа 0 реализован: `backend/`, `agent/`, Compose, CI, seed и проверки. Этап 1 закрыт 10.11 на синтетических фикстурах (без реальных аккаунтов и OAuth Miro). Текущий статус и ограничения — в `STAGE_0_VALIDATION.md`; следующие этапы выполняются по `docs/3_ROADMAP.md`.
+Технический каркас Этапа 0 реализован: `backend/`, `agent/`, Compose, CI, seed и проверки. Этап 1 закрыт 10.11 на синтетических фикстурах (без реальных аккаунтов и OAuth Miro). Этап 2 закрыт 10.11: Router, каркас Executors, демо-режим, `buddy-mcp` и REST; seed-карточка и каталог — в формате backend (`backend/internal/store`), меняйте их через `seed/build_stage_two.py`. Текущий статус и ограничения — в `STAGE_0_VALIDATION.md`; следующие этапы выполняются по `docs/3_ROADMAP.md`.
 
 ## Стек
 - **Go** — `backend` (pgx, goose, официальный [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk)).
