@@ -95,10 +95,26 @@ class AccessService:
         lines.append("Бот только проверяет доступы и ничего не меняет в сервисах.")
         return ExecutorResponse(result="\n".join(lines), actions=actions, links=list(dict.fromkeys(links)))
 
+    async def _restore(self, context: Context, runtime: Runtime) -> None:
+        key = self.key(context)
+        if key in self.previous:
+            return
+        try:
+            snapshot = await runtime.data.latest_snapshot(context.user_id)
+        except DataError:
+            return
+        if snapshot:
+            self.previous[key] = {
+                item["object_id"]: item["status"]
+                for item in snapshot.get("objects", [])
+                if item.get("status") in SNAPSHOT_STATUSES
+            }
+
     async def _remember(
         self, context: Context, runtime: Runtime, items: list[AccessItem]
     ) -> list[tuple[AccessItem, str]]:
         """Store the new snapshot; return notifications for status changes since the previous one."""
+        await self._restore(context, runtime)
         key = self.key(context)
         previous = self.previous.get(key, {})
         current = {
@@ -256,6 +272,7 @@ class AccessService:
             items = await self._items("access_events", context, runtime)
         except DataError:
             return None
+        await self._restore(context, runtime)
         first = key not in self.previous
         notes = await self._remember(context, runtime, items)
         if first or not notes:

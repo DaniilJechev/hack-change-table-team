@@ -7,7 +7,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import quote
 
+import yaml
+from pydantic import ValidationError
+
 from buddy.data.base import DataError
+from buddy.demo.contracts import TeamCard
 
 BUNDLE = Path(__file__).resolve().parents[1] / "demo" / "data" / "seed.json"
 
@@ -28,6 +32,8 @@ class SeedData:
         self.snapshots: dict[str, dict] = {}
         self.questions: dict[str, dict] = {}
         self.faq: dict[str, dict] = {}
+        self.card_version = 1
+        self.team_flags: dict[str, dict[str, bool]] = {}
 
     def _user(self, user_id: str) -> dict:
         try:
@@ -73,7 +79,7 @@ class SeedData:
             raise DataError("not_found")
         return {
             "team_id": self.card["team_id"],
-            "version": 1,
+            "version": self.card_version,
             "document": deepcopy(self.card),
             "source_path": self.card["source_url"],
         }
@@ -133,6 +139,8 @@ class SeedData:
 
     async def create_question(self, user_id: str, question_id: str, text: str, assigned_to: str) -> dict:
         user = self._user(user_id)
+        if assigned_to and not (await self.flags(user_id))["team_escalation"]:
+            raise DataError("forbidden")
         target = self.users.get(assigned_to)
         if (assigned_to and (target is None or target["team_id"] != user["team_id"])) or not text.strip():
             raise DataError("invalid")
@@ -181,6 +189,8 @@ class SeedData:
         record["helpful"] = helpful
 
     async def publish_faq(self, user_id: str, faq_id: str, question_id: str) -> dict:
+        if not (await self.flags(user_id))["faq_publication"]:
+            raise DataError("forbidden")
         record = self._question_for(user_id, question_id)
         if record["assigned_to"] != user_id or not record["answer"]:
             raise DataError("forbidden")
@@ -219,3 +229,51 @@ class SeedData:
         if record["user_id"] != user_id or not record.get("bot_answer"):
             raise DataError("forbidden")
         record["bot_helpful"] = helpful
+
+    async def flags(self, user_id: str) -> dict[str, bool]:
+        user = self._user(user_id)
+        return {
+            "access_monitoring": True,
+            "team_escalation": True,
+            "faq_publication": True,
+            **self.team_flags.get(user["team_id"], {}),
+        }
+
+    async def upload_team_card(self, user_id: str, source: bytes) -> dict:
+        user = self._user(user_id)
+        if user["role"] not in {"mentor", "teamlead"}:
+            raise DataError("forbidden")
+        if len(source) > 1 << 20:
+            raise DataError("invalid", fields=("document: файл больше 1 МиБ",))
+        try:
+            document = yaml.safe_load(source)
+            validated = TeamCard.model_validate(document)
+        except (yaml.YAMLError, UnicodeError):
+            raise DataError("invalid", fields=("document: ожидается корректный YAML",)) from None
+        except ValidationError as error:
+            paths = []
+            for item in error.errors(include_input=False):
+                parts = list(item["loc"])
+                if item["type"] == "extra_forbidden":
+                    parts[-1] = "*"
+                field = "".join(
+                    f"[{part}]" if isinstance(part, int) else ("." if i else "") + str(part)
+                    for i, part in enumerate(parts)
+                )
+                paths.append(
+                    field + (": обязательное поле" if item["type"] == "missing" else ": неверное значение")
+                )
+            raise DataError("invalid", fields=tuple(paths[:20])) from None
+        if validated.team_id != user["team_id"]:
+            raise DataError("forbidden")
+        team_users = {uid for uid, value in self.users.items() if value["team_id"] == user["team_id"]}
+        if not {person.user_id for person in validated.people} <= team_users:
+            raise DataError("invalid", fields=("people: участник своей команды не найден",))
+        if document != self.card:
+            self.card = deepcopy(document)
+            self.card_version += 1
+        return await self.team_card(user_id)
+
+    async def latest_snapshot(self, user_id: str) -> dict | None:
+        self._user(user_id)
+        return deepcopy(self.snapshots.get(user_id))

@@ -122,7 +122,7 @@ async def demo(message: Message, agent_service: AgentService):
     arguments = (message.text or "").split(maxsplit=1)
     action = arguments[1].strip() if len(arguments) == 2 else ""
     user = message.from_user.id
-    if action in {"reset", "off"} or (not action and not agent_service.demo.active(user)):
+    if action in {"reset", "off", "mentor", "intern"} or (not action and not agent_service.demo.active(user)):
         agent_service.clear_demo(user)
     before = None
     if action == "next" and agent_service.demo.active(user):
@@ -149,6 +149,14 @@ async def route_text(
 ):
     profile = await context(message, message.from_user, agent_service, identity_client)
     if profile is None:
+        return
+    expected_card = agent_service.awaiting_card.pop(message.from_user.id, None)
+    if expected_card is not None:
+        if profile != expected_card:
+            await message.answer("Профиль изменился. Повторите /teamcard.")
+        else:
+            result = await agent_service.upload_card((message.text or "").encode("utf-8"), profile)
+            await message.answer(result.result, parse_mode=None)
         return
     if agent_service.is_answering(message.from_user.id):
         notes = await agent_service.submit_answer(message.text or "", profile, message.from_user.id)
@@ -210,6 +218,10 @@ async def choose(
 
 
 def register(router: Router):
+    from buddy.bot.teamcard import document, teamcard
+
+    router.message.register(teamcard, Command("teamcard"))
+    router.message.register(document, F.document)
     router.message.register(demo, Command("demo"))
     router.message.register(ask, Command("ask"))
     router.message.register(route_text, F.text)

@@ -339,3 +339,19 @@ func TestST3_ESCALATE_1_SameQuestionRetainsBotAnswerAndCreationRetry(t *testing.
 		t.Fatal(err)
 	}
 }
+
+func TestST3_CARD_2_StageMetadataValidation(t *testing.T) {
+	good := map[string]any{"synthetic": true, "team_id": "demo-orders", "name": "Demo",
+		"stage": map[string]any{"epic_key": "ORD-100", "source_url": "https://example.invalid/jira/browse/ORD-100"}}
+	if issues := validateCardFields(good); len(issues) > 0 {
+		t.Fatal(issues)
+	}
+	good["stage"] = map[string]any{"epic_key": "", "source_url": "javascript:bad"}
+	if issues := validateCardFields(good); len(issues) != 2 {
+		t.Fatalf("expected two field errors, got %v", issues)
+	}
+	good["stage"] = "bad"
+	if issues := validateCardFields(good); len(issues) != 1 || issues[0].Field != "stage" {
+		t.Fatal(issues)
+	}
+}

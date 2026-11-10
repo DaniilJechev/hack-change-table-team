@@ -36,8 +36,9 @@ func rules(required, optional map[string]string) map[string]cardRule {
 }
 
 var cardSchema = rules(map[string]string{"synthetic": "true", "team_id": "id", "name": "text"}, map[string]string{
-	"notice": "text", "source_url": "url", "people": "people", "routing": "routing", "do_not_disturb": "dnd", "tools": "texts", "links": "links", "faq": "empty",
+	"stage": "stage", "notice": "text", "source_url": "url", "people": "people", "routing": "routing", "do_not_disturb": "dnd", "tools": "texts", "links": "links", "faq": "empty",
 })
+var stageSchema = rules(map[string]string{"epic_key": "id", "source_url": "url"}, nil)
 var personSchema = rules(map[string]string{"user_id": "id", "name": "text", "role": "text", "areas": "texts", "contact_url": "url"}, map[string]string{"first_contact": "bool"})
 var routeSchema = rules(map[string]string{"situation": "text", "go_to": "text", "owner_id": "id", "wait_minutes": "minutes", "then_id": "id", "source_url": "url"}, nil)
 var dndSchema = rules(map[string]string{"person_id": "id", "direct_allowed": "bool", "reason": "text", "via_id": "id"}, nil)
@@ -86,6 +87,12 @@ func validateCardFields(document map[string]any) []FieldError {
 				valid = value == true
 			case "bool":
 				_, valid = value.(bool)
+			case "stage":
+				obj, ok := value.(map[string]any)
+				valid = ok
+				if ok {
+					check(obj, stageSchema, path+".")
+				}
 			case "minutes":
 				n, ok := value.(int)
 				valid = ok && n >= 0 && n <= 10080

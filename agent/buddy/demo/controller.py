@@ -17,6 +17,7 @@ DATA = Path(__file__).with_name("data")
 @dataclass
 class Session:
     step: int = 0
+    persona: str = "demo-daniil"
     data: SeedData | None = field(default=None)
 
 
@@ -40,8 +41,11 @@ class DemoController:
     def context(self, user: int) -> Context:
         if not self.active(user):
             raise DemoDisabled()
+        if self._bundle is None:
+            self._bundle = load_bundle(self.data / "seed.json")
+        actor = next(item for item in self._bundle["users"] if item["user_id"] == self.sessions[user].persona)
         return Context(
-            user_id="demo-daniil", team_id=self.scenario["team_id"], role="intern", demo=True, session=user
+            user_id=actor["user_id"], team_id=actor["team_id"], role=actor["role"], demo=True, session=user
         )
 
     def command(self, user: int, action: str = "") -> str:
@@ -50,11 +54,13 @@ class DemoController:
         if action == "off":
             self.sessions.pop(user, None)
             return "Демо выключено. Реальная привязка аккаунта не менялась."
-        if action not in {"", "next", "reset"}:
+        if action not in {"", "next", "reset", "mentor", "intern"}:
             return "Команды демо: /demo, /demo next, /demo reset, /demo off."
         session = self.sessions.pop(user, None)
         if session is None or action == "reset":
             session = Session()
+        if action in {"mentor", "intern"}:
+            session.persona = "demo-anna" if action == "mentor" else "demo-daniil"
         at_end = action == "next" and session.step == len(self.steps) - 1
         if action == "next" and not at_end:
             session.step += 1
@@ -63,10 +69,12 @@ class DemoController:
             self.sessions.popitem(last=False)
         step = session.step
         return (
-            "Демо: синтетические данные, учебный стажёр demo-daniil; реальная привязка не создаётся.\n"
+            f"Демо: синтетические данные, учебный профиль {session.persona}; "
+            "реальная привязка не создаётся.\n"
             f"Шаг {step + 1}/{len(self.steps)}: {self.scenario['steps'][self.steps[step]]}.\n"
             + ("Это последний шаг. /demo reset — начать сначала.\n" if at_end else "")
-            + "/access — доступы, /ask — вопросы о команде; /demo next — следующий шаг; /demo off — выйти."
+            + "/access — доступы, /ask — вопросы; /demo mentor и /demo intern — учебные роли. "
+            "/demo next — следующий шаг; /demo off — выйти."
         )
 
     def hub(self, user: int) -> Hub:

@@ -188,3 +188,33 @@ class BackendData:
             user_id,
             {"helpful": helpful},
         )
+
+    async def flags(self, user_id: str) -> dict[str, bool]:
+        return await self._rest("GET", "/api/v1/flags", user_id)
+
+    async def upload_team_card(self, user_id: str, source: bytes) -> dict:
+        if len(source) > 1 << 20:
+            raise DataError("invalid")
+        try:
+            async with asyncio.timeout(TIMEOUT):
+                response = await self.client.post(
+                    "/api/v1/team-card",
+                    content=source,
+                    headers={"X-Buddy-User": user_id, "Content-Type": "application/yaml"},
+                )
+            if response.status_code != 200:
+                raise DataError(STATUS.get(response.status_code, "unavailable"))
+            value = response.json()
+            if not isinstance(value, dict):
+                raise DataError("unavailable")
+            return value
+        except (httpx.HTTPError, TimeoutError, ValueError):
+            raise DataError("unavailable") from None
+
+    async def latest_snapshot(self, user_id: str) -> dict | None:
+        try:
+            return await self._rest("GET", "/api/v1/access-snapshots/latest", user_id)
+        except DataError as error:
+            if error.kind == "not_found":
+                return None
+            raise

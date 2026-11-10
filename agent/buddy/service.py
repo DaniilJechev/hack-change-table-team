@@ -16,6 +16,7 @@ class AgentService:
         self.chats: dict[str, int] = {}
         self.known: dict[str, Context] = {}
         self.awaiting: dict[int, tuple[str, str, Context]] = {}
+        self.awaiting_card: dict[int, Context] = {}
 
     def runtime(self, context: Context) -> Runtime | None:
         if context.demo and context.session is not None and self.demo.active(context.session):
@@ -62,11 +63,16 @@ class AgentService:
         return await self.executors.team.escalate(kind, context, runtime)
 
     def clear_demo(self, telegram_user: int) -> None:
-        key = f"demo-daniil:{telegram_user}"
         self.awaiting.pop(telegram_user, None)
-        self.executors.access.previous.pop(key, None)
-        self.executors.team.pending.pop(key, None)
-        self.executors.team.deferred.pop(key, None)
+        self.awaiting_card.pop(telegram_user, None)
+        for cache in (
+            self.executors.access.previous,
+            self.executors.team.pending,
+            self.executors.team.deferred,
+        ):
+            for key in list(cache):
+                if key.endswith(f":{telegram_user}"):
+                    cache.pop(key, None)
 
     async def start_answer(self, question_id: str, context: Context, telegram_user: int) -> ExecutorResponse:
         runtime = self.runtime(context)
@@ -116,6 +122,11 @@ class AgentService:
         runtime = self.runtime(context)
         if runtime is None:
             return None
+        try:
+            if not (await runtime.data.flags(context.user_id)).get("access_monitoring", True):
+                return None
+        except Exception:
+            return None
         return await self.executors.access.monitor(context, runtime)
 
     async def monitor_all(self) -> list[tuple[int, ExecutorResponse]]:
@@ -126,3 +137,19 @@ class AgentService:
             if response is not None and user_id in self.chats:
                 result.append((self.chats[user_id], response))
         return result
+
+    async def upload_card(self, source: bytes, context: Context) -> ExecutorResponse:
+        runtime = self.runtime(context)
+        if context.role not in {"mentor", "teamlead"}:
+            return ExecutorResponse(result="Загрузка карточки доступна только наставнику или тимлиду.")
+        if runtime is None:
+            return ExecutorResponse(result="Загрузка карточки сейчас недоступна.")
+        try:
+            card = await runtime.data.upload_team_card(context.user_id, source)
+        except Exception as error:
+            fields = getattr(error, "fields", ())
+            return ExecutorResponse(
+                result="Карточка не загружена."
+                + ("\n" + "\n".join(fields) if fields else " Проверьте поля и принадлежность своей команде.")
+            )
+        return ExecutorResponse(result=f"Карточка команды загружена. Версия: {card['version']}.")

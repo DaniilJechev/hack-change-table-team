@@ -8,7 +8,8 @@ KINDS = {"unauthorized", "forbidden", "not_found", "invalid", "conflict", "unava
 class DataError(Exception):
     """Safe error kind only; never carries backend messages or identifiers."""
 
-    def __init__(self, kind: str = "unavailable"):
+    def __init__(self, kind: str = "unavailable", *, fields: tuple[str, ...] = ()):
+        self.fields = fields
         self.kind = kind if kind in KINDS else "unavailable"
         super().__init__(self.kind)
 
@@ -49,3 +50,9 @@ class TeamData(Protocol):
     ) -> dict: ...
 
     async def rate_bot_answer(self, user_id: str, question_id: str, helpful: bool) -> None: ...
+
+    async def upload_team_card(self, user_id: str, source: bytes) -> dict: ...
+
+    async def flags(self, user_id: str) -> dict[str, bool]: ...
+
+    async def latest_snapshot(self, user_id: str) -> dict | None: ...

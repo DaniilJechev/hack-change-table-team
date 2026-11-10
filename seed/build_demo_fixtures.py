@@ -17,6 +17,8 @@ OFFICIAL = {
 def official_tool(server: str, name: str) -> dict:
     catalog = json.loads((ROOT / OFFICIAL[(server, name)]).read_text(encoding="utf-8"))
     return next(tool for tool in catalog["tools"] if tool["name"] == name)
+
+
 NOTICE = "Синтетические данные учебного проекта; не регламент и не реальные данные Авито."
 
 
