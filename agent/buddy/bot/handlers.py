@@ -3,6 +3,8 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 
 from buddy.bot.identity import IdentityClient, IdentityError
+from buddy.bot.stage_two import register
+from buddy.service import AgentService
 
 WELCOME = (
     "Привет! Я AI-buddy — помощник стажёра.\n"
@@ -21,9 +23,17 @@ def menu() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[[KeyboardButton(text="/help")]], resize_keyboard=True)
 
 
-async def start(message: Message, identity_client: IdentityClient | None = None) -> None:
+async def start(
+    message: Message, identity_client: IdentityClient | None = None, agent_service: AgentService | None = None
+) -> None:
     if identity_client is None:
-        await message.answer(WELCOME, reply_markup=menu())
+        await message.answer(
+            WELCOME
+            if agent_service is None
+            else "Привет! Я AI-buddy. /demo — синтетический сценарий, /ask — вопросы о команде. "
+            "Для реального профиля нужен настроенный backend и персональный код приглашения.",
+            reply_markup=menu(),
+        )
         return
     if (
         message.chat.type != "private"
@@ -56,7 +66,9 @@ async def start(message: Message, identity_client: IdentityClient | None = None)
         await message.answer(texts.get(exc.kind, "Сервис привязки временно недоступен. Попробуйте позже."))
 
 
-async def help_command(message: Message, identity_client: IdentityClient | None = None) -> None:
+async def help_command(
+    message: Message, identity_client: IdentityClient | None = None, agent_service: AgentService | None = None
+) -> None:
     text = (
         HELP
         if identity_client is None
@@ -65,14 +77,25 @@ async def help_command(message: Message, identity_client: IdentityClient | None 
             "Привязка доступна только в личном чате. Бриф и H0–H3 ещё не подключены."
         )
     )
+    if agent_service is not None:
+        text = (
+            "/start — профиль, /ask — восемь типов вопросов, /demo — синтетический сценарий, "
+            "/demo next — следующий шаг, /demo reset — сначала, /demo off — выход. "
+            "Распознавание запросов работает; ответы H0–H3 пока шаблонные."
+        )
     await message.answer(text, reply_markup=menu())
 
 
-def create_dispatcher(identity_client: IdentityClient | None = None) -> Dispatcher:
+def create_dispatcher(
+    identity_client: IdentityClient | None = None, agent_service: AgentService | None = None
+) -> Dispatcher:
     router = Router()
     router.message.register(start, CommandStart())
     router.message.register(help_command, Command("help"))
     dispatcher = Dispatcher()
     dispatcher["identity_client"] = identity_client
+    dispatcher["agent_service"] = agent_service
+    if agent_service is not None:
+        register(router)
     dispatcher.include_router(router)
     return dispatcher

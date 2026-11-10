@@ -4,7 +4,7 @@ from typing import Any
 
 from aiogram import Bot
 from aiogram.client.session.base import BaseSession
-from aiogram.methods import SendMessage
+from aiogram.methods import AnswerCallbackQuery, SendChatAction, SendMessage
 from aiogram.types import Chat, Message, Update, User
 
 from buddy.bot.handlers import WELCOME, create_dispatcher
@@ -23,6 +23,8 @@ class OfflineSession(BaseSession):
         pass
 
     async def make_request(self, bot: Bot, method, timeout: int | None = None):
+        if isinstance(method, (SendChatAction, AnswerCallbackQuery)):
+            return True
         if not isinstance(method, SendMessage):
             raise AssertionError("Unexpected network operation in offline smoke")
         self.sent.append(method)

@@ -1,0 +1,77 @@
+{
+  "total": 70,
+  "accuracy": 1.0,
+  "parameter_errors": 0,
+  "case_counts": {
+    "brief_now": 5,
+    "access_status": 5,
+    "access_task_analysis": 5,
+    "interns_status": 4,
+    "team_q1": 4,
+    "team_q2": 4,
+    "team_q3": 4,
+    "team_q4": 4,
+    "team_q5": 4,
+    "team_q6": 4,
+    "team_q7": 4,
+    "team_q8": 4,
+    "playbook_qa": 5,
+    "help": 4,
+    "clarify": 5,
+    "out_of_scope": 5
+  },
+  "confusion_matrix": {
+    "brief_now": {
+      "brief_now": 5
+    },
+    "access_status": {
+      "access_status": 5
+    },
+    "access_task_analysis": {
+      "access_task_analysis": 5
+    },
+    "interns_status": {
+      "interns_status": 4
+    },
+    "team_q1": {
+      "team_q1": 4
+    },
+    "team_q2": {
+      "team_q2": 4
+    },
+    "team_q3": {
+      "team_q3": 4
+    },
+    "team_q4": {
+      "team_q4": 4
+    },
+    "team_q5": {
+      "team_q5": 4
+    },
+    "team_q6": {
+      "team_q6": 4
+    },
+    "team_q7": {
+      "team_q7": 4
+    },
+    "team_q8": {
+      "team_q8": 4
+    },
+    "playbook_qa": {
+      "playbook_qa": 5
+    },
+    "help": {
+      "help": 4
+    },
+    "clarify": {
+      "clarify": 5
+    },
+    "out_of_scope": {
+      "out_of_scope": 5
+    }
+  },
+  "failures": [],
+  "mode": "rules",
+  "synthetic": true,
+  "real_llm_requested": false
+}
