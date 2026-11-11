@@ -145,7 +145,7 @@ async def test_st4_live_1_scheduled_brief_loop_and_flows_without_runtime():
         task.cancel()
         await asyncio.gather(task, return_exceptions=True)
         morning = next(message for message in app.session.sent if "Утренний бриф" in message.text)
-        assert morning.chat_id == 42 and [b.text for b in buttons(morning)][1:] == ["👍", "👎"]
+        assert morning.chat_id == 42 and [b.text for b in buttons(morning)][-2:] == ["👍", "👎"]
         assert (await fixtures.data.last_brief_sent("demo-daniil")) is not None
         assert await app.service.briefs_due() == []  # once per day
         await reply(app, "Спасибо!", to=list(app.service.brief_messages)[0][1])

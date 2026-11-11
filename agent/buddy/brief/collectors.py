@@ -1,7 +1,7 @@
 """Read-only collectors of changes for the morning brief (FR-H0-01): GitHub, Jira, Google Calendar.
 
-Every call goes through the Hub allowlist of the `brief_now` case. Tool arguments carry no time
-filters: results are filtered by code against the moment of the last successfully sent brief.
+Every call goes through the Hub allowlist of the `brief_now` case. Demo arguments have no time
+filters. Live results are also filtered by code since the last successfully sent brief.
 """
 
 import hashlib
@@ -184,36 +184,54 @@ def task_key(text: str) -> str:
 
 
 async def jira(context, runtime, target: dict, login: str, since: datetime, now: datetime) -> Collected:
+    from buddy.brief import jira_changes
+
     result = Collected()
     project = target["project_key"]
-    found = await call(
-        runtime,
-        context,
-        "jira",
-        "jira_search",
-        {
-            "jql": f'project = {project} AND (assignee = "{login}" OR comment ~ "{login}") '
-            "ORDER BY updated DESC",
-            "fields": "summary,status,assignee,duedate,created,updated,comment",
-            "limit": 20,
-        },
+    found = (
+        await call(
+            runtime,
+            context,
+            "jira",
+            "jira_search",
+            {
+                "jql": f'project = {project} AND (assignee = "{login}" OR comment ~ "{login}") '
+                "ORDER BY updated DESC",
+                "fields": "summary,status,assignee,duedate,created,updated,comment",
+                "limit": 20,
+            },
+        )
+        if context.demo
+        else None
     )
-    for issue in rows(found, "issues", "items"):
+    issues = (
+        rows(found, "issues", "items")
+        if context.demo
+        else await jira_changes.issues(context, runtime, target, login, since, now)
+    )
+    for issue in issues:
         key, url = issue.get("key") or "", issue.get("url") or ""
         title = f"{key} «{issue.get('summary', '')}»"
-        mine = login_of(issue.get("assignee")) == login
+        mine = login_of(issue.get("assignee")) == login if context.demo else issue["_mine"]
+        if not context.demo:
+            result.items.extend(jira_changes.changes(context, issue, login, since, now))
         status = issue.get("status")
         status = (status.get("name") if isinstance(status, dict) else status) or ""
         for comment in rows(issue.get("comments") or issue.get("comment"), "comments"):
             at = moment(comment.get("created"))
             author = login_of(comment.get("author"))
-            if at and at > since and author != login and login in str(comment.get("body", "")).casefold():
+            mention = login in str(comment.get("body", "")).casefold()
+            own_comment = jira_changes.matches(comment.get("author"), login)
+            personal = mine or issue.get("_was_mine", False)
+            if at and since < at <= now and not own_comment and (mention or personal):
                 result.items.append(
                     BriefItem(
                         id=item_id(context.user_id, "jira", key, "comment", comment.get("id")),
                         source="jira",
-                        type="jira_mention",
-                        title=f"{title} — вас упомянули ({author})",
+                        type="jira_mention" if mention else "jira_comment",
+                        title=f"{title} — "
+                        + ("вас упомянули" if mention else "новый комментарий")
+                        + (f" ({author[:30]})" if author else ""),
                         url=comment.get("url") or (f"{url}?focusedCommentId={comment['id']}" if url else ""),
                         priority_class="people",
                         related_task=key,
@@ -221,7 +239,12 @@ async def jira(context, runtime, target: dict, login: str, since: datetime, now:
                     )
                 )
         created = moment(issue.get("created"))
-        if mine and created and created > since:
+        if (
+            mine
+            and created
+            and since < created <= now
+            and not any(item.related_task == key and item.type == "jira_assigned" for item in result.items)
+        ):
             result.items.append(
                 BriefItem(
                     id=item_id(context.user_id, "jira", key, "assigned"),

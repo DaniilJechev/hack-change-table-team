@@ -19,6 +19,7 @@ ACTION_TEXT = {
     "pr_review_requested": "сделать ревью: {title}",
     "pr_comment": "ответить на комментарий в {title}",
     "jira_mention": "ответить на упоминание в {title}",
+    "jira_comment": "прочитать комментарий в {title}",
     "jira_due": "закрыть до срока: {title}",
     "jira_assigned": "взять в работу: {title}",
     "meeting_moved": "учесть перенос встречи: {title}",
