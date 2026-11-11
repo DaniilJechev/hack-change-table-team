@@ -8,6 +8,19 @@ TEAM_CHOICES = "Доступ к инструменту | Кто это и мож
 TASK = re.compile(r"\b[A-Z][A-Z0-9]{1,15}-\d{1,10}\b", re.I)
 
 
+BRIEF_SOURCES = {
+    "github": r"\bpr\b|пулл|\bпр\b|ревью|\bgit|\bгит|коммит",
+    "jira": r"jira|джир|задач|тикет",
+    "calendar": r"календар|встреч|созвон|стендап",
+}
+
+
+def brief_source(value: str) -> dict[str, str]:
+    """FR-H0-07: a brief limited to one source only when exactly one is named."""
+    named = [source for source, pattern in BRIEF_SOURCES.items() if re.search(pattern, value)]
+    return {"source": named[0]} if len(named) == 1 else {}
+
+
 def decide(text: str) -> RouteDecision:
     text = text.strip()
     value = re.sub(r"\s+", " ", text.casefold().replace("ё", "е"))
@@ -20,6 +33,8 @@ def decide(text: str) -> RouteDecision:
         "/start": "help",
         "/ask": "help",
     }
+    if command == "/brief":
+        return RouteDecision(case="brief_now", params=brief_source(value))
     if command in commands:
         return RouteDecision(case=commands[command], params={"menu": "team"} if command == "/ask" else {})
     if command.startswith("/"):
@@ -62,8 +77,11 @@ def decide(text: str) -> RouteDecision:
         return RouteDecision(case="access_status")
     if "чуж" in value and any(word in value for word in ("функционал", "код")):
         return RouteDecision(case="playbook_qa", params={"query": text})  # neighborhood agreement
-    if any(word in value for word in ("бриф", "что нового", "изменил", "изменени", "обновлени", "обзор дня")):
-        return RouteDecision(case="brief_now")
+    if any(
+        word in value
+        for word in ("бриф", "что нового", "изменил", "изменени", "обновлени", "обзор дня", "есть что по")
+    ) or re.search(r"^что (у меня )?по ", value):
+        return RouteDecision(case="brief_now", params=brief_source(value))
     if task_id and any(word in value for word in ("связ", "зачем", "эпик", "проект", "часть", "вклад")):
         return RouteDecision(case="team_q6", params={"task": task_id})
     if any(
@@ -110,6 +128,9 @@ def decide(text: str) -> RouteDecision:
             "протестирован",
             "стал не нужен",
             "работоспособност",
+            "офис",
+            "wi-fi",
+            "wifi",
         )
     ):
         return RouteDecision(case="playbook_qa", params={"query": text})

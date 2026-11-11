@@ -35,13 +35,13 @@ agent/       Python: bot/ router/ executors/ mcp_hub/ brief/ access/ rag/ schedu
 mcp/         конфиги готовых MCP-серверов (github, atlassian, google calendar, miro)
 seed/        тестовые пользователи, карточки команд, каталог доступов
 fixtures/    записанные ответы MCP для демо-режима (step_1/, step_2/ …)
-data/playbook/  снимок avito-tech/playbook
+data/playbook/  снимок avito-tech/playbook (snapshot/); индекс — agent/buddy/rag/data/index.json
 evals/       наборы и скрипт оценки качества AI
 openspec/    спецификации (OpenSpec)
 infra/       grafana, postgres init
 docs/        продуктовая документация
 ```
-Технический каркас Этапа 0 реализован: `backend/`, `agent/`, Compose, CI, seed и проверки. Этап 1 закрыт 10.11 на синтетических фикстурах (без реальных аккаунтов и OAuth Miro). Этап 2 закрыт 10.11: Router, каркас Executors, демо-режим, `buddy-mcp` и REST; seed-карточка и каталог — в формате backend (`backend/internal/store`), меняйте их через `seed/build_stage_two.py`. Этап 3 реализован в согласованном режиме фикстур: H1/H2, роли демо, карточки, FAQ, оценки и мониторинг; состояние приёмки — в `reports/STAGE_3_COMPLETION_REPORT.md`. Бот выключен по прямому указанию пользователя; не запускать его без нового поручения. Текущий статус каркаса — в `reports/STAGE_0_VALIDATION.md`; следующие этапы выполняются по `docs/3_ROADMAP.md`.
+Технический каркас Этапа 0 реализован: `backend/`, `agent/`, Compose, CI, seed и проверки. Этап 1 закрыт 10.11 на синтетических фикстурах (без реальных аккаунтов и OAuth Miro). Этап 2 закрыт 10.11: Router, каркас Executors, демо-режим, `buddy-mcp` и REST; seed-карточка и каталог — в формате backend (`backend/internal/store`), меняйте их через `seed/build_stage_two.py`. Этап 3 реализован в согласованном режиме фикстур: H1/H2, роли демо, карточки, FAQ, оценки и мониторинг; состояние приёмки — в `reports/STAGE_3_COMPLETION_REPORT.md`. Этап 4 (части Эмиля и Даниила) реализован в том же режиме: H0 (бриф) и H3 (playbook, `RAG_SEARCH_MODE=bm25|vector|rrf`); состояние — в `reports/STAGE_4_EMIL_DANIIL_REPORT.md`. Бот выключен по прямому указанию пользователя; не запускать его без нового поручения. Текущий статус каркаса — в `reports/STAGE_0_VALIDATION.md`; следующие этапы выполняются по `docs/3_ROADMAP.md`.
 
 ## Стек
 - **Go** — `backend` (pgx, goose, официальный [MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk)).
@@ -78,7 +78,8 @@ make up              # поднять всё в docker compose
 make demo            # запуск в демо-режиме (DEMO_MODE=true)
 make test            # go test ./... и pytest
 make cover           # отчёты о покрытии
-make ingest          # индексация playbook для H3
+make ingest          # индексация playbook для H3 (эмбеддинги — только при RAG_SEARCH_MODE=vector|rrf)
+make setup-rag       # необязательные зависимости e5 + pgvector для режимов vector и rrf
 make record-fixtures # запись ответов MCP в fixtures/
 ```
 

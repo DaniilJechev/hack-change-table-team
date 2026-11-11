@@ -73,6 +73,33 @@
   },
   "steps": {
     "step_1": "PR требует внимания; задача назначена; встреча перенесена; Miro ещё нет",
-    "step_2": "Появился доступ viewer к Miro"
+    "step_2": "Появился доступ viewer к Miro",
+    "step_3": "Следующее утро: PR одобрен, срок ORD-118 сегодня, новый комментарий в Jira"
+  },
+  "clock": {
+    "step_1": "2026-11-11T09:00:00+03:00",
+    "step_2": "2026-11-11T09:00:00+03:00",
+    "step_3": "2026-11-12T09:00:00+03:00"
+  },
+  "calendar_baseline": {
+    "demo-daniil": {
+      "events": {
+        "demo-standup": {
+          "start": "2026-11-11T09:30:00+03:00",
+          "summary": "Учебный стендап",
+          "url": "https://example.invalid/calendar/event/demo-standup"
+        },
+        "demo-sync-ord-101": {
+          "start": "2026-11-11T15:00:00+03:00",
+          "summary": "Синк по ORD-101",
+          "url": "https://example.invalid/calendar/event/demo-sync-ord-101"
+        },
+        "demo-retro": {
+          "start": "2026-11-11T17:00:00+03:00",
+          "summary": "Учебное ретро",
+          "url": "https://example.invalid/calendar/event/demo-retro"
+        }
+      }
+    }
   }
 }

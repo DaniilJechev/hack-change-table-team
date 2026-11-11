@@ -11,6 +11,7 @@ import yaml
 from pydantic import ValidationError
 
 from buddy.data.base import DataError
+from buddy.data.briefs import BriefState
 from buddy.demo.contracts import TeamCard
 
 BUNDLE = Path(__file__).resolve().parents[1] / "demo" / "data" / "seed.json"
@@ -20,7 +21,7 @@ def load_bundle(path: Path = BUNDLE) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-class SeedData:
+class SeedData(BriefState):
     def __init__(self, bundle: dict | None = None, *, clock: Callable[[], datetime] | None = None):
         bundle = deepcopy(bundle if bundle is not None else load_bundle())
         self.users = {user["user_id"]: user for user in bundle["users"]}
@@ -34,6 +35,8 @@ class SeedData:
         self.faq: dict[str, dict] = {}
         self.card_version = 1
         self.team_flags: dict[str, dict[str, bool]] = {}
+        # Yesterday's calendar of the synthetic day: the first demo brief compares against it.
+        self._briefs()["calendar"].update(deepcopy(bundle.get("calendar_baseline", {})))
 
     def _user(self, user_id: str) -> dict:
         try:
@@ -277,3 +280,32 @@ class SeedData:
     async def latest_snapshot(self, user_id: str) -> dict | None:
         self._user(user_id)
         return deepcopy(self.snapshots.get(user_id))
+
+    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> None:
+        self._user(user_id)
+        self.brief_create(user_id, brief_id, items, self._now())
+
+    async def brief_status(
+        self, user_id: str, brief_id: str, status: str, calendar: dict | None = None, at: str = ""
+    ) -> None:
+        self._user(user_id)
+        self.brief_mark(user_id, brief_id, status, at or self._now(), calendar)
+
+    async def brief_event(self, user_id: str, brief_id: str, kind: str, item_id: str = "") -> None:
+        self._user(user_id)
+        self.brief_signal(user_id, brief_id, kind, self._now(), item_id)
+
+    async def brief_stats(self, user_id: str) -> list[dict]:
+        user = self._user(user_id)
+        if user["role"] == "intern":
+            people = [user]
+        else:
+            people = [self.users[item["user_id"]] for item in await self.interns(user_id)]
+        return [
+            {
+                "user_id": item["user_id"],
+                "display_name": item["display_name"],
+                **self.brief_counts(item["user_id"]),
+            }
+            for item in people
+        ]

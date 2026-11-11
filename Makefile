@@ -69,6 +69,19 @@ mcp-down:
 mcp-list:
 	$(UV) run --script infra/mcp_probe.py --compose "$(MCP_COMPOSE)"
 
-ingest record-fixtures:
+# H3: index of the playbook snapshot. With RAG_SEARCH_MODE=vector|rrf it also writes e5
+# embeddings to pgvector (needs `make setup-rag` and RAG_DATABASE_URL); bm25 needs neither.
+ingest:
+	$(UV) run --project agent --frozen python -m buddy.rag.ingest
+
+.PHONY: setup-rag ingest-compose
+setup-rag:
+	$(UV) sync --project agent --frozen --extra dev --extra rag --python 3.12
+
+# Embeddings from inside the running agent container (image built with AGENT_EXTRAS="--extra rag").
+ingest-compose:
+	$(COMPOSE) exec -T agent python -m buddy.rag.ingest --embed-only
+
+record-fixtures:
 	@echo "$@: not implemented until the corresponding roadmap stage"
 	@exit 1

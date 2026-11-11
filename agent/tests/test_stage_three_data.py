@@ -87,7 +87,7 @@ async def test_st2_rest_1_seed_questions_answers_and_faq_rights():
 
 def test_st3_data_1_bundle_matches_seed_generator():
     bundle = load_bundle()
-    assert set(bundle) == {"users", "card", "catalog", "targets"}
+    assert set(bundle) == {"users", "card", "catalog", "targets", "calendar_baseline"}
     assert bundle["card"]["stage"]["epic_key"] == "ORD-100"
     assert set(bundle["targets"]) == {item["id"] for item in bundle["catalog"]["objects"]}
 

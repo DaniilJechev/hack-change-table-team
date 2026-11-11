@@ -7,7 +7,7 @@ from buddy.executors.core import TEAM_MENU, Context, format_response
 from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
-CALLBACKS = ("case:", "mentor:", "mark:", "remind:", "esc:", "ans:", "faq:", "nofaq:", "rate:")
+CALLBACKS = ("case:", "mentor:", "mark:", "remind:", "esc:", "ans:", "faq:", "nofaq:", "rate:", "brief:")
 
 
 def team_menu() -> InlineKeyboardMarkup:
@@ -88,13 +88,28 @@ def prefix(profile: Context) -> str:
     return "Демо: синтетический сценарий.\n" if profile.demo else ""
 
 
-async def send(message: Message, profile: Context, response: ExecutorResponse, case: str = ""):
-    await message.answer(
-        prefix(profile) + format_response(response),
-        reply_markup=response_menu(case, response),
-        parse_mode=None,
-        disable_web_page_preview=True,
-    )
+async def send(
+    message: Message,
+    profile: Context,
+    response: ExecutorResponse,
+    case: str = "",
+    agent_service: AgentService | None = None,
+):
+    try:
+        sent = await message.answer(
+            prefix(profile) + format_response(response),
+            reply_markup=response_menu(case, response),
+            parse_mode=None,
+            disable_web_page_preview=True,
+        )
+    except Exception:
+        # FR-H0-01: a brief that was not delivered stays unsent, so its changes are collected again.
+        if agent_service is not None and response.brief_id:
+            await agent_service.brief_delivered(response, profile, False)
+        raise
+    if agent_service is not None and response.brief_id:
+        await agent_service.brief_delivered(response, profile, True)
+        agent_service.remember_brief(message.chat.id, sent.message_id, response.brief_id)
 
 
 async def deliver(message: Message, agent_service: AgentService, profile: Context, notes) -> list[str]:
@@ -167,10 +182,29 @@ async def route_text(
                 "Автоматическая доставка пока не настроена."
             )
         return
+    if message.reply_to_message is not None:
+        # FR-H0-08: a reply to the brief message is a read signal.
+        await agent_service.brief_reply(message.chat.id, message.reply_to_message.message_id, profile)
     if agent_service.router.llm is not None:
         await message.bot.send_chat_action(message.chat.id, "typing")
     decision, response = await agent_service.handle(message.text or "", profile)
-    await send(message, profile, response, decision.case)
+    await send(message, profile, response, decision.case, agent_service)
+
+
+async def stats(message: Message, agent_service: AgentService, identity_client: IdentityClient | None = None):
+    profile = await context(message, message.from_user, agent_service, identity_client)
+    if profile is not None:
+        await send(message, profile, await agent_service.stats(profile))
+
+
+async def settings(
+    message: Message, agent_service: AgentService, identity_client: IdentityClient | None = None
+):
+    profile = await context(message, message.from_user, agent_service, identity_client)
+    if profile is not None:
+        arguments = (message.text or "").split(maxsplit=1)
+        value = arguments[1] if len(arguments) == 2 else ""
+        await send(message, profile, await agent_service.settings(profile, value))
 
 
 async def choose(
@@ -209,12 +243,15 @@ async def choose(
         await send(message, profile, await agent_service.publish(value, profile))
     elif kind == "nofaq":
         await message.answer("Хорошо, в FAQ не сохраняю.")
+    elif kind == "brief":
+        action, _, brief_id = value.partition(":")
+        await send(message, profile, await agent_service.brief_signal(action, brief_id, profile))
     elif kind == "rate":
         target, _, mark = value.rpartition(":")
         await send(message, profile, await agent_service.rate(target, mark == "1", profile))
     else:
         result = await agent_service.trigger(value, profile)
-        await send(message, profile, result, value)
+        await send(message, profile, result, value, agent_service)
 
 
 def register(router: Router):
@@ -224,6 +261,8 @@ def register(router: Router):
     router.message.register(document, F.document)
     router.message.register(demo, Command("demo"))
     router.message.register(ask, Command("ask"))
+    router.message.register(stats, Command("stats"))
+    router.message.register(settings, Command("settings"))
     router.message.register(route_text, F.text)
     router.callback_query.register(
         choose, F.data.func(lambda data: bool(data) and data.startswith(CALLBACKS))

@@ -6,9 +6,11 @@ COPY pyproject.toml uv.lock ./
 COPY buddy ./buddy
 COPY --from=github-mcp /server/github-mcp-server /usr/local/bin/github-mcp-server
 COPY github_mcp.py /app/github_mcp.py
-RUN pip install --no-cache-dir uv==0.9.5 && uv sync --frozen --no-dev --no-editable
-RUN useradd --system --uid 10001 buddy
+# AGENT_EXTRAS="--extra rag" adds CPU-only torch and e5 for RAG_SEARCH_MODE=vector|rrf (about +1 GB).
+ARG AGENT_EXTRAS=""
+RUN pip install --no-cache-dir uv==0.9.5 && uv sync --frozen --no-dev --no-editable ${AGENT_EXTRAS}
+RUN useradd --system --uid 10001 buddy && mkdir -p /models && chown buddy /models
 USER buddy
-ENV PATH="/app/.venv/bin:$PATH"
+ENV PATH="/app/.venv/bin:$PATH" HF_HOME=/models
 EXPOSE 8081
 CMD ["python", "-m", "buddy"]

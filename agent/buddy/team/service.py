@@ -114,15 +114,17 @@ class TeamService:
         self, case: str, params: dict, text: str, context: Context, runtime: Runtime
     ) -> ExecutorResponse:
         response = await self._answer_query(case, params, text, context, runtime)
+        return await self.record(response, text.strip() or f"Вопрос о команде ({case})", context, runtime)
+
+    async def record(
+        self, response: ExecutorResponse, question: str, context: Context, runtime: Runtime
+    ) -> ExecutorResponse:
+        """Store a sourced bot answer so that its [Помогло]/[Не помогло] rating has an owner."""
         if response.links:
             question_id = "b-" + uuid.uuid4().hex[:16]
             try:
                 await runtime.data.record_bot_answer(
-                    context.user_id,
-                    question_id,
-                    text.strip() or f"Вопрос о команде ({case})",
-                    response.result,
-                    response.links,
+                    context.user_id, question_id, question, response.result, response.links
                 )
             except DataError:
                 response.actions = [
@@ -362,7 +364,7 @@ class TeamService:
             result=(
                 f"📩 Вопрос от {about}:\n«{pending['text']}»\n"
                 f"Текущая задача: {profile.get('current_task') or 'не указана'}.\n"
-                "Бот проверил карточку команды и FAQ — ответа нет."
+                f"Бот проверил {pending.get('checked', 'карточку команды и FAQ')} — ответа нет."
             ),
             actions=[Action(label="Ответить", data="ans:" + question_id)],
         )

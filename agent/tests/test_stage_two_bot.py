@@ -59,17 +59,18 @@ async def test_st2_demo_1_rt_07_telegram_flow_and_eight_buttons():
     app = Harness()
     try:
         assert "/demo" in (await app.send("/start")).text
-        assert "H2 отвечает" in (await app.send("/help")).text
+        assert "/brief" in (await app.send("/help")).text
         assert "Нужна привязка" in (await app.send("Что нового?")).text
         ask = await app.send("/ask")
         assert len(ask.reply_markup.inline_keyboard) == 8
         assert "синтетические" in (await app.send("/demo")).text
-        assert "Сбор" in (await app.send("Что нового?")).text
+        assert "Главное сегодня" in (await app.send("Что нового?")).text
         changed = await app.send("/demo next")
-        assert "Шаг 2/2" in app.session.sent[-2].text
+        assert "Шаг 2/3" in app.session.sent[-2].text
         assert "Miro" in changed.text and "появился" in changed.text  # FR-H1-07 access_events
+        assert "Шаг 3/3" in (await app.send("/demo next")).text
         assert "последний" in (await app.send("/demo next")).text
-        assert "Шаг 1/2" in (await app.send("/demo reset")).text
+        assert "Шаг 1/3" in (await app.send("/demo reset")).text
         assert "не менялась" in (await app.send("/demo off")).text
         assert not app.service.demo.active(42)
     finally:

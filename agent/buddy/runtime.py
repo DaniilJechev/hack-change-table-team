@@ -14,3 +14,5 @@ class Runtime:
     gateway: Gateway
     telegram: TelegramMembers
     clock: Callable[[], datetime] = field(default=lambda: datetime.now(UTC))
+    # Demo only: the fixed moment of the scenario step, so that fixture arguments stay reproducible.
+    brief_now: datetime | None = None

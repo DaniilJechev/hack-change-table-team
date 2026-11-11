@@ -1,9 +1,9 @@
-"""H3 evaluation set: validation and routing check (Stage 3).
+"""H3 evaluation: Router rules + playbook retrieval on the pinned snapshot.
 
-Retrieval metrics (source in top-3 ≥ 90 %, refusal on out-of-corpus questions) are measured in
-Stage 4, when `rag/ingest.py` and `playbook_qa` exist. Today the script checks that the dataset is
-consistent with the pinned playbook snapshot and measures how the rules Router routes the questions.
-No network, no LLM.
+Metrics: routing accuracy; the expected file in top-1/top-3 for in-corpus questions; refusal for
+out-of-corpus questions; false refusals. `--mode bm25` (default) needs no model, no database and no
+network. `--mode vector|rrf` needs the `rag` extra, RAG_DATABASE_URL and a finished `make ingest`.
+No LLM is called: the answer wording is not evaluated here.
 """
 
 import argparse
@@ -11,81 +11,89 @@ import asyncio
 import json
 from pathlib import Path
 
+from buddy.config import Settings
+from buddy.rag.index import PlaybookIndex
+from buddy.rag.search import PlaybookSearch, create_search
 from buddy.router.service import Router
 
 ROOT = Path(__file__).resolve().parents[1]
-# avito-tech/playbook @ 0c1d2aa1501ca6889357908f54b12695f0534e48 — content files of the snapshot.
-PLAYBOOK_FILES = {
-    "QA-profile.md",
-    "analytics-levels.md",
-    "analytics-management.md",
-    "avito-developer-practice.md",
-    "avito-history.md",
-    "avito-open-source.md",
-    "avito-paas.md",
-    "bi-developers.md",
-    "books.md",
-    "design-levels.md",
-    "design-management.md",
-    "developer-profile.md",
-    "development-principles.md",
-    "ds-managers-profiles.md",
-    "ds-skills.md",
-    "goal-setting.md",
-    "mission-and-values.md",
-    "neighborhood-agreement.md",
-    "processes-and-standards.md",
-    "product-levels.md",
-    "readme.md",
-    "recruitment-and-office.md",
-    "spt.md",
-    "structure.md",
-    "students.md",
-    "tech_design_review.md",
-    "techlead-profile.md",
-    "training-and-development.md",
-}
 
 
-def load(path: Path) -> list[dict]:
+def load(path: Path, index: PlaybookIndex | None = None) -> list[dict]:
     rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
     if not rows or len({row["id"] for row in rows}) != len(rows):
         raise ValueError("Dataset needs unique IDs and at least one example")
+    files = {chunk.file for chunk in (index or PlaybookIndex.load()).chunks}
     for row in rows:
-        if row["in_corpus"] and row["source"] not in PLAYBOOK_FILES:
+        if row["in_corpus"] and row["source"] not in files:
             raise ValueError(f"{row['id']}: unknown playbook file {row['source']}")
         if not row["in_corpus"] and row["source"] is not None:
             raise ValueError(f"{row['id']}: out-of-corpus question must not have a source")
     return rows
 
 
-async def evaluate(rows: list[dict]) -> dict:
+async def evaluate(rows: list[dict], search: PlaybookSearch | None = None) -> dict:
     router = Router(None)
-    failures = []
+    search = search or PlaybookSearch(PlaybookIndex.load())
+    routing, top1, top3, refused, false_refusals, failures, degraded = 0, 0, 0, 0, 0, [], False
+    inside = [row for row in rows if row["in_corpus"]]
+    outside = [row for row in rows if not row["in_corpus"]]
     for row in rows:
         decision = await router.route(row["text"])
-        if decision.case not in row.get("accept", [row["case"]]):
-            failures.append({"id": row["id"], "expected": row["case"], "actual": decision.case})
+        routed = decision.case in row.get("accept", [row["case"]])
+        routing += routed
+        found = await search.search(row["text"], 3)
+        degraded = degraded or found.degraded
+        files = [hit.chunk.file for hit in found.hits]
+        problem = None if routed else "routing"
+        if row["in_corpus"]:
+            top1 += files[:1] == [row["source"]]
+            top3 += row["source"] in files
+            false_refusals += not found.answerable
+            if row["source"] not in files:
+                problem = "source_not_in_top3"
+            elif not found.answerable:
+                problem = "false_refusal"
+        else:
+            refused += not found.answerable
+            if found.answerable:
+                problem = "answered_out_of_corpus"
+        if problem:
+            # IDs and classes only: no question text and no playbook text in the report.
+            failures.append({"id": row["id"], "problem": problem})
     return {
         "total": len(rows),
-        "in_corpus": sum(row["in_corpus"] for row in rows),
-        "out_of_corpus": sum(not row["in_corpus"] for row in rows),
-        "sources": len({row["source"] for row in rows if row["in_corpus"]}),
-        "routing_accuracy": (len(rows) - len(failures)) / len(rows),
+        "in_corpus": len(inside),
+        "out_of_corpus": len(outside),
+        "search_mode": search.mode,
+        "degraded_to_bm25": degraded,
+        "fragments": len(search.index.chunks),
+        "commit": search.index.commit,
+        "routing_accuracy": round(routing / len(rows), 4),
+        "source_top1": round(top1 / len(inside), 4),
+        "source_top3": round(top3 / len(inside), 4),
+        "false_refusals": false_refusals,
+        "out_of_corpus_refused": round(refused / len(outside), 4) if outside else None,
         "failures": failures,
-        "retrieval": "not measured: playbook_qa is Stage 4",
-        "mode": "rules",
+        "llm": "not used",
     }
 
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dataset", type=Path, default=ROOT / "evals/h3/cases.jsonl")
-    parser.add_argument("--output", type=Path, default=ROOT / "evals/h3/rules-report.json")
+    parser.add_argument("--mode", choices=["bm25", "vector", "rrf"], default="bm25")
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args(argv)
-    report = asyncio.run(evaluate(load(args.dataset)))
+    index = PlaybookIndex.load()
+    if args.mode == "bm25":
+        search = PlaybookSearch(index)
+    else:
+        search = create_search(Settings(rag_search_mode=args.mode), index)
+    report = asyncio.run(evaluate(load(args.dataset, index), search))
     text = json.dumps(report, ensure_ascii=False, indent=2) + "\n"
-    args.output.write_text(text, encoding="utf-8", newline="\n")
+    output = args.output or ROOT / f"evals/h3/{args.mode}-report.json"
+    output.write_text(text, encoding="utf-8", newline="\n")
     print(text)
     return 0
 

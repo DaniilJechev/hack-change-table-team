@@ -1,6 +1,7 @@
 import json
 from collections import OrderedDict
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 
 from buddy.access.checker import FixtureTelegram
@@ -73,7 +74,7 @@ class DemoController:
             "реальная привязка не создаётся.\n"
             f"Шаг {step + 1}/{len(self.steps)}: {self.scenario['steps'][self.steps[step]]}.\n"
             + ("Это последний шаг. /demo reset — начать сначала.\n" if at_end else "")
-            + "/access — доступы, /ask — вопросы; /demo mentor и /demo intern — учебные роли. "
+            + "/brief — бриф, /access — доступы, /ask — вопросы; /demo mentor и /demo intern — учебные роли. "
             "/demo next — следующий шаг; /demo off — выйти."
         )
 
@@ -97,6 +98,8 @@ class DemoController:
             data=session.data,
             gateway=hub,
             telegram=FixtureTelegram(self.data / "fixtures", self.steps[session.step]),
+            # The synthetic day has a fixed clock: fixture arguments (calendar window) stay reproducible.
+            brief_now=datetime.fromisoformat(self.scenario["clock"][self.steps[session.step]]),
         )
 
     async def replay(self, user: int, server: str, tool: str, arguments: dict) -> dict:

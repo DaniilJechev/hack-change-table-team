@@ -49,18 +49,42 @@ async def monitor_loop(service: AgentService, bot, seconds: int) -> None:
                 await bot.send_message(chat, format_response(response), parse_mode=None)
 
 
+async def brief_loop(service: AgentService, bot, seconds: int = 60) -> None:
+    """Scheduler of morning briefs (FR-H0-06): checks once a minute whose brief is due."""
+    from buddy.bot.stage_two import keyboard
+
+    while True:
+        await asyncio.sleep(seconds)
+        for chat, response, context in await service.briefs_due():
+            ok = True
+            try:
+                sent = await bot.send_message(
+                    chat,
+                    format_response(response),
+                    reply_markup=keyboard(response.actions),
+                    parse_mode=None,
+                    disable_web_page_preview=True,
+                )
+                if response.brief_id:
+                    service.remember_brief(chat, sent.message_id, response.brief_id)
+            except Exception:
+                ok = False
+            with suppress(Exception):
+                await service.brief_delivered(response, context, ok)
+
+
 async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
     identity = (
         IdentityClient(settings.backend_url, settings.buddy_service_key.get_secret_value())
         if settings.backend_url and settings.buddy_service_key.get_secret_value()
         else None
     )
-    service = AgentService(
-        Router(None if settings.demo_mode else create_llm(settings)), demo_mode=settings.demo_mode
-    )
+    llm = None if settings.demo_mode else create_llm(settings)
+    service = AgentService(Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm)
     bot = None
     polling = None
     monitor = None
+    briefs = None
     data = None
     token = settings.telegram_bot_token.get_secret_value()
     if token:
@@ -69,6 +93,7 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
             data = BackendData(settings.backend_url, settings.buddy_service_key.get_secret_value())
             service.live = Runtime(data=data, gateway=live_hub(), telegram=BotTelegram(bot))
             monitor = asyncio.create_task(monitor_loop(service, bot, settings.access_monitor_seconds))
+            briefs = asyncio.create_task(brief_loop(service, bot))
         # Poll only registered command updates; do not delete webhooks or pending updates.
         polling = asyncio.create_task(
             create_dispatcher(identity, service).start_polling(bot, handle_signals=False)
@@ -88,7 +113,7 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
             with suppress(asyncio.CancelledError):
                 await waiter
     finally:
-        for task in (polling, monitor):
+        for task in (polling, monitor, briefs):
             if task is not None:
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)

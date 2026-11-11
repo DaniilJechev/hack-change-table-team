@@ -16,10 +16,22 @@ dependencies = [
   "pydantic>=2.11,<3",
   "pydantic-settings>=2.10,<3",
   "PyYAML>=6,<7",
+  "tzdata>=2025.1",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.4,<9", "pytest-asyncio>=1.2,<2", "pytest-cov>=6,<8", "ruff>=0.12,<1"]
+# Only for RAG_SEARCH_MODE=vector|rrf: local embeddings and pgvector access. BM25 mode needs none of it.
+rag = ["sentence-transformers>=3.4,<6", "torch>=2.4", "psycopg[binary]>=3.2,<4"]
+
+# CPU-only torch: no CUDA libraries (several GB) on a laptop or in the agent image.
+[tool.uv.sources]
+torch = { index = "pytorch-cpu" }
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
 
 [project.scripts]
 buddy = "buddy.__main__:main"

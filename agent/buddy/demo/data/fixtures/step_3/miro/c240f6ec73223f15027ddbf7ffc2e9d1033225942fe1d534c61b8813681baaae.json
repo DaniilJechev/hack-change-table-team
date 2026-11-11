@@ -1,0 +1,19 @@
+{
+  "server": "miro",
+  "tool": "content_item_list_roles",
+  "arguments": {
+    "contentItemId": "demo-board-orders"
+  },
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"contentItemId\": \"demo-board-orders\", \"roles\": [{\"user_id\": \"demo-anna\", \"role\": \"viewer\"}, {\"user_id\": \"demo-daniil\", \"role\": \"viewer\"}]}"
+      }
+    ]
+  }
+}
