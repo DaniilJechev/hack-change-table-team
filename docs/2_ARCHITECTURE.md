@@ -148,7 +148,7 @@ backend/
     tools_team.go             team_card_get, team_faq_search
     tools_access.go           access_catalog_get, access_marks_get
     tools_people.go           user_profile_get, interns_list
-  internal/redirect/          /r/<item_id> — редирект для учёта переходов («прочитано»)
+  internal/redirect/          /r/<token> — редирект для учёта переходов («прочитано»)
   migrations/                 SQL-миграции (goose)
 ```
 
