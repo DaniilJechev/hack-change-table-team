@@ -1,1 +1,175 @@
-{"uid":"ai-buddy","title":"AI-buddy — Этап 0","schemaVersion":41,"version":1,"panels":[{"id":1,"type":"text","title":"Статус каркаса","gridPos":{"h":5,"w":24,"x":0,"y":0},"options":{"mode":"markdown","content":"Каркас запущен. Метрики H0–H3 появятся после реализации сценариев. Демонстрационные данные синтетические; результатов пилота пока нет."}}]}
+{
+  "uid": "ai-buddy",
+  "title": "AI-buddy — H0–H3",
+  "schemaVersion": 41,
+  "version": 2,
+  "refresh": "30s",
+  "editable": false,
+  "panels": [
+    {
+      "id": 1,
+      "title": "Прочитанные брифы стажёров · цель ≥ 60%",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT read_percent FROM metrics_briefs",
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 2,
+      "title": "Брифы стажёров с переходом · цель ≥ 40%",
+      "type": "stat",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 0
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT clicked_percent FROM metrics_briefs",
+          "editorMode": "code"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "Оценки H2/H3 · последняя оценка каждого ответа",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT capability,answer_kind,rated,helpful,helpful_percent FROM metrics_helpful ORDER BY capability,answer_kind",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Часы до первого подтверждённого доступа",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT instrument,completed,mean_hours FROM metrics_access ORDER BY instrument",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "MCP · вызовы и ошибки без запретов",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT case_name,server,tool,outcome,calls FROM metrics_mcp WHERE outcome <> 'tool_denied' ORDER BY calls DESC",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "MCP · отклонённые политикой попытки",
+      "type": "table",
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "buddy-postgres"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "format": "table",
+          "rawSql": "SELECT case_name,server,tool,calls FROM metrics_mcp WHERE outcome='tool_denied' ORDER BY calls DESC",
+          "editorMode": "code"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Как читать метрики",
+      "type": "text",
+      "gridPos": {
+        "h": 5,
+        "w": 24,
+        "x": 0,
+        "y": 24
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Синтетические данные разработки, не результаты пилота. Все показатели — за всё время хранения. Доли брифов считаются только среди доставленных стажёрам. Повторные сигналы не увеличивают число брифов. Нет данных — пустое значение. Время доступа: от «Я запросил» до первого granted без ошибки; незавершённые запросы не входят в среднее. H2/H3: последняя оценка отдельно для бота и человека. Журнал MCP содержит только метаданные, аргументы и ответы не сохраняются. Демо SeedData работает в памяти и не наполняет PostgreSQL."
+      }
+    }
+  ]
+}

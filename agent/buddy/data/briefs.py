@@ -1,8 +1,7 @@
 """In-process state of morning briefs (H0): drafts, delivery, read signals, calendar snapshot, settings.
 
-SeedData uses it as the whole storage of the offline demo. BackendData keeps the same state next to
-the REST calls, because the stage-two backend stores briefs and events but has no endpoints for the
-last sent time, calendar snapshots, statistics or settings yet (stage 4, backend part).
+SeedData uses it as the whole storage of the offline demo. BackendData reads the corresponding
+state from PostgreSQL through REST; it does not inherit this in-memory implementation.
 """
 
 from copy import deepcopy

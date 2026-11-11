@@ -46,7 +46,13 @@ class TeamData(Protocol):
     async def close(self) -> None: ...
 
     async def record_bot_answer(
-        self, user_id: str, question_id: str, text: str, answer: str, sources: list[str]
+        self,
+        user_id: str,
+        question_id: str,
+        text: str,
+        answer: str,
+        sources: list[str],
+        capability: str = "h2",
     ) -> dict: ...
 
     async def rate_bot_answer(self, user_id: str, question_id: str, helpful: bool) -> None: ...
@@ -57,7 +63,7 @@ class TeamData(Protocol):
 
     async def latest_snapshot(self, user_id: str) -> dict | None: ...
 
-    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> None: ...
+    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> dict | None: ...
 
     async def brief_status(
         self, user_id: str, brief_id: str, status: str, calendar: dict | None = None, at: str = ""

@@ -16,6 +16,7 @@ import (
 func DataHandler(data *store.Store, key string) http.Handler {
 	mux := http.NewServeMux()
 	actor := auth.Actor
+	stageFourRoutes(mux, data)
 	mux.HandleFunc("GET /api/v1/flags", func(w http.ResponseWriter, r *http.Request) {
 		v, e := data.Flags(r.Context(), actor(r.Context()))
 		result(w, v, e)
@@ -108,12 +109,13 @@ func DataHandler(data *store.Store, key string) http.Handler {
 	})
 	mux.HandleFunc("PATCH /api/v1/briefs/{id}", func(w http.ResponseWriter, r *http.Request) {
 		var input struct {
-			Status string `json:"status"`
+			Status   string         `json:"status"`
+			Calendar map[string]any `json:"calendar,omitempty"`
 		}
 		if !decode(w, r, &input) {
 			return
 		}
-		v, e := data.BriefStatus(r.Context(), actor(r.Context()), r.PathValue("id"), input.Status)
+		v, e := data.BriefDelivery(r.Context(), actor(r.Context()), r.PathValue("id"), input.Status, input.Calendar)
 		result(w, v, e)
 	})
 	mux.HandleFunc("POST /api/v1/briefs/{id}/events", func(w http.ResponseWriter, r *http.Request) {
@@ -130,6 +132,7 @@ func DataHandler(data *store.Store, key string) http.Handler {
 	})
 	mux.HandleFunc("POST /api/v1/questions", func(w http.ResponseWriter, r *http.Request) {
 		var input struct {
+			Capability string `json:"capability,omitempty"`
 			ID         string `json:"id"`
 			Text       string `json:"text"`
 			AssignedTo string `json:"assigned_to,omitempty"`
@@ -141,7 +144,7 @@ func DataHandler(data *store.Store, key string) http.Handler {
 		if !decode(w, r, &input) {
 			return
 		}
-		v, e := data.SaveQuestion(r.Context(), actor(r.Context()), store.Question{ID: input.ID, Text: input.Text, AssignedTo: input.AssignedTo, Context: store.QuestionContext{CurrentTask: input.Context.CurrentTask, CheckedSources: input.Context.CheckedSources}})
+		v, e := data.SaveQuestion(r.Context(), actor(r.Context()), store.Question{Capability: input.Capability, ID: input.ID, Text: input.Text, AssignedTo: input.AssignedTo, Context: store.QuestionContext{CurrentTask: input.Context.CurrentTask, CheckedSources: input.Context.CheckedSources}})
 		result(w, v, e)
 	})
 	mux.HandleFunc("GET /api/v1/questions/{id}", func(w http.ResponseWriter, r *http.Request) {
@@ -268,6 +271,16 @@ func Application(data *store.Store, key string) http.Handler {
 	root.Handle("/api/v1/auth/", identity)
 	root.Handle("/api/v1/", DataHandler(data, key))
 	root.Handle("/mcp", buddymcp.Handler(data, key))
+	root.HandleFunc("GET /r/{token}", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "no-store")
+		w.Header().Set("Referrer-Policy", "no-referrer")
+		target, err := data.ResolveBriefLink(r.Context(), r.PathValue("token"), r.Method != "HEAD")
+		if err != nil {
+			storeError(w, err)
+			return
+		}
+		http.Redirect(w, r, target, http.StatusFound)
+	})
 	root.Handle("/", identity)
 	return root
 }

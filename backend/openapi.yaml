@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AI-buddy Backend · Вход и наши данные
-  version: 0.2.0
+  version: 0.4.0
 servers:
 - url: http://backend:8080
 security:
@@ -147,7 +147,8 @@ paths:
           type: integer
           minimum: 1
     post:
-      summary: Загрузка YAML-карточки своей команды наставником или тимлидом; строгая схема в README
+      summary: Загрузка YAML-карточки своей команды наставником или тимлидом; строгая
+        схема в README
       security: &id002
       - buddyKey: []
         buddyUser: []
@@ -905,7 +906,8 @@ paths:
           type: string
   /api/v1/questions/{id}/escalate:
     post:
-      summary: Назначить участника в существующем вопросе; повтор безопасен, переназначение запрещено
+      summary: Назначить участника в существующем вопросе; повтор безопасен, переназначение
+        запрещено
       security:
       - buddyKey: []
         buddyUser: []
@@ -949,6 +951,190 @@ paths:
         schema:
           type: string
           pattern: ^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$
+  /api/v1/brief-state:
+    get:
+      summary: Последняя доставка, ID доставленных изменений и последний успешный
+        снимок календаря
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя по его правам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefState'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/brief-stats:
+    get:
+      summary: Стажёр — себя, наставник — своих стажёров, тимлид — стажёров команды
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя по его правам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefStats'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/brief-settings:
+    get:
+      summary: Настройки текущего пользователя
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя по его правам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefSettings'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+    patch:
+      summary: Частичное обновление времени/тихого режима
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя по его правам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BriefSettings'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BriefSettingsInput'
+  /api/v1/mcp-calls:
+    post:
+      summary: Идемпотентная запись метаданных MCP без аргументов и ответов
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Данные текущего пользователя по его правам
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MCPCallResult'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MCPCall'
+  /r/{token}:
+    get:
+      summary: Перейти к сохранённому URL с идемпотентным учётом чтения
+      security: []
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      responses:
+        '302':
+          description: 'Сохранённый HTTP(S) URL; Cache-Control: no-store, Referrer-Policy:
+            no-referrer'
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '404':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+    head:
+      summary: Перейти к сохранённому URL без учёта чтения
+      security: []
+      parameters:
+      - name: token
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: ^[a-f0-9]{64}$
+      responses:
+        '302':
+          description: 'Сохранённый HTTP(S) URL; Cache-Control: no-store, Referrer-Policy:
+            no-referrer'
+          headers:
+            Location:
+              schema:
+                type: string
+                format: uri
+        '404':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
 components:
   securitySchemes:
     buddyKey:
@@ -1091,6 +1277,12 @@ components:
           type: boolean
         reason:
           type: string
+        target:
+          type: object
+          additionalProperties: true
+          description: 'Координаты объекта по инструменту: owner/repo/org/team_slug,
+            project_key, board_id, calendarId/timeMin/timeMax или chat_id; keywords
+            — список строк. Не секреты. Полная проверка в seed.'
       required:
       - id
       - instrument
@@ -1257,6 +1449,12 @@ components:
           format: date-time
           nullable: true
         read_at: *id009
+        redirect_tokens:
+          type: object
+          additionalProperties:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+          description: Стабильный item_id → непрозрачный токен этой доставки
       required:
       - id
       - items
@@ -1273,6 +1471,12 @@ components:
           enum:
           - sent
           - failed
+        calendar:
+          type: object
+          nullable: true
+          additionalProperties: true
+          description: Снимок до 512 KiB. Только sent; null/отсутствие сохраняет предыдущую
+            базу.
       required:
       - status
     BriefEventInput:
@@ -1324,6 +1528,12 @@ components:
         assigned_to: *id001
         context:
           $ref: '#/components/schemas/QuestionContextInput'
+        capability:
+          type: string
+          enum:
+          - h2
+          - h3
+          default: h2
       required:
       - id
       - text
@@ -1352,6 +1562,13 @@ components:
         bot_helpful:
           type: boolean
           nullable: true
+        capability:
+          type: string
+          enum:
+          - h2
+          - h3
+          - unknown
+          description: unknown — историческая запись до введения категории
       required:
       - id
       - user_id
@@ -1467,8 +1684,112 @@ components:
           type: integer
           minimum: 1
           nullable: true
-      description: Команда и неделя фиксируются backend при первом сохранении; для записей Этапа 2 контекст
-        может быть пустым.
+      description: Команда и неделя фиксируются backend при первом сохранении; для
+        записей Этапа 2 контекст может быть пустым.
+    BriefState:
+      type: object
+      additionalProperties: false
+      properties:
+        last_sent:
+          type: string
+          format: date-time
+          nullable: true
+        seen:
+          type: array
+          items: &id016
+            type: string
+        calendar:
+          type: object
+          nullable: true
+          additionalProperties: true
+      required:
+      - last_sent
+      - seen
+      - calendar
+    BriefSettings:
+      type: object
+      additionalProperties: false
+      properties:
+        time:
+          type: string
+          nullable: true
+          pattern: ^([01][0-9]|2[0-3]):[0-5][0-9]$
+        quiet:
+          type: boolean
+      required:
+      - time
+      - quiet
+    BriefSettingsInput:
+      type: object
+      additionalProperties: false
+      properties:
+        time:
+          type: string
+          description: HH:MM либо пустая строка для возврата к расписанию по умолчанию
+        quiet:
+          type: boolean
+      minProperties: 1
+    BriefStats:
+      type: object
+      additionalProperties: false
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            properties:
+              user_id: *id016
+              display_name: *id016
+              sent:
+                type: integer
+                minimum: 0
+              read:
+                type: integer
+                minimum: 0
+              clicked:
+                type: integer
+                minimum: 0
+              positive:
+                type: integer
+                minimum: 0
+              negative:
+                type: integer
+                minimum: 0
+      required:
+      - items
+    MCPCall:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          maxLength: 128
+        case:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,100}$
+        server:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,100}$
+        tool:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,100}$
+        outcome:
+          type: string
+          pattern: ^[a-zA-Z0-9_-]{1,100}$
+      required:
+      - id
+      - case
+      - server
+      - tool
+      - outcome
+    MCPCallResult:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *id016
+      required:
+      - id
   responses:
     Profile:
       description: Привязанный профиль из БД

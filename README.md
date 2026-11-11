@@ -27,7 +27,9 @@ docker compose up --build -d --wait --wait-timeout 180
 Пять сервисов: PostgreSQL 16 + pgvector, Redis 7, Grafana, Go backend и Python agent.
 Порты доступны только локально: backend 8080, agent 8081, Grafana 3000.
 Проверки: `http://localhost:8080/health`, `http://localhost:8081/health`, `http://localhost:3000/api/health`.
-Grafana: пользователь buddy; локальный демо-пароль buddy_local_demo, если не переопределён в .env.
+Grafana: для просмотра пользователь `viewer`, локальный пароль `buddy_viewer_local_demo`
+(переопределяется `GRAFANA_VIEWER_PASSWORD`). `make up` подготавливает Viewer;
+для обслуживания сохранён admin `buddy` с `GRAFANA_ADMIN_PASSWORD` (fallback `buddy_local_demo`).
 
 Без `.env` каркас работает offline, без Telegram и без внешних аккаунтов. В контейнере:
 
@@ -216,6 +218,9 @@ Jira, сроки, перенос, отмену и появление встре�
 (`python scripts/demo_transcript.py`), сценарий видео — `reports/STAGE_4_VIDEO_SCRIPT.md`,
 доклад — `reports/STAGE_4_EMIL_DANIIL_REPORT.md`.
 
-Ограничения: редирект `/r/<item_id>` и хранение снимков календаря — часть backend Этапа 4; до неё
-ссылки прямые (или через `REDIRECT_BASE_URL`), а снимок календаря, статистика и настройки брифа живут
-в памяти процесса агента. Реальные аккаунты и реальная LLM не проверялись.
+Backend Этапа 4 сохраняет календарь, статистику и настройки брифа в PostgreSQL.
+При `REDIRECT_BASE_URL`, доступном устройству пользователя, сохранённые пункты открываются
+через случайные токены `/r/<token>` с учётом кликов; офлайн SeedData использует прямые ссылки.
+Grafana `/d/ai-buddy` читает агрегаты через отдельную SQL-роль без доступа к исходным таблицам.
+Контракты и ограничения — в [backend/README.md](backend/README.md).
+Реальные аккаунты и реальная LLM не проверялись.

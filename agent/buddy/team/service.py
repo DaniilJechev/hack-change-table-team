@@ -117,14 +117,19 @@ class TeamService:
         return await self.record(response, text.strip() or f"Вопрос о команде ({case})", context, runtime)
 
     async def record(
-        self, response: ExecutorResponse, question: str, context: Context, runtime: Runtime
+        self,
+        response: ExecutorResponse,
+        question: str,
+        context: Context,
+        runtime: Runtime,
+        capability: str = "h2",
     ) -> ExecutorResponse:
         """Store a sourced bot answer so that its [Помогло]/[Не помогло] rating has an owner."""
         if response.links:
             question_id = "b-" + uuid.uuid4().hex[:16]
             try:
                 await runtime.data.record_bot_answer(
-                    context.user_id, question_id, question, response.result, response.links
+                    context.user_id, question_id, question, response.result, response.links, capability
                 )
             except DataError:
                 response.actions = [

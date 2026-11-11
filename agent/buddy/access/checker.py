@@ -150,7 +150,7 @@ class AccessChecker:
     async def membership(self, case: str, obj: dict, profile: dict) -> bool | None:
         """True/False from the tool itself; None when the object or login cannot be checked."""
         instrument = obj["instrument"]
-        target = self.targets(obj["id"]) or {}
+        target = obj.get("target") or self.targets(obj["id"]) or {}
         login = (profile.get("logins") or {}).get(LOGIN_KEYS[instrument], "")
         if not login:
             return None

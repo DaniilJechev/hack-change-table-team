@@ -119,6 +119,9 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 		_, err = fmt.Fprintln(output, code)
 		return err
 	default:
+		if err := database.ProvisionMetricsRole(startup, getenv("GRAFANA_DB_PASSWORD")); err != nil {
+			return errors.New("metrics role provisioning failed")
+		}
 		return run(ctx, getenv("HTTP_ADDR"), api.Application(database, key))
 	}
 }

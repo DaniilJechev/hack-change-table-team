@@ -32,6 +32,9 @@ services:
       GF_SECURITY_ADMIN_USER: buddy
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-buddy_local_demo}
       GF_USERS_ALLOW_SIGN_UP: 'false'
+      GF_USERS_AUTO_ASSIGN_ORG_ROLE: Viewer
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:-buddy_metrics_local_demo}
+      GRAFANA_VIEWER_PASSWORD: ${GRAFANA_VIEWER_PASSWORD:-buddy_viewer_local_demo}
       GF_ANALYTICS_REPORTING_ENABLED: 'false'
       GF_ANALYTICS_CHECK_FOR_UPDATES: 'false'
       GF_ANALYTICS_CHECK_FOR_PLUGIN_UPDATES: 'false'
@@ -62,6 +65,7 @@ services:
       FEATURE_ACCESS_MONITORING: ${FEATURE_ACCESS_MONITORING:-true}
       FEATURE_TEAM_ESCALATION: ${FEATURE_TEAM_ESCALATION:-true}
       FEATURE_FAQ_PUBLICATION: ${FEATURE_FAQ_PUBLICATION:-true}
+      GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:-buddy_metrics_local_demo}
     volumes:
       - ./seed:/seed:ro
     ports:

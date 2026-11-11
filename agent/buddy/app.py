@@ -29,7 +29,7 @@ def health_app(mode: str, polling: asyncio.Task | None = None) -> web.Applicatio
     return app
 
 
-def live_hub():  # pragma: no cover - live accounts only
+def live_hub(audit_sink=None):  # pragma: no cover - live accounts only
     from pathlib import Path
 
     from buddy.demo.controller import DATA
@@ -37,7 +37,9 @@ def live_hub():  # pragma: no cover - live accounts only
     from buddy.mcp_hub.fixtures import FixtureStore
     from buddy.mcp_hub.hub import Hub
 
-    return Hub(load_servers(Path(".env")), FixtureStore(DATA / "fixtures"), demo_mode=False)
+    return Hub(
+        load_servers(Path(".env")), FixtureStore(DATA / "fixtures"), demo_mode=False, audit_sink=audit_sink
+    )
 
 
 async def monitor_loop(service: AgentService, bot, seconds: int) -> None:
@@ -91,7 +93,9 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         bot = Bot(token=token)
         if not settings.demo_mode and identity is not None:  # pragma: no cover - live accounts only
             data = BackendData(settings.backend_url, settings.buddy_service_key.get_secret_value())
-            service.live = Runtime(data=data, gateway=live_hub(), telegram=BotTelegram(bot))
+            service.live = Runtime(
+                data=data, gateway=live_hub(data.record_mcp_call), telegram=BotTelegram(bot)
+            )
             monitor = asyncio.create_task(monitor_loop(service, bot, settings.access_monitor_seconds))
             briefs = asyncio.create_task(brief_loop(service, bot))
         # Poll only registered command updates; do not delete webhooks or pending updates.

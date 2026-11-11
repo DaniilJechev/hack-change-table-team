@@ -11,7 +11,6 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
 from buddy.data.base import DataError
-from buddy.data.briefs import BriefState
 
 TIMEOUT = 5
 STATUS = {400: "invalid", 401: "unauthorized", 403: "forbidden", 404: "not_found", 409: "conflict"}
@@ -55,7 +54,7 @@ def tool_payload(result) -> dict:
     raise DataError("unavailable")
 
 
-class BackendData(BriefState):
+class BackendData:
     def __init__(
         self,
         url: str,
@@ -94,13 +93,45 @@ class BackendData(BriefState):
                     return tool_payload(await session.call_tool(tool, arguments))
 
     async def _read(self, user_id: str, tool: str, arguments: dict | None = None) -> dict:
+        outcome = "ok"
         try:
             async with asyncio.timeout(TIMEOUT):
                 return await self.mcp(user_id, tool, arguments or {})
-        except DataError:
+        except asyncio.CancelledError:
+            outcome = "cancelled"
+            raise
+        except DataError as error:
+            outcome = error.kind
             raise
         except Exception:
+            outcome = "unavailable"
             raise DataError("unavailable") from None
+        finally:
+            await self.record_mcp_call(
+                {
+                    "case": "buddy_read",
+                    "server": "buddy",
+                    "tool": tool,
+                    "user_id": user_id,
+                    "outcome": outcome,
+                }
+            )
+
+    async def record_mcp_call(self, call: dict) -> None:
+        import logging
+
+        try:
+            await self._rest(
+                "POST",
+                "/api/v1/mcp-calls",
+                call["user_id"],
+                {
+                    "id": "mc-" + uuid.uuid4().hex,
+                    **{key: call[key] for key in ("case", "server", "tool", "outcome")},
+                },
+            )
+        except DataError:
+            logging.getLogger(__name__).warning("MCP audit metadata could not be saved")
 
     async def _rest(self, method: str, path: str, user_id: str, body: dict | None = None) -> dict:
         try:
@@ -173,9 +204,17 @@ class BackendData(BriefState):
         return await self._rest("POST", "/api/v1/faq", user_id, body)
 
     async def record_bot_answer(
-        self, user_id: str, question_id: str, text: str, answer: str, sources: list[str]
+        self,
+        user_id: str,
+        question_id: str,
+        text: str,
+        answer: str,
+        sources: list[str],
+        capability: str = "h2",
     ) -> dict:
-        await self.create_question(user_id, question_id, text, "")
+        await self._rest(
+            "POST", "/api/v1/questions", user_id, {"id": question_id, "text": text, "capability": capability}
+        )
         return await self._rest(
             "POST",
             "/api/v1/questions/" + quote(question_id, safe="") + "/bot-answer",
@@ -221,34 +260,42 @@ class BackendData(BriefState):
                 return None
             raise
 
-    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> None:
-        value = await self._rest("POST", "/api/v1/briefs", user_id, {"id": brief_id, "items": items})
-        self.brief_create(user_id, brief_id, items, value.get("created_at", ""))
+    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> dict:
+        return await self._rest("POST", "/api/v1/briefs", user_id, {"id": brief_id, "items": items})
 
     async def brief_status(
         self, user_id: str, brief_id: str, status: str, calendar: dict | None = None, at: str = ""
     ) -> None:
         path = "/api/v1/briefs/" + quote(brief_id, safe="")
-        value = await self._rest("PATCH", path, user_id, {"status": status})
-        self.brief_mark(user_id, brief_id, status, value.get("sent_at") or at, calendar)
+        body = {"status": status}
+        if status == "sent" and calendar is not None:
+            body["calendar"] = calendar
+        await self._rest("PATCH", path, user_id, body)
 
     async def brief_event(self, user_id: str, brief_id: str, kind: str, item_id: str = "") -> None:
         path = "/api/v1/briefs/" + quote(brief_id, safe="") + "/events"
         body = {"id": "e-" + uuid.uuid4().hex[:16], "kind": kind}
         if item_id:
             body["item_id"] = item_id
-        value = await self._rest("POST", path, user_id, body)
-        self.brief_signal(user_id, brief_id, kind, value.get("created_at", ""), item_id)
+        await self._rest("POST", path, user_id, body)
+
+    async def brief(self, user_id: str, brief_id: str) -> dict:
+        return await self._rest("GET", "/api/v1/briefs/" + quote(brief_id, safe=""), user_id)
+
+    async def last_brief_sent(self, user_id: str) -> str | None:
+        return (await self._rest("GET", "/api/v1/brief-state", user_id))["last_sent"]
+
+    async def brief_seen(self, user_id: str) -> set[str]:
+        return set((await self._rest("GET", "/api/v1/brief-state", user_id))["seen"])
+
+    async def calendar_snapshot(self, user_id: str) -> dict | None:
+        return (await self._rest("GET", "/api/v1/brief-state", user_id))["calendar"]
 
     async def brief_stats(self, user_id: str) -> list[dict]:
-        # Until the backend exposes brief metrics, statistics cover briefs sent by this process.
-        profile = await self.profile(user_id)
-        people = [profile] if profile["role"] == "intern" else await self.interns(user_id)
-        return [
-            {
-                "user_id": item["user_id"],
-                "display_name": item["display_name"],
-                **self.brief_counts(item["user_id"]),
-            }
-            for item in people
-        ]
+        return (await self._rest("GET", "/api/v1/brief-stats", user_id))["items"]
+
+    async def brief_settings(self, user_id: str) -> dict:
+        return await self._rest("GET", "/api/v1/brief-settings", user_id)
+
+    async def set_brief_settings(self, user_id: str, **changes) -> dict:
+        return await self._rest("PATCH", "/api/v1/brief-settings", user_id, changes)

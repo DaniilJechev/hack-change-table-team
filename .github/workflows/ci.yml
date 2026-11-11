@@ -70,6 +70,8 @@ jobs:
       - run: make seed
       - name: Agent reads our real buddy-mcp
         run: make buddy-check
+      - name: Persistent H0, redirects and Grafana permissions
+        run: make stage4-check
       - run: docker compose --env-file .env.example up -d --wait --wait-timeout 180
       - run: python infra/smoke.py --demo
       - run: docker compose logs --no-color

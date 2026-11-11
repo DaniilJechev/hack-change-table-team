@@ -7,9 +7,11 @@ OPENSPEC ?= openspec
 .PHONY: up demo down test cover smoke validate setup
 up:
 	$(COMPOSE) up --build -d --wait --wait-timeout 180
+	$(PYTHON) infra/setup_grafana.py --compose "$(COMPOSE)"
 
 demo:
 	$(COMPOSE) --env-file .env.example up --build -d --wait --wait-timeout 180
+	$(PYTHON) infra/setup_grafana.py --compose "$(COMPOSE) --env-file .env.example"
 
 # Named volumes сохраняются.
 down:
@@ -52,6 +54,14 @@ seed:
 
 buddy-check:
 	$(PYTHON) infra/buddy_probe.py --compose "$(COMPOSE)"
+
+.PHONY: grafana-setup
+grafana-setup:
+	$(PYTHON) infra/setup_grafana.py --compose "$(COMPOSE)"
+
+.PHONY: stage4-check
+stage4-check:
+	$(PYTHON) infra/stage_four_probe.py --compose "$(COMPOSE)"
 
 invite:
 	$(COMPOSE) exec -T backend backend invite --user "$(USER_ID)" --ttl "$(or $(TTL),24h)"

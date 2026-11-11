@@ -167,42 +167,10 @@ async def test_st4_live_1_brief_loop_marks_failed_delivery():
     service.remember_brief.assert_not_called()
 
 
-async def test_st4_data_1_backend_brief_rest_and_local_state():
+async def test_st4_brief_1_backend_rest_survives_client_restart():
     seen = []
-
-    def handler(request: httpx.Request):
-        body = json.loads(request.content) if request.content else None
-        seen.append((request.method, request.url.path, request.headers["X-Buddy-User"], body))
-        if request.url.path == "/api/v1/briefs":
-            return httpx.Response(200, json={"id": body["id"], "created_at": "2026-11-11T06:00:00Z"})
-        if request.url.path.endswith("/events"):
-            return httpx.Response(200, json={"id": body["id"], "created_at": "2026-11-11T06:05:00Z"})
-        return httpx.Response(
-            200, json={"id": "br 1", "status": body["status"], "sent_at": "2026-11-11T06:01:00Z"}
-        )
-
-    async def mcp(user_id, tool, arguments):
-        if tool == "interns_list":
-            return {"items": [{"user_id": "u1", "display_name": "Стажёр"}]}
-        return {"user_id": user_id, "display_name": "Наставник", "role": "mentor", "team_id": "t"}
-
-    data = BackendData("http://backend:8080", "service-key", transport=httpx.MockTransport(handler), mcp=mcp)
-    items = [{"id": "i-1", "source": "jira"}]
-    await data.save_brief("u1", "br 1", items)
-    await data.brief_status("u1", "br 1", "sent", {"events": {"e": {"start": "x"}}})
-    await data.brief_event("u1", "br 1", "click", "i-1")
-    await data.brief_event("u1", "br 1", "read")
-    assert [entry[:2] for entry in seen] == [
-        ("POST", "/api/v1/briefs"),
-        ("PATCH", "/api/v1/briefs/br 1"),
-        ("POST", "/api/v1/briefs/br 1/events"),
-        ("POST", "/api/v1/briefs/br 1/events"),
-    ]
-    assert seen[0][3] == {"id": "br 1", "items": items} and seen[1][3] == {"status": "sent"}
-    assert seen[2][3]["kind"] == "click" and seen[2][3]["item_id"] == "i-1" and "item_id" not in seen[3][3]
-    assert await data.last_brief_sent("u1") == "2026-11-11T06:01:00Z"
-    assert await data.brief_seen("u1") == {"i-1"} and await data.calendar_snapshot("u1")
-    assert await data.brief_stats("mentor") == [
+    calendar = {"events": {"e": {"start": "x"}}}
+    stats = [
         {
             "user_id": "u1",
             "display_name": "Стажёр",
@@ -211,10 +179,48 @@ async def test_st4_data_1_backend_brief_rest_and_local_state():
             "clicked": 1,
             "positive": 0,
             "negative": 0,
-        }
+        },
     ]
-    assert (await data.set_brief_settings("u1", time="08:00", unknown=1)) == {"time": "08:00", "quiet": False}
+
+    def handler(request):
+        body = json.loads(request.content) if request.content else None
+        seen.append((request.method, request.url.path, request.headers["X-Buddy-User"], body))
+        path = request.url.path
+        if path == "/api/v1/brief-state":
+            return httpx.Response(
+                200, json={"last_sent": "2026-11-11T06:01:00Z", "seen": ["i-1"], "calendar": calendar}
+            )
+        if path == "/api/v1/brief-stats":
+            return httpx.Response(200, json={"items": stats})
+        if path == "/api/v1/brief-settings":
+            return httpx.Response(200, json={"time": "08:00", "quiet": False})
+        if path == "/api/v1/briefs/br 1" and request.method == "GET":
+            return httpx.Response(200, json={"id": "br 1", "status": "sent", "items": []})
+        return httpx.Response(200, json={"id": "br 1", "redirect_tokens": {"i-1": "a" * 64}})
+
+    transport = httpx.MockTransport(handler)
+    data = BackendData("http://backend:8080", "service-key", transport=transport)
+    items = [{"id": "i-1", "source": "jira"}]
+    saved = await data.save_brief("u1", "br 1", items)
+    assert saved["redirect_tokens"]["i-1"] == "a" * 64
+    await data.brief_status("u1", "br 1", "sent", calendar)
+    await data.brief_event("u1", "br 1", "click", "i-1")
+    await data.brief_event("u1", "br 1", "read")
+    assert seen[0][3] == {"id": "br 1", "items": items}
+    assert seen[1][3] == {"status": "sent", "calendar": calendar}
+    assert seen[2][3]["kind"] == "click" and "item_id" not in seen[3][3]
     await data.close()
+    restored = BackendData("http://backend:8080", "service-key", transport=transport)
+    assert await restored.last_brief_sent("u1") == "2026-11-11T06:01:00Z"
+    assert await restored.brief_seen("u1") == {"i-1"}
+    assert await restored.calendar_snapshot("u1") == calendar
+    assert await restored.brief_stats("mentor") == stats
+    assert await restored.set_brief_settings("u1", time="08:00") == {"time": "08:00", "quiet": False}
+    assert (await restored.brief_settings("u1"))["time"] == "08:00"
+    assert (await restored.brief("u1", "br 1"))["status"] == "sent"
+    await restored.brief_status("u1", "br 1", "failed")
+    assert seen[-1][3] == {"status": "failed"}
+    await restored.close()
 
 
 async def test_st4_data_1_brief_state_rules():
@@ -243,7 +249,16 @@ async def test_st4_data_1_brief_state_rules():
             "clicked": 0,
             "positive": 0,
             "negative": 0,
-        }
+        },
+        {
+            "user_id": "Emil_Mardanov",
+            "display_name": "Эмиль",
+            "sent": 0,
+            "read": 0,
+            "clicked": 0,
+            "positive": 0,
+            "negative": 0,
+        },
     ]
     runtime = Runtime(data=data, gateway=None, telegram=None)
     assert runtime.brief_now is None

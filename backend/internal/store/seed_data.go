@@ -216,6 +216,9 @@ func validateCard(card map[string]any) error {
 	return nil
 }
 func validateObject(o CatalogObject) error {
+	if err := validateTarget(o.Instrument, o.Target); err != nil {
+		return err
+	}
 	if !ValidID(o.ID) || !ValidID(o.OwnerID) || !validText(o.Name, 200) || !validURL(o.URL) {
 		return fmt.Errorf("id, owner_id, name and http(s) url required")
 	}
@@ -240,6 +243,54 @@ func validateObject(o CatalogObject) error {
 		}
 	} else if !validURL(o.RequestURL) {
 		return fmt.Errorf("request_url: http(s) url required")
+	}
+	return nil
+}
+
+// Optional read-only external object coordinates. No credentials or arbitrary fields.
+func validateTarget(instrument string, target map[string]any) error {
+	allowed := map[string]map[string]bool{
+		"github": {"owner": true, "repo": true, "org": true, "team_slug": true},
+		"jira":   {"project_key": true}, "miro": {"board_id": true},
+		"google_calendar": {"calendarId": true, "timeMin": true, "timeMax": true},
+		"telegram":        {"chat_id": true},
+	}
+	for key, value := range target {
+		if key == "keywords" {
+			items, ok := value.([]any)
+			if !ok || len(items) > 20 {
+				return fmt.Errorf("target.keywords: expected list of up to 20 strings")
+			}
+			for _, item := range items {
+				text, ok := item.(string)
+				if !ok || !validText(text, 100) {
+					return fmt.Errorf("target.keywords: invalid keyword")
+				}
+			}
+			continue
+		}
+		if !allowed[instrument][key] {
+			return fmt.Errorf("target: unknown field")
+		}
+		if key == "chat_id" {
+			switch n := value.(type) {
+			case int:
+				if n == 0 {
+					return fmt.Errorf("target.chat_id: nonzero integer required")
+				}
+			case int64:
+				if n == 0 {
+					return fmt.Errorf("target.chat_id: nonzero integer required")
+				}
+			default:
+				return fmt.Errorf("target.chat_id: integer required")
+			}
+		} else {
+			text, ok := value.(string)
+			if !ok || !validText(text, 200) {
+				return fmt.Errorf("target: nonempty string required")
+			}
+		}
 	}
 	return nil
 }

@@ -182,7 +182,7 @@ def test_fr_h3_01_pgvector_store_replaces_rows_in_one_transaction():
     store = PgVectorStore("postgresql://synthetic/db", connect=lambda dsn: Connection())
     chunks = split("page.md", PAGE, "abc123")
     assert store.replace("abc123", chunks, [[0.5] * DIMENSIONS] * 2) == 2
-    assert [entry[0][:12] for entry in executed[:3]] == ["CREATE EXTEN", "DELETE FROM ", "many"]
+    assert [entry[0][:12] for entry in executed] == ["DELETE FROM ", "many"]
     assert store.count("abc123") == 2 and store.search("abc123", [0.1] * DIMENSIONS, 5)[0] == ("id-1", 0.91)
     assert Connection.closed == 3 and literal([0.5, 1]) == "[0.500000,1.000000]"
     with pytest.raises(ValueError):

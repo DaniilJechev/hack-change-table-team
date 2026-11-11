@@ -8,7 +8,7 @@ import json
 import logging
 import re
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
@@ -42,6 +42,7 @@ class Draft:
     hidden: list[BriefItem]
     calendar: dict | None
     persisted: bool
+    tokens: dict[str, str] = field(default_factory=dict)
 
 
 def rank(items: list[BriefItem]) -> list[BriefItem]:
@@ -70,13 +71,16 @@ class BriefService:
     def moment(self, runtime) -> datetime:
         return (getattr(runtime, "brief_now", None) or runtime.clock()).astimezone(self.zone)
 
-    def link(self, item: BriefItem) -> str:
-        return f"{self.redirect}/r/{item.id}" if self.redirect else item.url
+    def link(self, item: BriefItem, tokens: dict[str, str]) -> str:
+        token = tokens.get(item.id)
+        return f"{self.redirect}/r/{token}" if self.redirect and token else item.url
 
     async def _targets(self, context: Context, runtime) -> dict[str, dict]:
         result = {}
         for obj in await runtime.data.access_catalog(context.user_id):
-            target = runtime.data.target(obj["id"]) if not obj.get("forbidden") else None
+            target = (
+                (obj.get("target") or runtime.data.target(obj["id"])) if not obj.get("forbidden") else None
+            )
             for source, instrument in INSTRUMENT.items():
                 if target and obj["instrument"] == instrument:
                     result.setdefault(source, target)
@@ -188,14 +192,16 @@ class BriefService:
         brief_id = "br-" + uuid.uuid4().hex[:12]
         # A one-source answer is a quick look, not the daily brief: it does not move the "since" mark.
         persisted = len(sources) > 1
+        tokens = {}
         if persisted:
             try:
-                await runtime.data.save_brief(
+                saved = await runtime.data.save_brief(
                     context.user_id, brief_id, [item.model_dump(mode="json") for item in ranked]
                 )
+                tokens = (saved or {}).get("redirect_tokens", {})
             except DataError:
                 persisted = False
-        self.drafts[brief_id] = Draft(context, shown, hidden, merged.calendar, persisted)
+        self.drafts[brief_id] = Draft(context, shown, hidden, merged.calendar, persisted, tokens)
         while len(self.drafts) > 512:
             self.drafts.pop(next(iter(self.drafts)))
         title = "☀️ Утренний бриф" if scheduled else "Бриф"
@@ -205,7 +211,7 @@ class BriefService:
         lines += [f"{number}. {texts.get(item.id) or item.line()}" for number, item in enumerate(shown, 1)]
         response = ExecutorResponse(
             result="\n".join(lines) + self._missing(missing),
-            links=[self.link(item) for item in shown],
+            links=[self.link(item, tokens) for item in shown],
             brief_id=brief_id if persisted else None,
         )
         if hidden:
@@ -265,8 +271,21 @@ class BriefService:
         except DataError:
             log.warning("Brief %s delivery status was not saved", brief_id)
 
-    async def signal(self, kind: str, brief_id: str, context: Context, runtime) -> ExecutorResponse:
+    async def _draft(self, brief_id: str, context: Context, runtime) -> Draft | None:
         draft = self.drafts.get(brief_id)
+        if draft is None:
+            try:
+                record = await runtime.data.brief(context.user_id, brief_id)
+                items = [BriefItem(**item) for item in record["items"]]
+                draft = Draft(
+                    context, items[:LIMIT], items[LIMIT:], None, True, record.get("redirect_tokens", {})
+                )
+            except (DataError, ValueError, KeyError):
+                return None
+        return draft
+
+    async def signal(self, kind: str, brief_id: str, context: Context, runtime) -> ExecutorResponse:
+        draft = await self._draft(brief_id, context, runtime)
         if draft is None or draft.context != context:
             return ExecutorResponse(result="Этот бриф уже недоступен. Запросите новый: /brief")
         if kind == "more":
@@ -274,7 +293,8 @@ class BriefService:
                 await self._event(context, runtime, brief_id, "read")
             lines = [f"{number}. {item.line()}" for number, item in enumerate(draft.hidden, LIMIT + 1)]
             return ExecutorResponse(
-                result="Остальные изменения:\n" + "\n".join(lines), links=[self.link(i) for i in draft.hidden]
+                result="Остальные изменения:\n" + "\n".join(lines),
+                links=[self.link(i, draft.tokens) for i in draft.hidden],
             )
         if kind not in {"read", "positive", "negative"} or not draft.persisted:
             return ExecutorResponse(result="Не понял действие с брифом.")
@@ -293,7 +313,7 @@ class BriefService:
 
     async def replied(self, brief_id: str, context: Context, runtime) -> None:
         """A text reply to the brief message is a read signal too (FR-H0-08)."""
-        draft = self.drafts.get(brief_id)
+        draft = await self._draft(brief_id, context, runtime)
         if draft is not None and draft.persisted and draft.context == context:
             await self._event(context, runtime, brief_id, "reply")
 
