@@ -121,7 +121,7 @@ https://example.invalid/team/demo-orders/objects/production-config
 
 ```
 Демо: синтетический сценарий.
-Отметил: доступ к «Доска планирования» запрошен (11.11 08:49). Проверю, когда он появится, и напишу.
+Отметил: доступ к «Доска планирования» запрошен (11.11 11:33). Проверю, когда он появится, и напишу.
 ```
 
 **Пользователь:** Какие доступы нужны для ORD-118?
@@ -255,7 +255,7 @@ https://example.invalid/jira/browse/ORD-100
 Ответ из FAQ команды на вопрос «Почему у нас Kafka, а не RabbitMQ?»:
 Нужна шина событий между сервисами.
 Источники:
-https://example.invalid/team/demo-orders/faq/f-q-4acb9b3d518f43a9
+https://example.invalid/team/demo-orders/faq/f-q-7721ef8f666a49f0
 ```
 Кнопки: [Помогло] · [Не помогло]
 
@@ -339,6 +339,7 @@ https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestr
 Демо: синтетический сценарий.
 Доступы стажёров:
 Даниил — 5/5 ✅
+Эмиль — проверок ещё не было
 ```
 
 **Пользователь:** /stats
@@ -347,4 +348,5 @@ https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestr
 Демо: синтетический сценарий.
 Статистика брифов:
 Даниил — отправлено 2, прочитано 50% (цель ≥ 60%), с переходами 0%, 👍 0 / 👎 0
+Эмиль — брифов ещё не было
 ```
