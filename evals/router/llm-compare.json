@@ -1,0 +1,6908 @@
+{
+ "rows": [
+  {
+   "id": "router-001",
+   "dataset": "router",
+   "text": "/brief",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-002",
+   "dataset": "router",
+   "text": "Что нового?",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-003",
+   "dataset": "router",
+   "text": "Покажи утренний бриф",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-004",
+   "dataset": "router",
+   "text": "Какие изменения за сегодня?",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-005",
+   "dataset": "router",
+   "text": "Нужен обзор дня",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-006",
+   "dataset": "router",
+   "text": "/access",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-007",
+   "dataset": "router",
+   "text": "Какие доступы у меня есть?",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-008",
+   "dataset": "router",
+   "text": "Проверь мои разрешения",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-009",
+   "dataset": "router",
+   "text": "Нет доступа к Miro",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-010",
+   "dataset": "router",
+   "text": "Хочу проверить доступ к репозиторию",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-011",
+   "dataset": "router",
+   "text": "Какие доступы нужны для ORD-118?",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "ORD-118"
+   }
+  },
+  {
+   "id": "router-012",
+   "dataset": "router",
+   "text": "Проверь доступы для ORD-101",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "ORD-101"
+   }
+  },
+  {
+   "id": "router-013",
+   "dataset": "router",
+   "text": "Хватает ли прав доступа под ORD-205?",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "ORD-205"
+   }
+  },
+  {
+   "id": "router-014",
+   "dataset": "router",
+   "text": "Какие разрешения требуются для ORD-7?",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "ORD-7"
+   }
+  },
+  {
+   "id": "router-015",
+   "dataset": "router",
+   "text": "Для задачи ORD-12 нужен доступ к доске",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "ORD-12"
+   }
+  },
+  {
+   "id": "router-016",
+   "dataset": "router",
+   "text": "/interns",
+   "case": "interns_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-017",
+   "dataset": "router",
+   "text": "Покажи список стажёров",
+   "case": "interns_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-018",
+   "dataset": "router",
+   "text": "Сводка по моим интернам",
+   "case": "interns_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-019",
+   "dataset": "router",
+   "text": "У кого из стажёров проблемы?",
+   "case": "interns_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-020",
+   "dataset": "router",
+   "text": "Кто отвечает за Kafka?",
+   "case": "team_q1",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-021",
+   "dataset": "router",
+   "text": "Кто у нас по API заказов?",
+   "case": "team_q1",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-022",
+   "dataset": "router",
+   "text": "Кто владелец сервиса orders-api?",
+   "case": "team_q1",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-023",
+   "dataset": "router",
+   "text": "Кто занимается интеграциями?",
+   "case": "team_q1",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-024",
+   "dataset": "router",
+   "text": "Упал staging, кому писать?",
+   "case": "team_q2",
+   "accept": null,
+   "params": {
+    "situation": "упал staging"
+   }
+  },
+  {
+   "id": "router-025",
+   "dataset": "router",
+   "text": "К кому идти, если сломался стенд?",
+   "case": "team_q2",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-026",
+   "dataset": "router",
+   "text": "Куда обращаться при сбое API?",
+   "case": "team_q2",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-027",
+   "dataset": "router",
+   "text": "Не проходит деплой, кого звать?",
+   "case": "team_q2",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-028",
+   "dataset": "router",
+   "text": "Кто мой наставник?",
+   "case": "team_q3",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-029",
+   "dataset": "router",
+   "text": "Кто тимлид команды?",
+   "case": "team_q3",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-030",
+   "dataset": "router",
+   "text": "Как найти первого контакта?",
+   "case": "team_q3",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-031",
+   "dataset": "router",
+   "text": "Кто мой ментор?",
+   "case": "team_q3",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-032",
+   "dataset": "router",
+   "text": "Можно написать продакту?",
+   "case": "team_q4",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-033",
+   "dataset": "router",
+   "text": "Можно ли писать Петру напрямую?",
+   "case": "team_q4",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-034",
+   "dataset": "router",
+   "text": "Кого нельзя дёргать?",
+   "case": "team_q4",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-035",
+   "dataset": "router",
+   "text": "Можно ли отправить Олегу личные сообщения?",
+   "case": "team_q4",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-036",
+   "dataset": "router",
+   "text": "На каком этапе проект?",
+   "case": "team_q5",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-037",
+   "dataset": "router",
+   "text": "Что сейчас делает команда?",
+   "case": "team_q5",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-038",
+   "dataset": "router",
+   "text": "Какой прогресс по эпикам?",
+   "case": "team_q5",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-039",
+   "dataset": "router",
+   "text": "Над чем работаем сейчас?",
+   "case": "team_q5",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-040",
+   "dataset": "router",
+   "text": "Как ORD-118 связана с проектом?",
+   "case": "team_q6",
+   "accept": null,
+   "params": {
+    "task": "ORD-118"
+   }
+  },
+  {
+   "id": "router-041",
+   "dataset": "router",
+   "text": "Зачем нужна ORD-101?",
+   "case": "team_q6",
+   "accept": null,
+   "params": {
+    "task": "ORD-101"
+   }
+  },
+  {
+   "id": "router-042",
+   "dataset": "router",
+   "text": "В какой эпик входит ORD-7?",
+   "case": "team_q6",
+   "accept": null,
+   "params": {
+    "task": "ORD-7"
+   }
+  },
+  {
+   "id": "router-043",
+   "dataset": "router",
+   "text": "Какой вклад ORD-12 в проект?",
+   "case": "team_q6",
+   "accept": null,
+   "params": {
+    "task": "ORD-12"
+   }
+  },
+  {
+   "id": "router-044",
+   "dataset": "router",
+   "text": "На чём пишем?",
+   "case": "team_q7",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-045",
+   "dataset": "router",
+   "text": "Какой стек у команды?",
+   "case": "team_q7",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-046",
+   "dataset": "router",
+   "text": "Какие технологии используем?",
+   "case": "team_q7",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-047",
+   "dataset": "router",
+   "text": "Какие инструменты команды?",
+   "case": "team_q7",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-048",
+   "dataset": "router",
+   "text": "Где доска планирования?",
+   "case": "team_q8",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-049",
+   "dataset": "router",
+   "text": "Дай ссылку на репозиторий",
+   "case": "team_q8",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-050",
+   "dataset": "router",
+   "text": "Как найти командный чат?",
+   "case": "team_q8",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-051",
+   "dataset": "router",
+   "text": "Где календарь команды?",
+   "case": "team_q8",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-052",
+   "dataset": "router",
+   "text": "Что такое Zero Bug Policy?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-053",
+   "dataset": "router",
+   "text": "Как в Авито проходит код-ревью?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-054",
+   "dataset": "router",
+   "text": "Найди в playbook правила ревью",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-055",
+   "dataset": "router",
+   "text": "Что пишут про технический долг?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-056",
+   "dataset": "router",
+   "text": "Как проводят ретроспективы?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-057",
+   "dataset": "router",
+   "text": "/help",
+   "case": "help",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-058",
+   "dataset": "router",
+   "text": "/ask",
+   "case": "help",
+   "accept": null,
+   "params": {
+    "menu": "team"
+   }
+  },
+  {
+   "id": "router-059",
+   "dataset": "router",
+   "text": "Что ты умеешь?",
+   "case": "help",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-060",
+   "dataset": "router",
+   "text": "Покажи команды бота",
+   "case": "help",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-061",
+   "dataset": "router",
+   "text": "Нужен доступ к Олегу",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-062",
+   "dataset": "router",
+   "text": "Помоги с этим",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-063",
+   "dataset": "router",
+   "text": "Мне нужен доступ к человеку",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-064",
+   "dataset": "router",
+   "text": "Ну и как?",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-065",
+   "dataset": "router",
+   "text": "Нужно разобраться",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-066",
+   "dataset": "router",
+   "text": "Напиши мне код сортировки",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-067",
+   "dataset": "router",
+   "text": "Сколько я буду получать?",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-068",
+   "dataset": "router",
+   "text": "Какая завтра погода?",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-069",
+   "dataset": "router",
+   "text": "Выдай права администратора",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "router-070",
+   "dataset": "router",
+   "text": "Покажи паспорт коллеги",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-01",
+   "dataset": "holdout",
+   "text": "Какие новости в брифе сегодня?",
+   "case": "brief_now",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-02",
+   "dataset": "holdout",
+   "text": "Есть ли у меня права доступа к GitHub?",
+   "case": "access_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-03",
+   "dataset": "holdout",
+   "text": "Посмотри доступы для pay-42",
+   "case": "access_task_analysis",
+   "accept": null,
+   "params": {
+    "task": "PAY-42"
+   }
+  },
+  {
+   "id": "holdout-04",
+   "dataset": "holdout",
+   "text": "Сводка по доступам моих стажёров",
+   "case": "interns_status",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-05",
+   "dataset": "holdout",
+   "text": "Кто поддерживает интеграцию с оплатой?",
+   "case": "team_q1",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-06",
+   "dataset": "holdout",
+   "text": "Сервис не отвечает, кому сигналить?",
+   "case": "team_q2",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-07",
+   "dataset": "holdout",
+   "text": "Кто наш руководитель?",
+   "case": "team_q3",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-08",
+   "dataset": "holdout",
+   "text": "Могу я побеспокоить Анну?",
+   "case": "team_q4",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-09",
+   "dataset": "holdout",
+   "text": "На какой стадии разработка?",
+   "case": "team_q5",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-10",
+   "dataset": "holdout",
+   "text": "Какова связь PAY-42 с проектом?",
+   "case": "team_q6",
+   "accept": null,
+   "params": {
+    "task": "PAY-42"
+   }
+  },
+  {
+   "id": "holdout-11",
+   "dataset": "holdout",
+   "text": "Чем пользуемся для разработки?",
+   "case": "team_q7",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-12",
+   "dataset": "holdout",
+   "text": "Где лежит репозиторий проекта?",
+   "case": "team_q8",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-13",
+   "dataset": "holdout",
+   "text": "Как устроено code review?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-14",
+   "dataset": "holdout",
+   "text": "Какие у тебя возможности?",
+   "case": "help",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-15",
+   "dataset": "holdout",
+   "text": "Нужен доступ к Анне",
+   "case": "clarify",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "holdout-16",
+   "dataset": "holdout",
+   "text": "Напиши стихотворение о работе",
+   "case": "out_of_scope",
+   "accept": null,
+   "params": {}
+  },
+  {
+   "id": "h2-q1-1",
+   "dataset": "h2",
+   "text": "Кто у нас по Kafka?",
+   "case": "team_q1",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q1-2",
+   "dataset": "h2",
+   "text": "Кто отвечает за ревью?",
+   "case": "team_q1",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q1-3",
+   "dataset": "h2",
+   "text": "Кто занимается надёжностью?",
+   "case": "team_q1",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q1-4",
+   "dataset": "h2",
+   "text": "Кто знает про интеграции?",
+   "case": "team_q1",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q1-5",
+   "dataset": "h2",
+   "text": "Кто отвечает за orders-api?",
+   "case": "team_q1",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q2-1",
+   "dataset": "h2",
+   "text": "Упал staging, кому писать?",
+   "case": "team_q2",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q2-2",
+   "dataset": "h2",
+   "text": "Что делать, если упал staging?",
+   "case": "team_q2",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q2-3",
+   "dataset": "h2",
+   "text": "К кому идти с вопросом по Kafka?",
+   "case": "team_q2",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q2-4",
+   "dataset": "h2",
+   "text": "Сломался CI, к кому идти?",
+   "case": "team_q2",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q2-5",
+   "dataset": "h2",
+   "text": "Куда обращаться, если упал staging?",
+   "case": "team_q2",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q3-1",
+   "dataset": "h2",
+   "text": "Кто мой наставник?",
+   "case": "team_q3",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q3-2",
+   "dataset": "h2",
+   "text": "Кто тимлид команды?",
+   "case": "team_q3",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q3-3",
+   "dataset": "h2",
+   "text": "Кто первый контакт?",
+   "case": "team_q3",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q3-4",
+   "dataset": "h2",
+   "text": "Кто мой ментор?",
+   "case": "team_q3",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q3-5",
+   "dataset": "h2",
+   "text": "Кто руководитель команды?",
+   "case": "team_q3",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q4-1",
+   "dataset": "h2",
+   "text": "Можно написать Петру напрямую?",
+   "case": "team_q4",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q4-2",
+   "dataset": "h2",
+   "text": "Можно писать Анне напрямую?",
+   "case": "team_q4",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q4-3",
+   "dataset": "h2",
+   "text": "Стоит ли дёргать Олега?",
+   "case": "team_q4",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q4-4",
+   "dataset": "h2",
+   "text": "Можно написать Петру в личку?",
+   "case": "team_q4",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q4-5",
+   "dataset": "h2",
+   "text": "Можно побеспокоить Анну в личные сообщения?",
+   "case": "team_q4",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q5-1",
+   "dataset": "h2",
+   "text": "На каком этапе проект?",
+   "case": "team_q5",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q5-2",
+   "dataset": "h2",
+   "text": "Что сейчас делает команда?",
+   "case": "team_q5",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q5-3",
+   "dataset": "h2",
+   "text": "Какой прогресс по эпику?",
+   "case": "team_q5",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q5-4",
+   "dataset": "h2",
+   "text": "Над чем работает команда?",
+   "case": "team_q5",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q5-5",
+   "dataset": "h2",
+   "text": "Какой статус проекта?",
+   "case": "team_q5",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q6-1",
+   "dataset": "h2",
+   "text": "Зачем нужна ORD-118?",
+   "case": "team_q6",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q6-2",
+   "dataset": "h2",
+   "text": "Как ORD-118 связана с проектом?",
+   "case": "team_q6",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q6-3",
+   "dataset": "h2",
+   "text": "Частью какого эпика является ORD-118?",
+   "case": "team_q6",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q6-4",
+   "dataset": "h2",
+   "text": "Какой вклад ORD-118 в проект?",
+   "case": "team_q6",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q6-5",
+   "dataset": "h2",
+   "text": "Зачем мне делать ORD-118?",
+   "case": "team_q6",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q7-1",
+   "dataset": "h2",
+   "text": "На чём пишем?",
+   "case": "team_q7",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q7-2",
+   "dataset": "h2",
+   "text": "Какой у нас стек?",
+   "case": "team_q7",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q7-3",
+   "dataset": "h2",
+   "text": "Какие технологии использует команда?",
+   "case": "team_q7",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q7-4",
+   "dataset": "h2",
+   "text": "Какая база данных у команды?",
+   "case": "team_q7",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q7-5",
+   "dataset": "h2",
+   "text": "Чем пользуемся в команде?",
+   "case": "team_q7",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q8-1",
+   "dataset": "h2",
+   "text": "Где доска планирования?",
+   "case": "team_q8",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q8-2",
+   "dataset": "h2",
+   "text": "Где наш репозиторий?",
+   "case": "team_q8",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q8-3",
+   "dataset": "h2",
+   "text": "Дай ссылку на чат команды",
+   "case": "team_q8",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q8-4",
+   "dataset": "h2",
+   "text": "Где найти календарь команды?",
+   "case": "team_q8",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h2-q8-5",
+   "dataset": "h2",
+   "text": "Где открыть проект Jira?",
+   "case": "team_q8",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-01",
+   "dataset": "h3",
+   "text": "Что такое Zero Bug Policy?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-02",
+   "dataset": "h3",
+   "text": "Кто отвечает за работоспособность системы после релиза?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-03",
+   "dataset": "h3",
+   "text": "Как быстро нужно делать код-ревью пулл-реквеста?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-04",
+   "dataset": "h3",
+   "text": "Можно ли писать бизнес-логику в хранимых процедурах?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-05",
+   "dataset": "h3",
+   "text": "Почему нельзя катить непротестированный код?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-06",
+   "dataset": "h3",
+   "text": "Что делать с кодом, который стал не нужен?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-07",
+   "dataset": "h3",
+   "text": "Почему мы избегаем жёсткой связанности сервисов?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-08",
+   "dataset": "h3",
+   "text": "Что такое Live Site Review?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-09",
+   "dataset": "h3",
+   "text": "Что описывать в постмортеме инцидента?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-10",
+   "dataset": "h3",
+   "text": "Когда стоит идти в архитектурный комитет?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-11",
+   "dataset": "h3",
+   "text": "Что такое TDR?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-12",
+   "dataset": "h3",
+   "text": "Когда нужно делать tech design review?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-13",
+   "dataset": "h3",
+   "text": "Есть ли шаблон для TDR?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-14",
+   "dataset": "h3",
+   "text": "Что такое соседское соглашение?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-15",
+   "dataset": "h3",
+   "text": "Как вносить изменения в чужой функционал?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-16",
+   "dataset": "h3",
+   "text": "Какие ценности есть в Авито?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-17",
+   "dataset": "h3",
+   "text": "Какая миссия у Авито?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-18",
+   "dataset": "h3",
+   "text": "Как в Авито ставят цели по OKR?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-19",
+   "dataset": "h3",
+   "text": "Как проходит performance review?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-20",
+   "dataset": "h3",
+   "text": "Что такое self-review?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-21",
+   "dataset": "h3",
+   "text": "Какие стажировки есть в Авито?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-22",
+   "dataset": "h3",
+   "text": "Можно ли сходить на платную конференцию за счёт компании?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-23",
+   "dataset": "h3",
+   "text": "Проводятся ли в Авито хакатоны?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-24",
+   "dataset": "h3",
+   "text": "Какие уровни у инженеров?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-25",
+   "dataset": "h3",
+   "text": "Что ожидается от инженера уровня E1?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-26",
+   "dataset": "h3",
+   "text": "Чем занимается техлид?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-27",
+   "dataset": "h3",
+   "text": "Что такое юниты и кластеры?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-28",
+   "dataset": "h3",
+   "text": "Зачем разработчикам платформа Avito PaaS?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-29",
+   "dataset": "h3",
+   "text": "Как работают с обращениями пользователей в SPT?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-in-30",
+   "dataset": "h3",
+   "text": "По какому процессу работают команды: Scrum?",
+   "case": "playbook_qa",
+   "accept": null,
+   "params": null
+  },
+  {
+   "id": "h3-out-01",
+   "dataset": "h3",
+   "text": "Какой пароль от корпоративного Wi-Fi?",
+   "case": "playbook_qa",
+   "accept": [
+    "playbook_qa",
+    "clarify",
+    "out_of_scope"
+   ],
+   "params": null
+  },
+  {
+   "id": "h3-out-02",
+   "dataset": "h3",
+   "text": "Сколько дней отпуска положено стажёру?",
+   "case": "playbook_qa",
+   "accept": [
+    "playbook_qa",
+    "clarify",
+    "out_of_scope"
+   ],
+   "params": null
+  },
+  {
+   "id": "h3-out-03",
+   "dataset": "h3",
+   "text": "Какая зарплата у инженера E3?",
+   "case": "playbook_qa",
+   "accept": [
+    "playbook_qa",
+    "clarify",
+    "out_of_scope"
+   ],
+   "params": null
+  },
+  {
+   "id": "h3-out-04",
+   "dataset": "h3",
+   "text": "Как настроить VPN на ноутбуке?",
+   "case": "playbook_qa",
+   "accept": [
+    "playbook_qa",
+    "clarify",
+    "out_of_scope"
+   ],
+   "params": null
+  },
+  {
+   "id": "h3-out-05",
+   "dataset": "h3",
+   "text": "Когда следующий корпоратив?",
+   "case": "playbook_qa",
+   "accept": [
+    "playbook_qa",
+    "clarify",
+    "out_of_scope"
+   ],
+   "params": null
+  }
+ ],
+ "models": {
+  "anthropic/claude-haiku-5.5": [
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 2.45,
+    "cost": 8.72e-05,
+    "prompt_tokens": 782,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 2.05,
+    "cost": 8.77e-05,
+    "prompt_tokens": 787,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 2.23,
+    "cost": 8.79e-05,
+    "prompt_tokens": 789,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 2.99,
+    "cost": 0.0001046,
+    "prompt_tokens": 786,
+    "completion_tokens": 52,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 1.96,
+    "cost": 8.74e-05,
+    "prompt_tokens": 789,
+    "completion_tokens": 17,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 2.17,
+    "cost": 0.0001072,
+    "prompt_tokens": 787,
+    "completion_tokens": 57,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 1.25,
+    "cost": 0.0001257,
+    "prompt_tokens": 787,
+    "completion_tokens": 94,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 1.42,
+    "cost": 0.0001433,
+    "prompt_tokens": 793,
+    "completion_tokens": 128,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.6,
+    "cost": 0.0001198,
+    "prompt_tokens": 793,
+    "completion_tokens": 81,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"ORD-101\"}}",
+    "seconds": 1.34,
+    "cost": 0.000137,
+    "prompt_tokens": 790,
+    "completion_tokens": 116,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-101"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"ORD-205\"}}",
+    "seconds": 1.24,
+    "cost": 0.0001155,
+    "prompt_tokens": 795,
+    "completion_tokens": 72,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-205"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"ORD-7\"}}",
+    "seconds": 1.2,
+    "cost": 0.0001274,
+    "prompt_tokens": 794,
+    "completion_tokens": 96,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-7"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"ORD-12\"}}",
+    "seconds": 1.51,
+    "cost": 0.0001452,
+    "prompt_tokens": 797,
+    "completion_tokens": 131,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-12"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\": \"interns_status\", \"params\": {}}",
+    "seconds": 1.29,
+    "cost": 8.76e-05,
+    "prompt_tokens": 786,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"interns_status\", \"params\": {}}",
+    "seconds": 1.4,
+    "cost": 0.0001052,
+    "prompt_tokens": 787,
+    "completion_tokens": 53,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"interns_status\", \"params\": {}}",
+    "seconds": 1.07,
+    "cost": 0.0001095,
+    "prompt_tokens": 790,
+    "completion_tokens": 61,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"Kafka\"}}",
+    "seconds": 1.24,
+    "cost": 0.0001135,
+    "prompt_tokens": 790,
+    "completion_tokens": 69,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"API заказов\"}}",
+    "seconds": 2.75,
+    "cost": 0.0001124,
+    "prompt_tokens": 789,
+    "completion_tokens": 67,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "API заказов"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"orders-api\"}}",
+    "seconds": 1.27,
+    "cost": 0.0001262,
+    "prompt_tokens": 792,
+    "completion_tokens": 94,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "orders-api"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"интеграции\"}}",
+    "seconds": 1.24,
+    "cost": 0.0001124,
+    "prompt_tokens": 789,
+    "completion_tokens": 67,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "интеграции"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Упал staging\"}}",
+    "seconds": 1.2,
+    "cost": 0.0001183,
+    "prompt_tokens": 788,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Упал staging"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"сломался стенд\"}}",
+    "seconds": 1.19,
+    "cost": 0.0001271,
+    "prompt_tokens": 791,
+    "completion_tokens": 96,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "сломался стенд"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"сбой API\"}}",
+    "seconds": 1.58,
+    "cost": 0.0001185,
+    "prompt_tokens": 790,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "сбой API"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"Не проходит деплой\"}}",
+    "seconds": 1.54,
+    "cost": 0.0001286,
+    "prompt_tokens": 791,
+    "completion_tokens": 99,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Не проходит деплой"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.48,
+    "cost": 8.76e-05,
+    "prompt_tokens": 786,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.25,
+    "cost": 0.0001167,
+    "prompt_tokens": 787,
+    "completion_tokens": 76,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.81,
+    "cost": 0.0001102,
+    "prompt_tokens": 787,
+    "completion_tokens": 63,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.05,
+    "cost": 0.0001101,
+    "prompt_tokens": 786,
+    "completion_tokens": 63,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"продакт\"}}",
+    "seconds": 1.37,
+    "cost": 0.0001196,
+    "prompt_tokens": 786,
+    "completion_tokens": 82,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "продакт"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Петр\"}}",
+    "seconds": 1.13,
+    "cost": 0.0001127,
+    "prompt_tokens": 792,
+    "completion_tokens": 67,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Петр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {}}",
+    "seconds": 2.34,
+    "cost": 0.0002469,
+    "prompt_tokens": 789,
+    "completion_tokens": 336,
+    "error": "",
+    "case": "team_q4",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Олег\"}}",
+    "seconds": 1.22,
+    "cost": 0.0001226,
+    "prompt_tokens": 796,
+    "completion_tokens": 86,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Олег"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 1.36,
+    "cost": 0.0001186,
+    "prompt_tokens": 786,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 1.24,
+    "cost": 0.0001118,
+    "prompt_tokens": 788,
+    "completion_tokens": 66,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 1.51,
+    "cost": 0.0001645,
+    "prompt_tokens": 790,
+    "completion_tokens": 171,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 1.9,
+    "cost": 8.79e-05,
+    "prompt_tokens": 789,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 1.74,
+    "cost": 0.0001147,
+    "prompt_tokens": 792,
+    "completion_tokens": 71,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-101\"}}",
+    "seconds": 1.7,
+    "cost": 0.0001575,
+    "prompt_tokens": 790,
+    "completion_tokens": 157,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-101"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-7\"}}",
+    "seconds": 1.36,
+    "cost": 0.0001191,
+    "prompt_tokens": 791,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-7"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-12\"}}",
+    "seconds": 1.46,
+    "cost": 0.0001203,
+    "prompt_tokens": 793,
+    "completion_tokens": 82,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-12"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.41,
+    "cost": 0.0001124,
+    "prompt_tokens": 784,
+    "completion_tokens": 68,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.57,
+    "cost": 8.76e-05,
+    "prompt_tokens": 786,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.34,
+    "cost": 0.0001096,
+    "prompt_tokens": 786,
+    "completion_tokens": 62,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.46,
+    "cost": 0.0001222,
+    "prompt_tokens": 787,
+    "completion_tokens": 87,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"доска планирования\"}}",
+    "seconds": 2.24,
+    "cost": 0.000198,
+    "prompt_tokens": 785,
+    "completion_tokens": 239,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "доска планирования"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"репозиторий\"}}",
+    "seconds": 1.99,
+    "cost": 0.000215,
+    "prompt_tokens": 790,
+    "completion_tokens": 272,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как найти командный чат?\"}}",
+    "seconds": 1.36,
+    "cost": 0.0001371,
+    "prompt_tokens": 786,
+    "completion_tokens": 117,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как найти командный чат?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Где календарь команды?\"}}",
+    "seconds": 2.72,
+    "cost": 0.0001385,
+    "prompt_tokens": 785,
+    "completion_tokens": 120,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Где календарь команды?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что такое Zero Bug Policy?\"}}",
+    "seconds": 1.32,
+    "cost": 0.0001256,
+    "prompt_tokens": 791,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Zero Bug Policy?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как в Авито проходит код-ревью?\"}}",
+    "seconds": 1.2,
+    "cost": 0.0001132,
+    "prompt_tokens": 792,
+    "completion_tokens": 68,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как в Авито проходит код-ревью?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"правила ревью\"}}",
+    "seconds": 1.07,
+    "cost": 9.39e-05,
+    "prompt_tokens": 789,
+    "completion_tokens": 30,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "правила ревью"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"технический долг\"}}",
+    "seconds": 1.58,
+    "cost": 0.0001483,
+    "prompt_tokens": 788,
+    "completion_tokens": 139,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "технический долг"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как проводят ретроспективы?\"}}",
+    "seconds": 1.11,
+    "cost": 0.0001224,
+    "prompt_tokens": 789,
+    "completion_tokens": 87,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как проводят ретроспективы?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "help",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "help",
+    "params": {
+     "menu": "team"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\": \"help\", \"params\": {}}",
+    "seconds": 1.62,
+    "cost": 0.0001446,
+    "prompt_tokens": 786,
+    "completion_tokens": 132,
+    "error": "",
+    "case": "help",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"help\",\"params\":{\"menu\":\"команды бота\"}}",
+    "seconds": 1.7,
+    "cost": 0.0001385,
+    "prompt_tokens": 785,
+    "completion_tokens": 120,
+    "error": "",
+    "case": "help",
+    "params": {
+     "menu": "команды бота"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"Доступ к системе или ресурсу (access_status); Связаться с Олегом напрямую (team_q4)\"}}",
+    "seconds": 2.1,
+    "cost": 0.0001824,
+    "prompt_tokens": 789,
+    "completion_tokens": 207,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Доступ к системе или ресурсу (access_status); Связаться с Олегом напрямую (team_q4)"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"clarify\", \"params\": {\"options\": \"brief_now, access_status, access_task_analysis, interns_status, playbook_qa, help\"}}",
+    "seconds": 1.96,
+    "cost": 0.0001714,
+    "prompt_tokens": 784,
+    "completion_tokens": 186,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "brief_now, access_status, access_task_analysis, interns_status, playbook_qa, help"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"clarify\", \"params\": {\"options\": \"Вы хотите узнать, к кому обратиться (наставник, тимлид или первый контакт), можно ли написать конкретному человеку напрямую, или проверить свой доступ к системам?\"}}",
+    "seconds": 2.98,
+    "cost": 0.000183,
+    "prompt_tokens": 790,
+    "completion_tokens": 208,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Вы хотите узнать, к кому обратиться (наставник, тимлид или первый контакт), можно ли написать конкретному человеку напрямую, или проверить свой доступ к системам?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"clarify\", \"params\": {\"options\": \"brief_now, access_status, interns_status, playbook_qa, help\"}}",
+    "seconds": 2.08,
+    "cost": 0.0001258,
+    "prompt_tokens": 783,
+    "completion_tokens": 95,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "brief_now, access_status, interns_status, playbook_qa, help"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"clarify\", \"params\": {\"options\": \"brief_now, access_status, access_task_analysis, interns_status, team_q1, team_q2, team_q3, team_q4, team_q5, team_q6, team_q7, team_q8, playbook_qa, help\"}}",
+    "seconds": 1.89,
+    "cost": 0.0001465,
+    "prompt_tokens": 785,
+    "completion_tokens": 136,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "brief_now, access_status, access_task_analysis, interns_status, team_q1, team_q2, team_q3, team_q4, team_q5, team_q6, team_q7, team_q8, playbook_qa, help"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.31,
+    "cost": 0.0001053,
+    "prompt_tokens": 788,
+    "completion_tokens": 53,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 0.99,
+    "cost": 8.87e-05,
+    "prompt_tokens": 787,
+    "completion_tokens": 20,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.65,
+    "cost": 0.0001056,
+    "prompt_tokens": 786,
+    "completion_tokens": 54,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.94,
+    "cost": 0.0001525,
+    "prompt_tokens": 785,
+    "completion_tokens": 148,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.19,
+    "cost": 0.0001079,
+    "prompt_tokens": 789,
+    "completion_tokens": 58,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 1.1,
+    "cost": 8.81e-05,
+    "prompt_tokens": 791,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 1.24,
+    "cost": 0.0001095,
+    "prompt_tokens": 795,
+    "completion_tokens": 60,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"access_task_analysis\", \"params\": {\"task\": \"pay-42\"}}",
+    "seconds": 1.22,
+    "cost": 0.0001365,
+    "prompt_tokens": 790,
+    "completion_tokens": 115,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "pay-42"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"access_status\", \"params\": {}}",
+    "seconds": 1.97,
+    "cost": 0.0001871,
+    "prompt_tokens": 791,
+    "completion_tokens": 216,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "access_status",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"интеграция с оплатой\"}}",
+    "seconds": 1.52,
+    "cost": 0.0001176,
+    "prompt_tokens": 796,
+    "completion_tokens": 76,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "интеграция с оплатой"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"Сервис не отвечает, кому сигналить?\"}}",
+    "seconds": 1.4,
+    "cost": 0.0001444,
+    "prompt_tokens": 794,
+    "completion_tokens": 130,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Сервис не отвечает, кому сигналить?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.46,
+    "cost": 0.0001362,
+    "prompt_tokens": 787,
+    "completion_tokens": 115,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Анна\"}}",
+    "seconds": 1.14,
+    "cost": 0.0001176,
+    "prompt_tokens": 791,
+    "completion_tokens": 77,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анна"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 1.12,
+    "cost": 0.0001117,
+    "prompt_tokens": 787,
+    "completion_tokens": 66,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"PAY-42\"}}",
+    "seconds": 1.4,
+    "cost": 0.0001208,
+    "prompt_tokens": 793,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "PAY-42"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.09,
+    "cost": 0.000103,
+    "prompt_tokens": 790,
+    "completion_tokens": 48,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"репозиторий проекта\"}}",
+    "seconds": 1.19,
+    "cost": 0.0001426,
+    "prompt_tokens": 791,
+    "completion_tokens": 127,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий проекта"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как устроено code review?\"}}",
+    "seconds": 1.42,
+    "cost": 0.0001185,
+    "prompt_tokens": 785,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как устроено code review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"help\", \"params\": {}}",
+    "seconds": 1.28,
+    "cost": 0.0001183,
+    "prompt_tokens": 788,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "help",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"clarify\", \"params\": {\"options\": \"access_status, team_q4\"}}",
+    "seconds": 1.86,
+    "cost": 0.0001723,
+    "prompt_tokens": 788,
+    "completion_tokens": 187,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "access_status, team_q4"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.67,
+    "cost": 0.0001229,
+    "prompt_tokens": 789,
+    "completion_tokens": 88,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"Kafka\"}}",
+    "seconds": 5.19,
+    "cost": 0.0001149,
+    "prompt_tokens": 789,
+    "completion_tokens": 72,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"ревью\"}}",
+    "seconds": 1.26,
+    "cost": 0.0001164,
+    "prompt_tokens": 789,
+    "completion_tokens": 75,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "ревью"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"надёжность\"}}",
+    "seconds": 3.81,
+    "cost": 0.0001189,
+    "prompt_tokens": 789,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "надёжность"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"интеграции\"}}",
+    "seconds": 3.08,
+    "cost": 0.0001178,
+    "prompt_tokens": 788,
+    "completion_tokens": 78,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "интеграции"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"orders-api\"}}",
+    "seconds": 0.95,
+    "cost": 0.000115,
+    "prompt_tokens": 790,
+    "completion_tokens": 72,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "orders-api"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Упал staging, кому писать?\"}}",
+    "seconds": 3.02,
+    "cost": 0.0001203,
+    "prompt_tokens": 788,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Упал staging, кому писать?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что делать, если упал staging?\"}}",
+    "seconds": 4.27,
+    "cost": 0.0002023,
+    "prompt_tokens": 788,
+    "completion_tokens": 247,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что делать, если упал staging?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"Kafka\"}}",
+    "seconds": 2.03,
+    "cost": 0.0001468,
+    "prompt_tokens": 793,
+    "completion_tokens": 135,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "team_q1",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"Сломался CI\"}}",
+    "seconds": 1.27,
+    "cost": 0.0001255,
+    "prompt_tokens": 790,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Сломался CI"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q2\", \"params\": {\"situation\": \"упал staging\"}}",
+    "seconds": 1.47,
+    "cost": 0.0001186,
+    "prompt_tokens": 791,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "упал staging"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.45,
+    "cost": 8.76e-05,
+    "prompt_tokens": 786,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.44,
+    "cost": 0.0001092,
+    "prompt_tokens": 787,
+    "completion_tokens": 61,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.13,
+    "cost": 0.0001141,
+    "prompt_tokens": 786,
+    "completion_tokens": 71,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.6,
+    "cost": 0.0001086,
+    "prompt_tokens": 786,
+    "completion_tokens": 60,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q3\", \"params\": {}}",
+    "seconds": 1.2,
+    "cost": 0.0001132,
+    "prompt_tokens": 787,
+    "completion_tokens": 69,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Петр\"}}",
+    "seconds": 1.38,
+    "cost": 0.0001145,
+    "prompt_tokens": 790,
+    "completion_tokens": 71,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Петр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Анна\"}}",
+    "seconds": 1.07,
+    "cost": 0.0001085,
+    "prompt_tokens": 790,
+    "completion_tokens": 59,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анна"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Олег\"}}",
+    "seconds": 3.19,
+    "cost": 0.0001836,
+    "prompt_tokens": 791,
+    "completion_tokens": 209,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Олег"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Петр\"}}",
+    "seconds": 1.09,
+    "cost": 0.0001134,
+    "prompt_tokens": 789,
+    "completion_tokens": 69,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Петр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q4\", \"params\": {\"person\": \"Анна\"}}",
+    "seconds": 1.03,
+    "cost": 0.0001087,
+    "prompt_tokens": 797,
+    "completion_tokens": 58,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анна"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 1.32,
+    "cost": 0.0001186,
+    "prompt_tokens": 786,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 1.19,
+    "cost": 0.0001013,
+    "prompt_tokens": 788,
+    "completion_tokens": 45,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 2.27,
+    "cost": 0.0002229,
+    "prompt_tokens": 789,
+    "completion_tokens": 288,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"brief_now\", \"params\": {}}",
+    "seconds": 1.11,
+    "cost": 0.0001341,
+    "prompt_tokens": 786,
+    "completion_tokens": 111,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q5\", \"params\": {}}",
+    "seconds": 1.14,
+    "cost": 0.0001421,
+    "prompt_tokens": 786,
+    "completion_tokens": 127,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.3,
+    "cost": 0.000143,
+    "prompt_tokens": 790,
+    "completion_tokens": 128,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.27,
+    "cost": 0.0001282,
+    "prompt_tokens": 792,
+    "completion_tokens": 98,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.27,
+    "cost": 0.0001232,
+    "prompt_tokens": 792,
+    "completion_tokens": 88,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.01,
+    "cost": 0.0001198,
+    "prompt_tokens": 793,
+    "completion_tokens": 81,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q6\", \"params\": {\"task\": \"ORD-118\"}}",
+    "seconds": 1.32,
+    "cost": 0.0001561,
+    "prompt_tokens": 791,
+    "completion_tokens": 154,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.23,
+    "cost": 0.0001139,
+    "prompt_tokens": 784,
+    "completion_tokens": 71,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 0.97,
+    "cost": 8.76e-05,
+    "prompt_tokens": 786,
+    "completion_tokens": 18,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.35,
+    "cost": 0.0001128,
+    "prompt_tokens": 788,
+    "completion_tokens": 68,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.2,
+    "cost": 0.0001202,
+    "prompt_tokens": 787,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q7\", \"params\": {}}",
+    "seconds": 1.06,
+    "cost": 0.0001024,
+    "prompt_tokens": 789,
+    "completion_tokens": 47,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"доска планирования\"}}",
+    "seconds": 2.08,
+    "cost": 0.000178,
+    "prompt_tokens": 785,
+    "completion_tokens": 199,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "доска планирования"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"репозиторий\"}}",
+    "seconds": 1.37,
+    "cost": 0.0001457,
+    "prompt_tokens": 787,
+    "completion_tokens": 134,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"чат команды\"}}",
+    "seconds": 1.25,
+    "cost": 0.0001399,
+    "prompt_tokens": 789,
+    "completion_tokens": 122,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "чат команды"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Где найти календарь команды?\"}}",
+    "seconds": 1.35,
+    "cost": 0.0001217,
+    "prompt_tokens": 787,
+    "completion_tokens": 86,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Где найти календарь команды?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"team_q8\", \"params\": {\"object\": \"проект Jira\"}}",
+    "seconds": 1.63,
+    "cost": 0.0001633,
+    "prompt_tokens": 788,
+    "completion_tokens": 169,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "проект Jira"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что такое Zero Bug Policy?\"}}",
+    "seconds": 1.17,
+    "cost": 0.0001246,
+    "prompt_tokens": 791,
+    "completion_tokens": 91,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Zero Bug Policy?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"team_q1\", \"params\": {\"area\": \"работоспособность системы после релиза\"}}",
+    "seconds": 1.16,
+    "cost": 0.0001257,
+    "prompt_tokens": 797,
+    "completion_tokens": 92,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "работоспособность системы после релиза"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "team_q1",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как быстро нужно делать код-ревью пулл-реквеста?\"}}",
+    "seconds": 1.32,
+    "cost": 0.0001266,
+    "prompt_tokens": 801,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как быстро нужно делать код-ревью пулл-реквеста?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Можно ли писать бизнес-логику в хранимых процедурах?\"}}",
+    "seconds": 2.55,
+    "cost": 0.0001931,
+    "prompt_tokens": 801,
+    "completion_tokens": 226,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Можно ли писать бизнес-логику в хранимых процедурах?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Почему нельзя катить непротестированный код?\"}}",
+    "seconds": 1.44,
+    "cost": 0.0001183,
+    "prompt_tokens": 793,
+    "completion_tokens": 78,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Почему нельзя катить непротестированный код?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что делать с кодом, который стал не нужен?\"}}",
+    "seconds": 1.29,
+    "cost": 0.0001399,
+    "prompt_tokens": 794,
+    "completion_tokens": 121,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что делать с кодом, который стал не нужен?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Почему мы избегаем жёсткой связанности сервисов?\"}}",
+    "seconds": 2.54,
+    "cost": 0.0002024,
+    "prompt_tokens": 799,
+    "completion_tokens": 245,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Почему мы избегаем жёсткой связанности сервисов?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что такое Live Site Review?\"}}",
+    "seconds": 1.31,
+    "cost": 0.0001233,
+    "prompt_tokens": 788,
+    "completion_tokens": 89,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Live Site Review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что описывать в постмортеме инцидента?\"}}",
+    "seconds": 1.09,
+    "cost": 0.0001258,
+    "prompt_tokens": 793,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что описывать в постмортеме инцидента?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Когда стоит идти в архитектурный комитет?\"}}",
+    "seconds": 1.23,
+    "cost": 0.0001245,
+    "prompt_tokens": 795,
+    "completion_tokens": 90,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Когда стоит идти в архитектурный комитет?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что такое TDR?\"}}",
+    "seconds": 1.09,
+    "cost": 0.0001225,
+    "prompt_tokens": 785,
+    "completion_tokens": 88,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое TDR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Когда нужно делать tech design review?\"}}",
+    "seconds": 1.2,
+    "cost": 0.0001235,
+    "prompt_tokens": 790,
+    "completion_tokens": 89,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Когда нужно делать tech design review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Есть ли шаблон для TDR?\"}}",
+    "seconds": 1.34,
+    "cost": 0.0001371,
+    "prompt_tokens": 791,
+    "completion_tokens": 116,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Есть ли шаблон для TDR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое соседское соглашение?\"}}",
+    "seconds": 1.88,
+    "cost": 0.0001524,
+    "prompt_tokens": 789,
+    "completion_tokens": 147,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое соседское соглашение?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как вносить изменения в чужой функционал?\"}}",
+    "seconds": 1.36,
+    "cost": 0.0001268,
+    "prompt_tokens": 793,
+    "completion_tokens": 95,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как вносить изменения в чужой функционал?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Какие ценности есть в Авито?\"}}",
+    "seconds": 1.21,
+    "cost": 0.0001175,
+    "prompt_tokens": 790,
+    "completion_tokens": 77,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какие ценности есть в Авито?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Какая миссия у Авито?\"}}",
+    "seconds": 1.12,
+    "cost": 0.0001138,
+    "prompt_tokens": 788,
+    "completion_tokens": 70,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какая миссия у Авито?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как в Авито ставят цели по OKR?\"}}",
+    "seconds": 1.27,
+    "cost": 0.0001188,
+    "prompt_tokens": 793,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как в Авито ставят цели по OKR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как проходит performance review?\"}}",
+    "seconds": 1.21,
+    "cost": 0.0001156,
+    "prompt_tokens": 786,
+    "completion_tokens": 74,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как проходит performance review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"self-review\"}}",
+    "seconds": 1.16,
+    "cost": 0.0001175,
+    "prompt_tokens": 785,
+    "completion_tokens": 78,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "self-review"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Какие стажировки есть в Авито?\"}}",
+    "seconds": 1.66,
+    "cost": 0.0001566,
+    "prompt_tokens": 791,
+    "completion_tokens": 155,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какие стажировки есть в Авито?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Можно ли сходить на платную конференцию за счёт компании?\"}}",
+    "seconds": 1.59,
+    "cost": 0.0001684,
+    "prompt_tokens": 799,
+    "completion_tokens": 177,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Можно ли сходить на платную конференцию за счёт компании?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Проводятся ли в Авито хакатоны?\"}}",
+    "seconds": 1.31,
+    "cost": 0.0001239,
+    "prompt_tokens": 794,
+    "completion_tokens": 89,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Проводятся ли в Авито хакатоны?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"уровни инженеров\"}}",
+    "seconds": 1.53,
+    "cost": 0.0001549,
+    "prompt_tokens": 789,
+    "completion_tokens": 152,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "уровни инженеров"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что ожидается от инженера уровня E1?\"}}",
+    "seconds": 1.28,
+    "cost": 0.0001418,
+    "prompt_tokens": 793,
+    "completion_tokens": 125,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что ожидается от инженера уровня E1?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Чем занимается техлид?\"}}",
+    "seconds": 1.61,
+    "cost": 0.0001577,
+    "prompt_tokens": 787,
+    "completion_tokens": 158,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Чем занимается техлид?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Что такое юниты и кластеры?\"}}",
+    "seconds": 1.27,
+    "cost": 0.000135,
+    "prompt_tokens": 790,
+    "completion_tokens": 112,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое юниты и кластеры?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Зачем разработчикам платформа Avito PaaS?\"}}",
+    "seconds": 1.09,
+    "cost": 0.0001267,
+    "prompt_tokens": 797,
+    "completion_tokens": 94,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Зачем разработчикам платформа Avito PaaS?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Как работают с обращениями пользователей в SPT?\"}}",
+    "seconds": 1.55,
+    "cost": 0.000122,
+    "prompt_tokens": 795,
+    "completion_tokens": 85,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как работают с обращениями пользователей в SPT?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"По какому процессу работают команды: Scrum?\"}}",
+    "seconds": 1.38,
+    "cost": 0.0001288,
+    "prompt_tokens": 793,
+    "completion_tokens": 99,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "По какому процессу работают команды: Scrum?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.46,
+    "cost": 0.0001422,
+    "prompt_tokens": 797,
+    "completion_tokens": 125,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"playbook_qa\", \"params\": {\"query\": \"Сколько дней отпуска положено стажёру?\"}}",
+    "seconds": 1.32,
+    "cost": 0.0001369,
+    "prompt_tokens": 794,
+    "completion_tokens": 115,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Сколько дней отпуска положено стажёру?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 0.92,
+    "cost": 8.86e-05,
+    "prompt_tokens": 791,
+    "completion_tokens": 19,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.18,
+    "cost": 0.0001313,
+    "prompt_tokens": 793,
+    "completion_tokens": 104,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\": \"out_of_scope\", \"params\": {}}",
+    "seconds": 1.41,
+    "cost": 0.0001354,
+    "prompt_tokens": 789,
+    "completion_tokens": 113,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   }
+  ],
+  "deepseek/deepseek-v4.1-flash-1017": [
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.73,
+    "cost": 7.0364e-05,
+    "prompt_tokens": 583,
+    "completion_tokens": 45,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 2.22,
+    "cost": 0.00023201,
+    "prompt_tokens": 589,
+    "completion_tokens": 51,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.88,
+    "cost": 0.0002742,
+    "prompt_tokens": 586,
+    "completion_tokens": 82,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 2.35,
+    "cost": 4.119528e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 110,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 1.96,
+    "cost": 3.394328e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 85,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 3.51,
+    "cost": 8.618e-05,
+    "prompt_tokens": 563,
+    "completion_tokens": 68,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 1.09,
+    "cost": 8.44e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 110,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 1.37,
+    "cost": 0.00019026,
+    "prompt_tokens": 593,
+    "completion_tokens": 116,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 0.92,
+    "cost": 4.929792e-05,
+    "prompt_tokens": 592,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"ORD-101\"}}",
+    "seconds": 2.14,
+    "cost": 7.9292e-05,
+    "prompt_tokens": 592,
+    "completion_tokens": 130,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-101"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"ORD-205\"}}",
+    "seconds": 1.01,
+    "cost": 0.0003015,
+    "prompt_tokens": 593,
+    "completion_tokens": 103,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-205"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"ORD-7\"}}",
+    "seconds": 1.07,
+    "cost": 7.531692e-05,
+    "prompt_tokens": 592,
+    "completion_tokens": 139,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-7"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"ORD-12\"}}",
+    "seconds": 0.98,
+    "cost": 0.000170172,
+    "prompt_tokens": 593,
+    "completion_tokens": 119,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "ORD-12"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\":\"interns_status\",\"params\":{}}",
+    "seconds": 1.25,
+    "cost": 3.7422e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 61,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"interns_status\",\"params\":{}}",
+    "seconds": 1.02,
+    "cost": 3.609928e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 92,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"interns_status\",\"params\":{}}",
+    "seconds": 1.45,
+    "cost": 0.00011799,
+    "prompt_tokens": 590,
+    "completion_tokens": 71,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "interns_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"Kafka\"}}",
+    "seconds": 1.31,
+    "cost": 6.5306e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 86,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"API заказов\"}}",
+    "seconds": 1.37,
+    "cost": 4.904e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 91,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "API заказов"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"orders-api\"}}",
+    "seconds": 1.46,
+    "cost": 9.5108e-05,
+    "prompt_tokens": 592,
+    "completion_tokens": 173,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "orders-api"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"интеграциями\"}}",
+    "seconds": 2.55,
+    "cost": 7.885e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 99,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "интеграциями"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Упал staging\"}}",
+    "seconds": 2.99,
+    "cost": 7.7784e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 149,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Упал staging"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"сломался стенд\"}}",
+    "seconds": 0.83,
+    "cost": 0.0003453,
+    "prompt_tokens": 595,
+    "completion_tokens": 139,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "сломался стенд"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"сбой API\"}}",
+    "seconds": 1.38,
+    "cost": 0.0003837,
+    "prompt_tokens": 591,
+    "completion_tokens": 172,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "сбой API"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Не проходит деплой\"}}",
+    "seconds": 1.64,
+    "cost": 6.379e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 121,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Не проходит деплой"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.68,
+    "cost": 0.00021588,
+    "prompt_tokens": 588,
+    "completion_tokens": 110,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.07,
+    "cost": 0.0003279,
+    "prompt_tokens": 589,
+    "completion_tokens": 126,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 2.73,
+    "cost": 0.00022575,
+    "prompt_tokens": 587,
+    "completion_tokens": 79,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.76,
+    "cost": 8.4252e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 94,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"продакту\"}}",
+    "seconds": 2.47,
+    "cost": 0.000103272,
+    "prompt_tokens": 588,
+    "completion_tokens": 200,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "продакту"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Пётр\"}}",
+    "seconds": 1.58,
+    "cost": 0.000165694,
+    "prompt_tokens": 591,
+    "completion_tokens": 116,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Пётр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{}}",
+    "seconds": 8.62,
+    "cost": 0.000325522,
+    "prompt_tokens": 587,
+    "completion_tokens": 644,
+    "error": "",
+    "case": "team_q4",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Олег\"}}",
+    "seconds": 1.45,
+    "cost": 3.894128e-05,
+    "prompt_tokens": 594,
+    "completion_tokens": 100,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Олег"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q5\",\"params\":{}}",
+    "seconds": 1.41,
+    "cost": 4.942728e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 138,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.32,
+    "cost": 9.069648e-05,
+    "prompt_tokens": 586,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 2.41,
+    "cost": 0.0003422,
+    "prompt_tokens": 588,
+    "completion_tokens": 508,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.09,
+    "cost": 3.825528e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 100,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 1.04,
+    "cost": 7.0187e-05,
+    "prompt_tokens": 565,
+    "completion_tokens": 87,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Зачем нужна ORD-101?\"}}",
+    "seconds": 2.47,
+    "cost": 0.00020269216,
+    "prompt_tokens": 589,
+    "completion_tokens": 283,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Зачем нужна ORD-101?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-7\"}}",
+    "seconds": 1.74,
+    "cost": 0.00033465,
+    "prompt_tokens": 591,
+    "completion_tokens": 205,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-7"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-12\"}}",
+    "seconds": 2.3,
+    "cost": 6.3886e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 101,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-12"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.05,
+    "cost": 5.136112e-05,
+    "prompt_tokens": 586,
+    "completion_tokens": 67,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.07,
+    "cost": 8.1785e-05,
+    "prompt_tokens": 561,
+    "completion_tokens": 61,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 0.98,
+    "cost": 5.2847e-05,
+    "prompt_tokens": 560,
+    "completion_tokens": 59,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.12,
+    "cost": 0.00015555,
+    "prompt_tokens": 587,
+    "completion_tokens": 135,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Где доска планирования?\"}}",
+    "seconds": 5.58,
+    "cost": 0.00032189,
+    "prompt_tokens": 587,
+    "completion_tokens": 351,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Где доска планирования?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"репозиторий\"}}",
+    "seconds": 2.48,
+    "cost": 0.0003383,
+    "prompt_tokens": 592,
+    "completion_tokens": 499,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как найти командный чат?\"}}",
+    "seconds": 5.03,
+    "cost": 0.000517185,
+    "prompt_tokens": 587,
+    "completion_tokens": 811,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как найти командный чат?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"календарь команды\"}}",
+    "seconds": 6.54,
+    "cost": 0.00034450528,
+    "prompt_tokens": 589,
+    "completion_tokens": 1141,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "календарь команды"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое Zero Bug Policy?\"}}",
+    "seconds": 0.88,
+    "cost": 0.00012123,
+    "prompt_tokens": 586,
+    "completion_tokens": 78,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Zero Bug Policy?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как в Авито проходит код-ревью?\"}}",
+    "seconds": 2.41,
+    "cost": 6.529e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 124,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как в Авито проходит код-ревью?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"правила ревью\"}}",
+    "seconds": 1.4,
+    "cost": 7.2002e-05,
+    "prompt_tokens": 565,
+    "completion_tokens": 90,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "правила ревью"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"технический долг\"}}",
+    "seconds": 2.28,
+    "cost": 0.000143832,
+    "prompt_tokens": 590,
+    "completion_tokens": 176,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "технический долг"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как проводят ретроспективы?\"}}",
+    "seconds": 1.21,
+    "cost": 8.2936e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 140,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как проводят ретроспективы?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "help",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "(команда, LLM не вызывается)",
+    "seconds": 0,
+    "cost": 0.0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "error": "",
+    "case": "help",
+    "params": {
+     "menu": "team"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true,
+    "skipped": true
+   },
+   {
+    "raw": "{\"case\":\"help\",\"params\":{}}",
+    "seconds": 2.18,
+    "cost": 6.853728e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 203,
+    "error": "",
+    "case": "help",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"help\",\"params\":{\"menu\":\"commands\"}}",
+    "seconds": 1.6,
+    "cost": 0.000135,
+    "prompt_tokens": 588,
+    "completion_tokens": 103,
+    "error": "",
+    "case": "help",
+    "params": {
+     "menu": "commands"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"Уточнить, какой именно доступ к Олегу требуется\"}}",
+    "seconds": 60.38,
+    "cost": 0.00409643,
+    "prompt_tokens": 589,
+    "completion_tokens": 5069,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Уточнить, какой именно доступ к Олегу требуется"
+    },
+    "format_ok": true,
+    "timed_out": true,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"уточните, с чем именно нужна помощь\"}}",
+    "seconds": 3.71,
+    "cost": 0.00035235,
+    "prompt_tokens": 586,
+    "completion_tokens": 506,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "уточните, с чем именно нужна помощь"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"Уточните, нужен доступ к системе/ресурсу или контакт с человеком\"}}",
+    "seconds": 2.75,
+    "cost": 0.000308532,
+    "prompt_tokens": 589,
+    "completion_tokens": 405,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Уточните, нужен доступ к системе/ресурсу или контакт с человеком"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"Уточните, что именно нужно: статус доступа, информация по стажёрам, ответственный за область, наставник/тимлид, этап проекта, стек, ссылка на объект или процесс Авито/playbook?\"}}",
+    "seconds": 10.36,
+    "cost": 0.000142754,
+    "prompt_tokens": 585,
+    "completion_tokens": 279,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Уточните, что именно нужно: статус доступа, информация по стажёрам, ответственный за область, наставник/тимлид, этап проекта, стек, ссылка на объект или процесс Авито/playbook?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"Уточните, что именно нужно разобраться: доступы, статус стажёров, ответственный в команде, этап проекта, стек, playbook или помощь.\"}}",
+    "seconds": 3.13,
+    "cost": 0.000178585,
+    "prompt_tokens": 561,
+    "completion_tokens": 221,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "Уточните, что именно нужно разобраться: доступы, статус стажёров, ответственный в команде, этап проекта, стек, playbook или помощь."
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.35,
+    "cost": 0.000122772,
+    "prompt_tokens": 589,
+    "completion_tokens": 147,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.47,
+    "cost": 0.0001161,
+    "prompt_tokens": 588,
+    "completion_tokens": 68,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 0.85,
+    "cost": 9.5472e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 58,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 2.8,
+    "cost": 0.000136417,
+    "prompt_tokens": 561,
+    "completion_tokens": 197,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.18,
+    "cost": 5.9822e-05,
+    "prompt_tokens": 564,
+    "completion_tokens": 70,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.37,
+    "cost": 2.9922e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 46,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "brief_now",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 1.57,
+    "cost": 0.000126225,
+    "prompt_tokens": 591,
+    "completion_tokens": 86,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "access_status",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_task_analysis\",\"params\":{\"task\":\"pay-42\"}}",
+    "seconds": 2.77,
+    "cost": 3.192532e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 138,
+    "error": "",
+    "case": "access_task_analysis",
+    "params": {
+     "task": "pay-42"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": true,
+    "prod_case": "access_task_analysis",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 2.59,
+    "cost": 0.000137236,
+    "prompt_tokens": 594,
+    "completion_tokens": 258,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "access_status",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"интеграция с оплатой\"}}",
+    "seconds": 1.37,
+    "cost": 8.7472e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 161,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "интеграция с оплатой"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Сервис не отвечает\"}}",
+    "seconds": 1.23,
+    "cost": 4.805528e-05,
+    "prompt_tokens": 594,
+    "completion_tokens": 131,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Сервис не отвечает"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.36,
+    "cost": 0.000129136,
+    "prompt_tokens": 586,
+    "completion_tokens": 233,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Анна\"}}",
+    "seconds": 0.95,
+    "cost": 6.2476e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 108,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анна"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q5\",\"params\":{}}",
+    "seconds": 0.81,
+    "cost": 0.000125172,
+    "prompt_tokens": 587,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"PAY-42\"}}",
+    "seconds": 0.96,
+    "cost": 6.7162e-05,
+    "prompt_tokens": 565,
+    "completion_tokens": 82,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "PAY-42"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.32,
+    "cost": 7.249216e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 97,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"репозиторий проекта\"}}",
+    "seconds": 2.22,
+    "cost": 7.3802e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 152,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий проекта"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как устроено code review?\"}}",
+    "seconds": 1.25,
+    "cost": 0.00017694,
+    "prompt_tokens": 587,
+    "completion_tokens": 99,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как устроено code review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"help\",\"params\":{\"menu\":\"возможности\"}}",
+    "seconds": 1.14,
+    "cost": 5.7322e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 101,
+    "error": "",
+    "case": "help",
+    "params": {
+     "menu": "возможности"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "help",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"access_status, access_task_analysis\"}}",
+    "seconds": 5.55,
+    "cost": 0.0005369112,
+    "prompt_tokens": 588,
+    "completion_tokens": 910,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "access_status, access_task_analysis"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "clarify",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.9,
+    "cost": 0.0001352904,
+    "prompt_tokens": 590,
+    "completion_tokens": 139,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"Kafka\"}}",
+    "seconds": 1.23,
+    "cost": 4.4766e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"ревью\"}}",
+    "seconds": 3.79,
+    "cost": 3.462532e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 156,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "ревью"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"надёжность\"}}",
+    "seconds": 1.21,
+    "cost": 7.267092e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 134,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "надёжность"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"интеграции\"}}",
+    "seconds": 1.67,
+    "cost": 0.000180912,
+    "prompt_tokens": 588,
+    "completion_tokens": 228,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "интеграции"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "team_q2",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"orders-api\"}}",
+    "seconds": 0.87,
+    "cost": 4.8344e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 80,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "orders-api"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q1",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Упал staging\"}}",
+    "seconds": 2.0,
+    "cost": 6.6472e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 119,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Упал staging"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что делать, если упал staging?\"}}",
+    "seconds": 2.54,
+    "cost": 0.00028275,
+    "prompt_tokens": 589,
+    "completion_tokens": 162,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что делать, если упал staging?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"вопрос по Kafka\"}}",
+    "seconds": 2.41,
+    "cost": 0.000239952,
+    "prompt_tokens": 592,
+    "completion_tokens": 309,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "вопрос по Kafka"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"Сломался CI\"}}",
+    "seconds": 2.51,
+    "cost": 0.000159492,
+    "prompt_tokens": 593,
+    "completion_tokens": 197,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "Сломался CI"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q2\",\"params\":{\"situation\":\"упал staging\"}}",
+    "seconds": 1.17,
+    "cost": 7.1477e-05,
+    "prompt_tokens": 566,
+    "completion_tokens": 89,
+    "error": "",
+    "case": "team_q2",
+    "params": {
+     "situation": "упал staging"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q2",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 7.58,
+    "cost": 2.357432e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.17,
+    "cost": 0.000101892,
+    "prompt_tokens": 589,
+    "completion_tokens": 118,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.03,
+    "cost": 0.0002541,
+    "prompt_tokens": 587,
+    "completion_tokens": 65,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.01,
+    "cost": 5.8786e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 92,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q3\",\"params\":{}}",
+    "seconds": 1.13,
+    "cost": 9.2286e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 159,
+    "error": "",
+    "case": "team_q3",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q3",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Петр\"}}",
+    "seconds": 1.03,
+    "cost": 6.4521e-05,
+    "prompt_tokens": 564,
+    "completion_tokens": 93,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Петр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Анне\"}}",
+    "seconds": 1.14,
+    "cost": 0.0002874,
+    "prompt_tokens": 590,
+    "completion_tokens": 92,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анне"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Олег\"}}",
+    "seconds": 2.62,
+    "cost": 0.0001439004,
+    "prompt_tokens": 591,
+    "completion_tokens": 149,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Олег"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Петр\"}}",
+    "seconds": 3.42,
+    "cost": 0.0001525,
+    "prompt_tokens": 590,
+    "completion_tokens": 139,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Петр"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q4\",\"params\":{\"person\":\"Анна\"}}",
+    "seconds": 1.27,
+    "cost": 7.9966e-05,
+    "prompt_tokens": 568,
+    "completion_tokens": 118,
+    "error": "",
+    "case": "team_q4",
+    "params": {
+     "person": "Анна"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q4",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q5\",\"params\":{}}",
+    "seconds": 1.01,
+    "cost": 4.7786e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 70,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.37,
+    "cost": 4.697728e-05,
+    "prompt_tokens": 586,
+    "completion_tokens": 130,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"clarify\",\"params\":{\"options\":\"уточните, по какому эпику нужен прогресс\"}}",
+    "seconds": 2.97,
+    "cost": 0.000279436,
+    "prompt_tokens": 588,
+    "completion_tokens": 533,
+    "error": "",
+    "case": "clarify",
+    "params": {
+     "options": "уточните, по какому эпику нужен прогресс"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "clarify",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"brief_now\",\"params\":{}}",
+    "seconds": 1.52,
+    "cost": 0.0001263762,
+    "prompt_tokens": 587,
+    "completion_tokens": 150,
+    "error": "",
+    "case": "brief_now",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "brief_now",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"team_q5\",\"params\":{}}",
+    "seconds": 1.45,
+    "cost": 6.4432e-05,
+    "prompt_tokens": 586,
+    "completion_tokens": 113,
+    "error": "",
+    "case": "team_q5",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q5",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 6.65,
+    "cost": 0.000623546,
+    "prompt_tokens": 589,
+    "completion_tokens": 1231,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 0.86,
+    "cost": 5.0042e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 83,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 1.07,
+    "cost": 3.492328e-05,
+    "prompt_tokens": 592,
+    "completion_tokens": 87,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 2.19,
+    "cost": 0.000154305,
+    "prompt_tokens": 591,
+    "completion_tokens": 138,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q6\",\"params\":{\"task\":\"ORD-118\"}}",
+    "seconds": 3.01,
+    "cost": 0.00011753728,
+    "prompt_tokens": 589,
+    "completion_tokens": 369,
+    "error": "",
+    "case": "team_q6",
+    "params": {
+     "task": "ORD-118"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q6",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.0,
+    "cost": 4.4841e-05,
+    "prompt_tokens": 560,
+    "completion_tokens": 61,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.12,
+    "cost": 0.00011151,
+    "prompt_tokens": 586,
+    "completion_tokens": 60,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 2.04,
+    "cost": 5.6637e-05,
+    "prompt_tokens": 562,
+    "completion_tokens": 65,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 3.82,
+    "cost": 2.337532e-05,
+    "prompt_tokens": 589,
+    "completion_tokens": 81,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q7\",\"params\":{}}",
+    "seconds": 1.81,
+    "cost": 0.000112586,
+    "prompt_tokens": 589,
+    "completion_tokens": 199,
+    "error": "",
+    "case": "team_q7",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q7",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"доска планирования\"}}",
+    "seconds": 1.69,
+    "cost": 0.000105778,
+    "prompt_tokens": 587,
+    "completion_tokens": 195,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "доска планирования"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"репозиторий\"}}",
+    "seconds": 2.2,
+    "cost": 0.0001451604,
+    "prompt_tokens": 589,
+    "completion_tokens": 151,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "репозиторий"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q8\",\"params\":{\"object\":\"чат команды\"}}",
+    "seconds": 2.14,
+    "cost": 8.002092e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 150,
+    "error": "",
+    "case": "team_q8",
+    "params": {
+     "object": "чат команды"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "team_q8",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Где найти календарь команды?\"}}",
+    "seconds": 4.67,
+    "cost": 0.00045225,
+    "prompt_tokens": 590,
+    "completion_tokens": 690,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Где найти календарь команды?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Где открыть проект Jira?\"}}",
+    "seconds": 2.98,
+    "cost": 0.000243344,
+    "prompt_tokens": 588,
+    "completion_tokens": 470,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Где открыть проект Jira?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "playbook_qa",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое Zero Bug Policy?\"}}",
+    "seconds": 1.46,
+    "cost": 0.000100632,
+    "prompt_tokens": 586,
+    "completion_tokens": 117,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Zero Bug Policy?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"team_q1\",\"params\":{\"area\":\"работоспособность системы после релиза\"}}",
+    "seconds": 1.3,
+    "cost": 0.0003498,
+    "prompt_tokens": 594,
+    "completion_tokens": 143,
+    "error": "",
+    "case": "team_q1",
+    "params": {
+     "area": "работоспособность системы после релиза"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "team_q1",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как быстро нужно делать код-ревью пулл-реквеста?\"}}",
+    "seconds": 1.13,
+    "cost": 0.000139185,
+    "prompt_tokens": 595,
+    "completion_tokens": 109,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как быстро нужно делать код-ревью пулл-реквеста?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Можно ли писать бизнес-логику в хранимых процедурах?\"}}",
+    "seconds": 1.32,
+    "cost": 0.000150425,
+    "prompt_tokens": 572,
+    "completion_tokens": 173,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Можно ли писать бизнес-логику в хранимых процедурах?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Почему нельзя катить непротестированный код?\"}}",
+    "seconds": 1.19,
+    "cost": 8.0174e-05,
+    "prompt_tokens": 593,
+    "completion_tokens": 143,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Почему нельзя катить непротестированный код?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что делать с кодом, который стал не нужен?\"}}",
+    "seconds": 2.57,
+    "cost": 0.000259,
+    "prompt_tokens": 592,
+    "completion_tokens": 111,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что делать с кодом, который стал не нужен?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Почему мы избегаем жёсткой связанности сервисов?\"}}",
+    "seconds": 4.43,
+    "cost": 7.9436e-05,
+    "prompt_tokens": 598,
+    "completion_tokens": 130,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Почему мы избегаем жёсткой связанности сервисов?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое Live Site Review?\"}}",
+    "seconds": 3.08,
+    "cost": 6.076e-05,
+    "prompt_tokens": 586,
+    "completion_tokens": 115,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое Live Site Review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что описывать в постмортеме инцидента?\"}}",
+    "seconds": 1.81,
+    "cost": 7.7302e-05,
+    "prompt_tokens": 593,
+    "completion_tokens": 148,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что описывать в постмортеме инцидента?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Когда стоит идти в архитектурный комитет?\"}}",
+    "seconds": 1.22,
+    "cost": 5.9122e-05,
+    "prompt_tokens": 593,
+    "completion_tokens": 104,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Когда стоит идти в архитектурный комитет?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое TDR?\"}}",
+    "seconds": 1.93,
+    "cost": 0.000138394,
+    "prompt_tokens": 585,
+    "completion_tokens": 261,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое TDR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Когда нужно делать tech design review?\"}}",
+    "seconds": 1.45,
+    "cost": 6.0778e-05,
+    "prompt_tokens": 587,
+    "completion_tokens": 105,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Когда нужно делать tech design review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Есть ли шаблон для TDR?\"}}",
+    "seconds": 1.6,
+    "cost": 0.000122976,
+    "prompt_tokens": 590,
+    "completion_tokens": 229,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Есть ли шаблон для TDR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое соседское соглашение?\"}}",
+    "seconds": 1.45,
+    "cost": 9.942492e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 195,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое соседское соглашение?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как вносить изменения в чужой функционал?\"}}",
+    "seconds": 2.27,
+    "cost": 6.4802e-05,
+    "prompt_tokens": 593,
+    "completion_tokens": 123,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как вносить изменения в чужой функционал?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Какие ценности есть в Авито?\"}}",
+    "seconds": 1.49,
+    "cost": 0.00018036,
+    "prompt_tokens": 590,
+    "completion_tokens": 103,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какие ценности есть в Авито?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Какая миссия у Авито?\"}}",
+    "seconds": 0.99,
+    "cost": 0.00018168,
+    "prompt_tokens": 590,
+    "completion_tokens": 111,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какая миссия у Авито?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как в Авито ставят цели по OKR?\"}}",
+    "seconds": 0.86,
+    "cost": 6.7242e-05,
+    "prompt_tokens": 566,
+    "completion_tokens": 82,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как в Авито ставят цели по OKR?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как проходит performance review?\"}}",
+    "seconds": 1.08,
+    "cost": 4.335128e-05,
+    "prompt_tokens": 585,
+    "completion_tokens": 118,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как проходит performance review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое self-review?\"}}",
+    "seconds": 1.65,
+    "cost": 0.00027525,
+    "prompt_tokens": 585,
+    "completion_tokens": 129,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое self-review?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"interns_status\",\"params\":{}}",
+    "seconds": 1.33,
+    "cost": 9.7835e-05,
+    "prompt_tokens": 565,
+    "completion_tokens": 87,
+    "error": "",
+    "case": "interns_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "interns_status",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Можно ли сходить на платную конференцию за счёт компании?\"}}",
+    "seconds": 2.85,
+    "cost": 0.000162826,
+    "prompt_tokens": 597,
+    "completion_tokens": 319,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Можно ли сходить на платную конференцию за счёт компании?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Проводятся ли в Авито хакатоны?\"}}",
+    "seconds": 2.47,
+    "cost": 0.000140526,
+    "prompt_tokens": 594,
+    "completion_tokens": 168,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Проводятся ли в Авито хакатоны?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Какие уровни у инженеров?\"}}",
+    "seconds": 3.78,
+    "cost": 0.000200586,
+    "prompt_tokens": 589,
+    "completion_tokens": 375,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Какие уровни у инженеров?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что ожидается от инженера уровня E1?\"}}",
+    "seconds": 1.3,
+    "cost": 7.869792e-05,
+    "prompt_tokens": 591,
+    "completion_tokens": 147,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что ожидается от инженера уровня E1?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Чем занимается техлид?\"}}",
+    "seconds": 2.75,
+    "cost": 0.00011038328,
+    "prompt_tokens": 588,
+    "completion_tokens": 345,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Чем занимается техлид?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Что такое юниты и кластеры?\"}}",
+    "seconds": 1.46,
+    "cost": 9.2236e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 158,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Что такое юниты и кластеры?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Зачем разработчикам платформа Avito PaaS?\"}}",
+    "seconds": 1.28,
+    "cost": 0.000114852,
+    "prompt_tokens": 593,
+    "completion_tokens": 135,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Зачем разработчикам платформа Avito PaaS?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Как работают с обращениями пользователей в SPT?\"}}",
+    "seconds": 1.63,
+    "cost": 0.00014418,
+    "prompt_tokens": 592,
+    "completion_tokens": 119,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Как работают с обращениями пользователей в SPT?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"По какому процессу работают команды: Scrum?\"}}",
+    "seconds": 1.5,
+    "cost": 0.00011966,
+    "prompt_tokens": 592,
+    "completion_tokens": 223,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "По какому процессу работают команды: Scrum?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"access_status\",\"params\":{}}",
+    "seconds": 2.45,
+    "cost": 0.000276536,
+    "prompt_tokens": 592,
+    "completion_tokens": 526,
+    "error": "",
+    "case": "access_status",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": false,
+    "case_ok": false,
+    "prod_case": "access_status",
+    "prod_ok": false
+   },
+   {
+    "raw": "{\"case\":\"playbook_qa\",\"params\":{\"query\":\"Сколько дней отпуска положено стажёру?\"}}",
+    "seconds": 12.39,
+    "cost": 0.000589302,
+    "prompt_tokens": 593,
+    "completion_tokens": 1172,
+    "error": "",
+    "case": "playbook_qa",
+    "params": {
+     "query": "Сколько дней отпуска положено стажёру?"
+    },
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "playbook_qa",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 0.61,
+    "cost": 3.0196e-05,
+    "prompt_tokens": 566,
+    "completion_tokens": 36,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.06,
+    "cost": 8.8236e-05,
+    "prompt_tokens": 590,
+    "completion_tokens": 150,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   },
+   {
+    "raw": "{\"case\":\"out_of_scope\",\"params\":{}}",
+    "seconds": 1.98,
+    "cost": 8.6344e-05,
+    "prompt_tokens": 588,
+    "completion_tokens": 156,
+    "error": "",
+    "case": "out_of_scope",
+    "params": {},
+    "format_ok": true,
+    "timed_out": false,
+    "llm_ok": true,
+    "case_ok": true,
+    "prod_case": "out_of_scope",
+    "prod_ok": true
+   }
+  ]
+ }
+}
