@@ -39,7 +39,7 @@ venv/
 htmlcov/
 
 # Local test reports and binaries
-reports/
+reports/*.xml
 *.test
 
 # Claude Code
