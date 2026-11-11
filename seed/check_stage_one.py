@@ -25,9 +25,7 @@ def command(*args, stdin=None):
     )
     if result.returncode:
         # May contain invitation codes/credentials: do not propagate captured output.
-        raise RuntimeError(
-            "Acceptance subprocess failed; inspect the local service health"
-        )
+        raise RuntimeError("Acceptance subprocess failed; inspect the local service health")
     return result.stdout.strip()
 
 
@@ -52,9 +50,7 @@ def main():
     # Guard against accidentally consuming invitations in the live development stack.
     if not args.project.startswith("buddy-stage1-acceptance"):
         parser.error("Use an isolated buddy-stage1-acceptance project")
-    backend, agent = (
-        container(args.project, service) for service in ("backend", "agent")
-    )
+    backend, agent = (container(args.project, service) for service in ("backend", "agent"))
     command("exec", backend, "backend", "seed")
     invitation = command("exec", backend, "backend", "invite", "--user", "demo-daniil")
     code = r"""import asyncio, json, os
@@ -126,12 +122,8 @@ asyncio.run(main())
             encoding="utf-8",
             newline="\n",
         )
-        print(
-            f"{server}: official tools/list verified ({len(names)} tools), tools/call not attempted"
-        )
-    print(
-        "ST1-BIND-1: real REST + PostgreSQL + offline Telegram dispatcher passed; replay rejected"
-    )
+        print(f"{server}: official tools/list verified ({len(names)} tools), tools/call not attempted")
+    print("ST1-BIND-1: real REST + PostgreSQL + offline Telegram dispatcher passed; replay rejected")
 
 
 if __name__ == "__main__":

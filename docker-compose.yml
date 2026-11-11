@@ -80,7 +80,10 @@ services:
   agent:
     read_only: true
     init: true
-    build: ./agent
+    build:
+      context: ./agent
+      args:
+        AGENT_EXTRAS: ${AGENT_EXTRAS:-}
     environment:
       DEMO_MODE: ${DEMO_MODE:-true}
       BACKEND_URL: http://backend:8080
@@ -99,6 +102,14 @@ services:
       LLM_BASE_URL: ${LLM_BASE_URL:-}
       LLM_TIMEOUT_SECONDS: ${LLM_TIMEOUT_SECONDS:-20}
       EMBEDDINGS_MODEL: ${EMBEDDINGS_MODEL:-intfloat/multilingual-e5-small}
+      RAG_SEARCH_MODE: ${RAG_SEARCH_MODE:-bm25}
+      RAG_DATABASE_URL: ${RAG_DATABASE_URL:-postgresql://buddy:${POSTGRES_PASSWORD:-buddy_local_demo}@postgres:5432/buddy}
+      RAG_MIN_SIMILARITY: ${RAG_MIN_SIMILARITY:-0.82}
+      BRIEF_TIME: ${BRIEF_TIME:-09:30}
+      BRIEF_TIMEZONE: ${BRIEF_TIMEZONE:-Europe/Moscow}
+      REDIRECT_BASE_URL: ${REDIRECT_BASE_URL:-}
+    volumes:
+      - hf_models:/models
     ports:
       - '127.0.0.1:${AGENT_PORT:-8081}:8081'
     depends_on:
@@ -114,3 +125,4 @@ volumes:
   postgres_data:
   redis_data:
   grafana_data:
+  hf_models:

@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import uuid
 from collections.abc import Awaitable, Callable
 from urllib.parse import quote, urlsplit
 
@@ -10,6 +11,7 @@ from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
 from buddy.data.base import DataError
+from buddy.data.briefs import BriefState
 
 TIMEOUT = 5
 STATUS = {400: "invalid", 401: "unauthorized", 403: "forbidden", 404: "not_found", 409: "conflict"}
@@ -53,7 +55,7 @@ def tool_payload(result) -> dict:
     raise DataError("unavailable")
 
 
-class BackendData:
+class BackendData(BriefState):
     def __init__(
         self,
         url: str,
@@ -218,3 +220,35 @@ class BackendData:
             if error.kind == "not_found":
                 return None
             raise
+
+    async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> None:
+        value = await self._rest("POST", "/api/v1/briefs", user_id, {"id": brief_id, "items": items})
+        self.brief_create(user_id, brief_id, items, value.get("created_at", ""))
+
+    async def brief_status(
+        self, user_id: str, brief_id: str, status: str, calendar: dict | None = None, at: str = ""
+    ) -> None:
+        path = "/api/v1/briefs/" + quote(brief_id, safe="")
+        value = await self._rest("PATCH", path, user_id, {"status": status})
+        self.brief_mark(user_id, brief_id, status, value.get("sent_at") or at, calendar)
+
+    async def brief_event(self, user_id: str, brief_id: str, kind: str, item_id: str = "") -> None:
+        path = "/api/v1/briefs/" + quote(brief_id, safe="") + "/events"
+        body = {"id": "e-" + uuid.uuid4().hex[:16], "kind": kind}
+        if item_id:
+            body["item_id"] = item_id
+        value = await self._rest("POST", path, user_id, body)
+        self.brief_signal(user_id, brief_id, kind, value.get("created_at", ""), item_id)
+
+    async def brief_stats(self, user_id: str) -> list[dict]:
+        # Until the backend exposes brief metrics, statistics cover briefs sent by this process.
+        profile = await self.profile(user_id)
+        people = [profile] if profile["role"] == "intern" else await self.interns(user_id)
+        return [
+            {
+                "user_id": item["user_id"],
+                "display_name": item["display_name"],
+                **self.brief_counts(item["user_id"]),
+            }
+            for item in people
+        ]

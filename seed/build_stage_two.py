@@ -207,7 +207,13 @@ def build(root: Path = ROOT):
     data = root / "agent/buddy/demo/data"
     data.mkdir(parents=True, exist_ok=True)
     # Runtime demo bundle: JSON only (PyYAML is a dev dependency of the agent).
-    bundle = {"users": users, "card": card, "catalog": catalog, "targets": targets}
+    bundle = {
+        "users": users,
+        "card": card,
+        "catalog": catalog,
+        "targets": targets,
+        "calendar_baseline": scenario["calendar_baseline"],
+    }
     (data / "seed.json").write_text(
         json.dumps(bundle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )

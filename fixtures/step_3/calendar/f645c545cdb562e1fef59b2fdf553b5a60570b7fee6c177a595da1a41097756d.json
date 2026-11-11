@@ -1,0 +1,21 @@
+{
+  "server": "calendar",
+  "tool": "list-events",
+  "arguments": {
+    "calendarId": "demo-orders-calendar",
+    "timeMin": "2026-11-11T00:00:00+03:00",
+    "timeMax": "2026-11-12T00:00:00+03:00"
+  },
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"events\": [{\"id\": \"demo-standup\", \"summary\": \"Учебный стендап\", \"start\": \"2026-11-11T10:30:00+03:00\", \"previous_start\": \"2026-11-11T09:30:00+03:00\", \"htmlLink\": \"https://example.invalid/calendar/event/demo-standup\", \"task\": \"ORD-118\", \"attendees\": [{\"email\": \"anna@example.invalid\", \"responseStatus\": \"accepted\"}, {\"email\": \"oleg@example.invalid\", \"responseStatus\": \"accepted\"}, {\"email\": \"daniil@example.invalid\", \"responseStatus\": \"needsAction\"}]}, {\"id\": \"demo-sync-ord-101\", \"summary\": \"Синк по ORD-101\", \"start\": \"2026-11-11T12:00:00+03:00\", \"htmlLink\": \"https://example.invalid/calendar/event/demo-sync-ord-101\"}]}"
+      }
+    ]
+  }
+}

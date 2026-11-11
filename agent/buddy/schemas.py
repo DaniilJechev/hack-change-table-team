@@ -55,3 +55,5 @@ class ExecutorResponse(Contract):
     citations: list[Citation] = Field(default_factory=list)
     actions: list[Action] = Field(default_factory=list)
     links: list[str] = Field(default_factory=list)
+    # Set for a stored daily brief: the bot confirms delivery and attaches read signals to it.
+    brief_id: str | None = None

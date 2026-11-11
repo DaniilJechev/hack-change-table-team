@@ -1,0 +1,20 @@
+{
+  "server": "github",
+  "tool": "list_repository_collaborators",
+  "arguments": {
+    "owner": "demo-buddy",
+    "repo": "orders-onboarding"
+  },
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"collaborators\": [{\"login\": \"demo-anna\", \"role_name\": \"maintain\"}, {\"login\": \"demo-oleg\", \"role_name\": \"admin\"}, {\"login\": \"demo-daniil\", \"role_name\": \"write\"}]}"
+      }
+    ]
+  }
+}

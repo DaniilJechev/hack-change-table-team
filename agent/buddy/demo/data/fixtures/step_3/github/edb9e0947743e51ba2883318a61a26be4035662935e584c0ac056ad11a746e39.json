@@ -1,0 +1,22 @@
+{
+  "server": "github",
+  "tool": "pull_request_read",
+  "arguments": {
+    "method": "get_reviews",
+    "owner": "demo-buddy",
+    "repo": "orders-onboarding",
+    "pullNumber": 45
+  },
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"reviews\": [{\"id\": 9001, \"user\": {\"login\": \"demo-anna\"}, \"state\": \"CHANGES_REQUESTED\", \"submitted_at\": \"2026-11-10T18:20:00+03:00\", \"html_url\": \"https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestreview-9001\", \"body\": \"Учебное замечание: добавить проверку пустого статуса.\"}, {\"id\": 9002, \"user\": {\"login\": \"demo-anna\"}, \"state\": \"APPROVED\", \"submitted_at\": \"2026-11-11T16:00:00+03:00\", \"html_url\": \"https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestreview-9002\", \"body\": \"Учебное одобрение.\"}]}"
+      }
+    ]
+  }
+}

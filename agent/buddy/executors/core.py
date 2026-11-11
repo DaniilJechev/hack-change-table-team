@@ -142,13 +142,20 @@ def render(result: ExecutorResponse, sources: dict[str, str]) -> str:
 class Registry:
     cases = frozenset((*CASES, *SCHEDULED))
 
-    def __init__(self):
+    def __init__(self, *, llm=None, settings=None):
         # Imported lazily: business services depend on the context module, not on this registry.
         from buddy.access.service import AccessService
+        from buddy.brief.service import BriefService
+        from buddy.rag.index import default_index
+        from buddy.rag.qa import PlaybookService
+        from buddy.rag.search import PlaybookSearch, create_search
         from buddy.team.service import TeamService
 
         self.access = AccessService()
         self.team = TeamService(self.access)
+        search = create_search(settings) if settings is not None else PlaybookSearch(default_index())
+        self.playbook = PlaybookService(search, llm, self.team)
+        self.brief = BriefService(llm, settings)
 
     async def execute(
         self, case: str, params: dict, context: Context, runtime=None, text: str = ""
@@ -156,8 +163,14 @@ class Registry:
         case = case if case in self.cases else "out_of_scope"
         if case == "interns_status" and context.role == "intern":
             return ExecutorResponse(result="Сводка стажёров доступна только наставнику или тимлиду.")
+        if case == "playbook_qa":
+            return await self.playbook.answer(params.get("query") or text, context, runtime)
         if runtime is None:
             return template(case, params)
+        if case in {"brief_now", "brief_render"}:
+            return await self.brief.now_brief(
+                context, runtime, source=params.get("source", ""), scheduled=case == "brief_render"
+            )
         if case == "access_status":
             return await self.access.status(context, runtime)
         if case == "access_task_analysis":

@@ -29,7 +29,10 @@ class OfflineSession(BaseSession):
             raise AssertionError("Unexpected network operation in offline smoke")
         self.sent.append(method)
         return Message(
-            message_id=1, date=datetime.now(UTC), chat=Chat(id=1, type="private"), text=method.text
+            message_id=len(self.sent),
+            date=datetime.now(UTC),
+            chat=Chat(id=int(method.chat_id), type="private"),
+            text=method.text,
         )
 
     async def stream_content(self, *args: Any, **kwargs: Any) -> AsyncGenerator[bytes, None]:

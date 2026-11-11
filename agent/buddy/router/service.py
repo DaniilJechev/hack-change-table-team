@@ -10,6 +10,7 @@ CASES = get_args(Case)
 PARAMS = {name: frozenset() for name in CASES}
 PARAMS.update(
     {
+        "brief_now": {"source"},
         "access_task_analysis": {"task"},
         "team_q1": {"area"},
         "team_q2": {"situation"},

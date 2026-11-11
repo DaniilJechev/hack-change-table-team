@@ -1,0 +1,19 @@
+{
+  "server": "jira",
+  "tool": "jira_get_issue",
+  "arguments": {
+    "issue_key": "ORD-118"
+  },
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"key\": \"ORD-118\", \"epic_key\": \"ORD-100\", \"assignee\": \"demo-daniil\", \"team_id\": \"demo-orders\", \"summary\": \"Учебная проверка заказов\", \"description\": \"Добавить фильтр по статусу в репозитории orders-onboarding, сверить план на доске планирования в Miro и обсудить на стендапе. Конфигурацию production-config не менять.\", \"url\": \"https://example.invalid/jira/browse/ORD-118\"}"
+      }
+    ]
+  }
+}

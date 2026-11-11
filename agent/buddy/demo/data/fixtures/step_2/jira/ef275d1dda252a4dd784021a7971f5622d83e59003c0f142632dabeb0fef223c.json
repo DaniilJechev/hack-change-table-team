@@ -1,0 +1,21 @@
+{
+  "server": "jira",
+  "tool": "jira_search",
+  "arguments": {
+    "jql": "project = ORD AND (assignee = \"demo.daniil\" OR comment ~ \"demo.daniil\") ORDER BY updated DESC",
+    "fields": "summary,status,assignee,duedate,created,updated,comment",
+    "limit": 20
+  },
+  "step": "step_2",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "isError": false,
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"issues\": [{\"key\": \"ORD-118\", \"summary\": \"Учебная проверка заказов\", \"status\": {\"name\": \"In Progress\"}, \"assignee\": {\"name\": \"demo.daniil\"}, \"duedate\": \"2026-11-12\", \"created\": \"2026-11-05T10:00:00+03:00\", \"updated\": \"2026-11-10T19:05:00+03:00\", \"url\": \"https://example.invalid/jira/browse/ORD-118\", \"comments\": [{\"id\": \"5001\", \"author\": {\"name\": \"demo.oleg\", \"display_name\": \"Олег (демо)\"}, \"body\": \"demo.daniil, сверь, пожалуйста, фильтр с планом на доске.\", \"created\": \"2026-11-10T19:05:00+03:00\", \"url\": \"https://example.invalid/jira/browse/ORD-118?focusedCommentId=5001\"}]}, {\"key\": \"ORD-121\", \"summary\": \"Учебные тесты фильтра\", \"status\": {\"name\": \"To Do\"}, \"assignee\": {\"name\": \"demo.daniil\"}, \"duedate\": \"2026-11-20\", \"created\": \"2026-11-10T16:00:00+03:00\", \"updated\": \"2026-11-10T16:00:00+03:00\", \"url\": \"https://example.invalid/jira/browse/ORD-121\", \"comments\": []}]}"
+      }
+    ]
+  }
+}

@@ -48,8 +48,9 @@ def test_st2_demo_1_boundaries_reset_off_and_bounded_memory():
     assert not controller.active(1)
     controller.command(1)
     controller.command(1, "next")
+    assert "Шаг 3/3" in controller.command(1, "next")
     assert "последний" in controller.command(1, "next")
-    assert "Шаг 1/2" in controller.command(1, "reset")
+    assert "Шаг 1/3" in controller.command(1, "reset")
     controller.command(2)
     controller.command(3)
     assert not controller.active(1) and len(controller.sessions) == 2

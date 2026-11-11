@@ -1,0 +1,35 @@
+{
+  "server": "calendar",
+  "step": "step_3",
+  "origin": "synthetic",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "tools": [
+    {
+      "name": "list-events",
+      "description": "Synthetic test contract, not live discovery",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "calendarId": {
+            "type": "string"
+          },
+          "timeMin": {
+            "type": "string"
+          },
+          "timeMax": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "calendarId",
+          "timeMin",
+          "timeMax"
+        ],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

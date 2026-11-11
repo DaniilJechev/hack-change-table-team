@@ -81,8 +81,9 @@ async def help_command(
         text = (
             "/start — профиль, /ask — восемь типов вопросов, /demo — синтетический сценарий, "
             "/demo next — следующий шаг, /demo reset — сначала, /demo off — выход. "
+            "/brief — бриф изменений, /stats — статистика брифов, /settings — время и тихий режим. "
             "/access — доступы, /teamcard — карточка для наставника/тимлида. "
-            "H2 отвечает по данным команды. Бриф H0 и поиск H3 появятся позже."
+            "Вопросы о команде и о процессах из AvitoTech Playbook можно писать обычным текстом."
         )
     await message.answer(text, reply_markup=menu())
 

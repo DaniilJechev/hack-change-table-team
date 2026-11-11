@@ -22,6 +22,14 @@ class Settings(BaseSettings):
     health_host: str = "0.0.0.0"
     health_port: int = Field(default=8081, ge=1, le=65535)
     access_monitor_seconds: int = Field(default=3600, ge=60, le=86400)
+    # H3 search: bm25 needs no model and no database; vector and rrf load e5 lazily and use pgvector.
+    rag_search_mode: Literal["bm25", "vector", "rrf"] = "bm25"
+    rag_database_url: SecretStr = SecretStr("")
+    rag_min_similarity: float = Field(default=0.82, ge=0, le=1)
+    # H0: default send time and time zone of the morning brief; public base of the /r redirect.
+    brief_time: str = Field(default="09:30", pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
+    brief_timezone: str = "Europe/Moscow"
+    redirect_base_url: str = ""
 
     @model_validator(mode="after")
     def validate_live(self) -> "Settings":

@@ -1,0 +1,25 @@
+{
+  "total": 35,
+  "in_corpus": 30,
+  "out_of_corpus": 5,
+  "search_mode": "rrf",
+  "degraded_to_bm25": false,
+  "fragments": 622,
+  "commit": "0c1d2aa1501ca6889357908f54b12695f0534e48",
+  "routing_accuracy": 1.0,
+  "source_top1": 1.0,
+  "source_top3": 1.0,
+  "false_refusals": 0,
+  "out_of_corpus_refused": 0.6,
+  "failures": [
+    {
+      "id": "h3-out-02",
+      "problem": "answered_out_of_corpus"
+    },
+    {
+      "id": "h3-out-03",
+      "problem": "answered_out_of_corpus"
+    }
+  ],
+  "llm": "not used"
+}

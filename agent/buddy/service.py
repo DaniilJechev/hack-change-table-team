@@ -8,9 +8,12 @@ from buddy.schemas import ExecutorResponse
 class AgentService:
     """Router → Executor plus H1/H2 interactive flows (marks, escalation, answers, FAQ, monitoring)."""
 
-    def __init__(self, router: Router, *, demo_mode: bool, live: Runtime | None = None):
+    def __init__(
+        self, router: Router, *, demo_mode: bool, live: Runtime | None = None, settings=None, llm=None
+    ):
         self.router = router
-        self.executors = Registry()
+        self.executors = Registry(llm=llm, settings=settings)
+        self.brief_messages: dict[tuple[int, int], str] = {}
         self.demo = DemoController(demo_mode)
         self.live = live
         self.chats: dict[str, int] = {}
@@ -153,3 +156,49 @@ class AgentService:
                 + ("\n" + "\n".join(fields) if fields else " Проверьте поля и принадлежность своей команде.")
             )
         return ExecutorResponse(result=f"Карточка команды загружена. Версия: {card['version']}.")
+
+    async def brief_delivered(self, response: ExecutorResponse, context: Context, ok: bool) -> None:
+        runtime = self.runtime(context)
+        if response.brief_id and runtime is not None:
+            await self.executors.brief.delivered(response.brief_id, runtime, ok)
+
+    def remember_brief(self, chat_id: int, message_id: int, brief_id: str) -> None:
+        self.brief_messages[(chat_id, message_id)] = brief_id
+        while len(self.brief_messages) > 1024:
+            self.brief_messages.pop(next(iter(self.brief_messages)))
+
+    async def brief_signal(self, kind: str, brief_id: str, context: Context) -> ExecutorResponse:
+        runtime = self.runtime(context)
+        if runtime is None:
+            return ExecutorResponse(result="Брифы сейчас недоступны.")
+        return await self.executors.brief.signal(kind, brief_id, context, runtime)
+
+    async def brief_reply(self, chat_id: int, message_id: int, context: Context) -> None:
+        brief_id = self.brief_messages.get((chat_id, message_id))
+        runtime = self.runtime(context)
+        if brief_id and runtime is not None:
+            await self.executors.brief.replied(brief_id, context, runtime)
+
+    async def stats(self, context: Context) -> ExecutorResponse:
+        runtime = self.runtime(context)
+        if runtime is None:
+            return ExecutorResponse(result="Статистика сейчас недоступна.")
+        return await self.executors.brief.stats(context, runtime)
+
+    async def settings(self, context: Context, arguments: str) -> ExecutorResponse:
+        runtime = self.runtime(context)
+        if runtime is None:
+            return ExecutorResponse(result="Настройки сейчас недоступны.")
+        return await self.executors.brief.settings(context, runtime, arguments)
+
+    async def briefs_due(self) -> list[tuple[int, ExecutorResponse, Context]]:
+        """Scheduler tick (live mode): morning briefs that are due for users seen by this process."""
+        result = []
+        for user_id, context in list(self.known.items()):
+            runtime = self.runtime(context)
+            if runtime is None or user_id not in self.chats:
+                continue
+            response = await self.executors.brief.scheduled(context, runtime)
+            if response is not None:
+                result.append((self.chats[user_id], response, context))
+        return result
