@@ -164,9 +164,18 @@ class Registry:
         if case == "interns_status" and context.role == "intern":
             return ExecutorResponse(result="Сводка стажёров доступна только наставнику или тимлиду.")
         if case == "playbook_qa":
+            if params.get("chunks"):
+                # FR-H3-07: «подробнее» answers from the chunk IDs kept in memory, without a new search.
+                chunks = [chunk for chunk in params["chunks"].split(",") if chunk]
+                return await self.playbook.details(chunks, params.get("query") or text, context, runtime)
             return await self.playbook.answer(params.get("query") or text, context, runtime)
         if runtime is None:
             return template(case, params)
+        if case == "brief_now" and params.get("brief_id"):
+            # FR-H0-12: a follow-up about an item of a stored brief (by number or PR), resolved from memory.
+            return await self.brief.item(
+                context, runtime, params["brief_id"], item=params.get("item", ""), pr=params.get("pr", "")
+            )
         if case in {"brief_now", "brief_render"}:
             return await self.brief.now_brief(
                 context, runtime, source=params.get("source", ""), scheduled=case == "brief_render"

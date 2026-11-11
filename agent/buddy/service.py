@@ -3,6 +3,7 @@ import os
 from buddy.demo.controller import DemoController
 from buddy.executors.core import Context, Registry
 from buddy.graph import build_graph
+from buddy.memory import Memory
 from buddy.router.service import Router
 from buddy.runtime import Runtime
 from buddy.schemas import ExecutorResponse, RouteDecision
@@ -12,7 +13,14 @@ class AgentService:
     """Router → Executor plus H1/H2 interactive flows (marks, escalation, answers, FAQ, monitoring)."""
 
     def __init__(
-        self, router: Router, *, demo_mode: bool, live: Runtime | None = None, settings=None, llm=None
+        self,
+        router: Router,
+        *,
+        demo_mode: bool,
+        live: Runtime | None = None,
+        settings=None,
+        llm=None,
+        memory: Memory | None = None,
     ):
         self.router = router
         self.executors = Registry(llm=llm, settings=settings)
@@ -20,7 +28,9 @@ class AgentService:
         if engine not in {"legacy", "graph"}:
             raise ValueError("AGENT_ENGINE must be legacy or graph")
         self.engine = engine
-        self.graph = build_graph(router, self.executors) if engine == "graph" else None
+        # FR-MEM-06: in process by default; app.py passes a Redis store for live mode.
+        self.memory = memory or Memory(enabled=getattr(settings, "memory_enabled", True))
+        self.graph = build_graph(router, self.executors, self.memory, llm) if engine == "graph" else None
         self.brief_messages: dict[tuple[int, int], str] = {}
         self.demo = DemoController(demo_mode)
         self.live = live
@@ -85,7 +95,13 @@ class AgentService:
             return ExecutorResponse(result="Передача вопросов сейчас недоступна."), []
         return await self.executors.team.escalate(kind, context, runtime)
 
+    async def reset(self, context: Context) -> ExecutorResponse:
+        """FR-MEM-03: /reset forgets the dialog window of this user and team."""
+        await self.memory.clear(context)
+        return ExecutorResponse(result="Контекст диалога очищен. Следующий вопрос начнём с чистого листа.")
+
     def clear_demo(self, telegram_user: int) -> None:
+        self.memory.clear_demo(telegram_user)
         self.awaiting.pop(telegram_user, None)
         self.awaiting_card.pop(telegram_user, None)
         for cache in (

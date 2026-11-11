@@ -32,6 +32,8 @@ PROMPT = """Ты формулируешь утренний бриф стажёр
 Пункты:
 {lines}
 """
+PULL = re.compile(r"/pull/(\d+)(?:\D|$)")
+PR_TITLE = re.compile(r"\bPR #(\d+)\b")
 log = logging.getLogger(__name__)
 
 
@@ -50,6 +52,26 @@ def rank(items: list[BriefItem]) -> list[BriefItem]:
     return sorted(
         items, key=lambda item: (CLASS_ORDER[item.priority_class], -item.created_at.timestamp(), item.id)
     )
+
+
+def pr_numbers(item: BriefItem) -> list[str]:
+    """PR numbers of a GitHub item, from its URL and title (code, not the LLM)."""
+    if item.source != "github":
+        return []
+    found = PULL.findall(item.url) + PR_TITLE.findall(item.title)
+    return list(dict.fromkeys(found))
+
+
+def entities(brief_id: str, items: list[BriefItem]) -> dict[str, list[str]]:
+    """FR-H0-12: what the dialog memory keeps about a brief answer; never shown to the user."""
+    result = {"brief": [brief_id], "brief_items": [item.id for item in items]}
+    prs = list(dict.fromkeys(number for item in items for number in pr_numbers(item)))
+    tasks = list(dict.fromkeys(item.related_task for item in items if item.related_task))
+    if prs:
+        result["pr"] = prs
+    if tasks:
+        result["task"] = tasks
+    return result
 
 
 def main_action(items: list[BriefItem]) -> BriefItem | None:
@@ -213,6 +235,7 @@ class BriefService:
             result="\n".join(lines) + self._missing(missing),
             links=[self.link(item, tokens) for item in shown],
             brief_id=brief_id if persisted else None,
+            entities=entities(brief_id, shown),
         )
         if hidden:
             response.actions.append(Action(label=f"Ещё {len(hidden)}", data=f"brief:more:{brief_id}"))
@@ -302,6 +325,43 @@ class BriefService:
             return ExecutorResponse(result="Не удалось сохранить отметку. Попробуйте позже.")
         return ExecutorResponse(
             result="Отметил: бриф прочитан." if kind == "read" else "Спасибо за оценку брифа!"
+        )
+
+    async def item(
+        self, context: Context, runtime, brief_id: str, *, item: str = "", pr: str = ""
+    ) -> ExecutorResponse:
+        """FR-H0-12: a follow-up about one item of the user's brief, chosen by code by number or PR."""
+        draft = await self._draft(brief_id, context, runtime)
+        ordered = [] if draft is None or draft.context != context else draft.shown + draft.hidden
+        number = int(item) if str(item).isdigit() else 0
+        if number:
+            chosen = [(number, ordered[number - 1])] if 0 < number <= len(ordered) else []
+            missing = f"В последнем брифе нет пункта {number}."
+            title = f"Пункт {number} из брифа:"
+        else:
+            pr = str(pr).lstrip("#")
+            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if pr and pr in pr_numbers(entry)]
+            missing = f"В последнем брифе нет PR #{pr}." if pr else "В последнем брифе нет такого пункта."
+            title = f"PR #{pr} в брифе:"
+        if not chosen:
+            if number or not pr:
+                return ExecutorResponse(result=missing)
+            # FR-H0-07: no such PR in memory, answer with the usual Git-only brief.
+            fresh = await self.now_brief(context, runtime, source="github")
+            fresh.result = f"{missing}\n{fresh.result}"
+            return fresh
+        lines = [title]
+        for position, entry in chosen:
+            lines.append(f"{position}. {entry.line()}")
+            if entry.before and not entry.after:
+                lines.append(f"Было: {entry.before}.")
+            elif entry.after and not entry.before:
+                lines.append(f"Стало: {entry.after}.")
+        items = [entry for _, entry in chosen]
+        return ExecutorResponse(
+            result="\n".join(lines),
+            links=[self.link(entry, draft.tokens) for entry in items],
+            entities=entities(brief_id, items),
         )
 
     async def _event(self, context: Context, runtime, brief_id: str, kind: str) -> bool:

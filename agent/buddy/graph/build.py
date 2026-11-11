@@ -11,10 +11,14 @@ from langgraph.graph import END, START, StateGraph
 
 from buddy.executors.core import Registry, template
 from buddy.graph.state import AgentState
+from buddy.memory import followup
+from buddy.memory.store import Memory, Turn, summary_for_llm
 from buddy.router.service import Router
 from buddy.schemas import ExecutorResponse
 
 FAMILIES = ("brief", "playbook", "team", "access", "template")
+# Follow-up parameters produced by code from memory; a stored turn keeps only user-facing parameters.
+INTERNAL = frozenset({"brief_id", "item", "pr", "chunks"})
 ACCESS = frozenset({"access_status", "access_task_analysis", "interns_status", "access_events"})
 
 
@@ -53,23 +57,36 @@ def guarded(response: ExecutorResponse | None, case: str) -> ExecutorResponse:
     return response
 
 
-def build_graph(router: Router, registry: Registry):
+def build_graph(router: Router, registry: Registry, memory: Memory | None = None, llm=None):
     async def load_memory(state: AgentState) -> dict:
-        # Stage 2 (FR-MEM-01): the dialog window is loaded here. Without memory the step is a no-op.
-        return {}
+        if memory is None or state.get("decision") is not None:
+            return {"turns": []}
+        return {"turns": await memory.load(state["context"])}
 
     async def resolve_followup(state: AgentState) -> dict:
-        # Stage 2 (FR-MEM-05): short continuations are resolved here. Without memory the step is a no-op.
-        return {}
+        turns = state.get("turns", [])
+        if state.get("decision") is not None or not turns:
+            return {}
+        decision = followup.resolve(state.get("text", ""), turns)
+        if decision is not None:
+            return {"decision": decision, "followup": True}
+        # Optional LLM rewrite: validated by schema, any failure leaves the Router on the original text.
+        rewritten = await followup.rewrite(llm, state.get("text", ""), turns)
+        return {"routed": rewritten} if rewritten else {}
 
     async def route(state: AgentState) -> dict:
-        return {"decision": await router.route(state.get("text", ""), context=state["context"])}
+        text = state.get("routed") or state.get("text", "")
+        summary = summary_for_llm(state.get("turns", []))
+        if summary == "{}":
+            return {"decision": await router.route(text, context=state["context"])}
+        return {"decision": await router.route(text, context=state["context"], memory=summary)}
 
     def executor(name: str):
         async def run(state: AgentState) -> dict:
             decision = state["decision"]
+            text = state.get("routed") or state.get("text", "")
             response = await registry.execute(
-                decision.case, decision.params, state["context"], state.get("runtime"), state.get("text", "")
+                decision.case, decision.params, state["context"], state.get("runtime"), text
             )
             return {"response": response, "trace": [*state.get("trace", []), name]}
 
@@ -80,7 +97,21 @@ def build_graph(router: Router, registry: Registry):
         return {"response": guarded(state.get("response"), state["decision"].case)}
 
     async def save_memory(state: AgentState) -> dict:
-        # Stage 2 (FR-MEM-01): the turn is stored here. Without memory the step is a no-op.
+        if memory is None:
+            return {}
+        decision, response = state["decision"], state["response"]
+        case = "brief_now" if decision.case == "brief_render" else decision.case
+        if case not in Registry.cases or case == "access_events":
+            return {}
+        text = state.get("routed") or state.get("text", "")
+        params = {k: v for k, v in decision.params.items() if k not in INTERNAL}
+        turn = Turn(
+            case=case,
+            params=params,
+            entities=followup.entities(decision, text, response.entities),
+            summary=response.result,
+        )
+        await memory.save(state["context"], turn)
         return {}
 
     graph = StateGraph(AgentState)

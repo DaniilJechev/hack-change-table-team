@@ -57,3 +57,5 @@ class ExecutorResponse(Contract):
     links: list[str] = Field(default_factory=list)
     # Set for a stored daily brief: the bot confirms delivery and attaches read signals to it.
     brief_id: str | None = None
+    # FR-MEM-01: object IDs for the dialog memory (brief, brief_items, chunks, …); never shown to the user.
+    entities: dict[str, list[str]] = Field(default_factory=dict)

@@ -20,7 +20,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def demo_service(engine: str) -> tuple[AgentService, object]:
-    settings = Settings(_env_file=None, agent_engine=engine)
+    # ST4-GRAPH-2: parity is defined with memory off; follow-ups are covered by test_stage_four_memory.
+    settings = Settings(_env_file=None, agent_engine=engine, memory_enabled=False)
     service = AgentService(Router(), demo_mode=True, settings=settings)
     service.demo.command(1)
     return service, service.demo.context(1)
