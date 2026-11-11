@@ -336,7 +336,7 @@ async def test_fr_h0_08_first_signal_marks_brief_read_and_stats_show_shares():
     assert "недоступен" in (await service.signal("read", "br-missing", context, runtime)).result
 
 
-async def test_fr_h0_08_reply_is_a_read_signal_and_redirect_links_when_configured():
+async def test_fr_h0_08_reply_is_a_read_signal_and_offline_links_remain_direct():
     controller, runtime, context = demo(2)  # next morning
     settings = type(
         "S",
@@ -350,7 +350,7 @@ async def test_fr_h0_08_reply_is_a_read_signal_and_redirect_links_when_configure
     service = BriefService(settings=settings)
     response = await service.now_brief(context, runtime)
     assert "срок сегодня" in response.result and "одобрен" in response.result
-    assert all(link.startswith("https://buddy.example/r/i-") for link in response.links)
+    assert all(not link.startswith("https://buddy.example/r/") for link in response.links)
     await service.delivered(response.brief_id, runtime, True)
     await service.replied(response.brief_id, context, runtime)
     assert (await runtime.data.brief(context.user_id, response.brief_id))["events"][0]["kind"] == "reply"
@@ -388,7 +388,7 @@ async def test_fr_h0_11_save_failure_keeps_brief_usable_without_read_buttons():
     assert "Остальные" in (await service.signal("more", more, context, runtime)).result
     runtime.data.brief_status = AsyncMock(side_effect=DataError("unavailable"))
     ok = BriefService()
-    runtime.data.save_brief = AsyncMock()
+    runtime.data.save_brief = AsyncMock(return_value=None)
     saved = await ok.now_brief(context, runtime)
     await ok.delivered(saved.brief_id, runtime, True)  # status error is logged, not raised
 

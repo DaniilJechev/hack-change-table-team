@@ -12,6 +12,7 @@ import (
 )
 
 type Question struct {
+	Capability string          `json:"capability"`
 	ID         string          `json:"id"`
 	UserID     string          `json:"user_id"`
 	Text       string          `json:"text"`
@@ -35,7 +36,7 @@ type QuestionContext struct {
 func scanQuestion(row *sql.Row) (Question, error) {
 	var q Question
 	var raw, sources []byte
-	err := row.Scan(&q.ID, &q.UserID, &q.Text, &q.AssignedTo, &q.Answer, &q.Helpful, &q.CreatedAt, &raw, &q.BotAnswer, &sources, &q.BotHelpful)
+	err := row.Scan(&q.ID, &q.UserID, &q.Text, &q.AssignedTo, &q.Answer, &q.Helpful, &q.CreatedAt, &raw, &q.BotAnswer, &sources, &q.BotHelpful, &q.Capability)
 	if err != nil {
 		return q, noRows(err)
 	}
@@ -46,9 +47,15 @@ func scanQuestion(row *sql.Row) (Question, error) {
 	return q, err
 }
 
-const questionColumns = `question_id,user_id,text,coalesce(assigned_to,''),answer,helpful,created_at,context,bot_answer,bot_sources,bot_helpful`
+const questionColumns = `question_id,user_id,text,coalesce(assigned_to,''),answer,helpful,created_at,context,bot_answer,bot_sources,bot_helpful,capability`
 
 func (s *Store) SaveQuestion(ctx context.Context, actor Profile, input Question) (Question, error) {
+	if input.Capability == "" {
+		input.Capability = "h2"
+	}
+	if input.Capability != "h2" && input.Capability != "h3" {
+		return input, ErrInvalid
+	}
 	if !ValidID(input.ID) || !validText(input.Text, 8000) {
 		return input, ErrInvalid
 	}
@@ -76,14 +83,14 @@ func (s *Store) SaveQuestion(ctx context.Context, actor Profile, input Question)
 		input.Context.CheckedSources = []string{}
 	}
 	checked, _ := json.Marshal(input.Context.CheckedSources)
-	q, err := scanQuestion(s.db.QueryRowContext(ctx, `INSERT INTO questions(team_id,question_id,user_id,text,assigned_to,initial_assigned_to,context)
- SELECT $1,$2,$3,$4,nullif($5,''),nullif($5,''), jsonb_build_object('current_task',$6::text,'checked_sources',$7::jsonb,'team_id',team_id,
+	q, err := scanQuestion(s.db.QueryRowContext(ctx, `INSERT INTO questions(team_id,question_id,user_id,text,assigned_to,initial_assigned_to,capability,context)
+ SELECT $1,$2,$3,$4,nullif($5,''),nullif($5,''),$8, jsonb_build_object('current_task',$6::text,'checked_sources',$7::jsonb,'team_id',team_id,
  'internship_week',CASE WHEN internship_started_on IS NULL THEN NULL ELSE greatest(1,(CURRENT_DATE-internship_started_on)/7+1) END)
  FROM users WHERE user_id=$3 AND team_id=$1
  ON CONFLICT(team_id,question_id) DO UPDATE SET text=questions.text
  WHERE questions.user_id=excluded.user_id AND questions.text=excluded.text AND questions.initial_assigned_to IS NOT DISTINCT FROM excluded.initial_assigned_to
- AND coalesce(questions.context->>'current_task','')=$6 AND coalesce(questions.context->'checked_sources','[]'::jsonb)=$7::jsonb
- RETURNING `+questionColumns, actor.TeamID, input.ID, actor.UserID, input.Text, input.AssignedTo, input.Context.CurrentTask, string(checked)))
+ AND (questions.capability=excluded.capability OR questions.capability='unknown') AND coalesce(questions.context->>'current_task','')=$6 AND coalesce(questions.context->'checked_sources','[]'::jsonb)=$7::jsonb
+ RETURNING `+questionColumns, actor.TeamID, input.ID, actor.UserID, input.Text, input.AssignedTo, input.Context.CurrentTask, string(checked), input.Capability))
 	if errors.Is(err, ErrNotFound) {
 		return input, ErrConflict
 	}

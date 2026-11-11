@@ -43,6 +43,7 @@ class Hub:
         record_mode=False,
         connector: Callable = sdk_session,
         auth=None,
+        audit_sink=None,
     ):
         if demo_mode and record_mode:
             raise ConfigurationError("DEMO_MODE and RECORD_MODE are mutually exclusive")
@@ -68,6 +69,7 @@ class Hub:
         self.record_mode = record_mode
         self.connector = connector
         self.auth = auth or {}
+        self.audit_sink = audit_sink
         self.audit: list[dict] = []
 
     async def _tools(self, session) -> list[dict]:
@@ -179,15 +181,21 @@ class Hub:
                     else "invalid"
                 )
 
-            self.audit.append(
-                {
-                    "case": identifier(case),
-                    "server": identifier(server),
-                    "tool": identifier(tool),
-                    "user_id": identifier(user_id),
-                    "outcome": outcome,
-                }
-            )
+            record = {
+                "case": identifier(case),
+                "server": identifier(server),
+                "tool": identifier(tool),
+                "user_id": identifier(user_id),
+                "outcome": outcome,
+            }
+            self.audit.append(record)
+            if self.audit_sink is not None:
+                try:
+                    await self.audit_sink(record)
+                except Exception:
+                    import logging
+
+                    logging.getLogger(__name__).warning("MCP audit metadata could not be saved")
 
     async def probe(self) -> list[dict]:
         async def one(server):

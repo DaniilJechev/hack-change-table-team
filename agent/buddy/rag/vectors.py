@@ -10,19 +10,6 @@ from typing import Protocol
 from buddy.rag.chunks import Chunk
 
 DIMENSIONS = 384  # intfloat/multilingual-e5-small
-SCHEMA = f"""
-CREATE EXTENSION IF NOT EXISTS vector;
-CREATE TABLE IF NOT EXISTS rag_chunks (
-    id text PRIMARY KEY,
-    commit_sha text NOT NULL,
-    file text NOT NULL,
-    heading text NOT NULL,
-    url text NOT NULL,
-    body text NOT NULL,
-    embedding vector({DIMENSIONS}) NOT NULL
-);
-CREATE INDEX IF NOT EXISTS rag_chunks_commit_idx ON rag_chunks(commit_sha);
-"""
 
 
 class VectorUnavailable(Exception):
@@ -132,7 +119,6 @@ class PgVectorStore:
 
         def action(connection):
             with connection.cursor() as cursor:
-                cursor.execute(SCHEMA)
                 cursor.execute("DELETE FROM rag_chunks")
                 cursor.executemany(
                     "INSERT INTO rag_chunks (id, commit_sha, file, heading, url, body, embedding) "

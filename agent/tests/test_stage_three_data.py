@@ -43,9 +43,11 @@ async def test_st2_rest_1_seed_marks_snapshots_and_interns():
     assert error.value.kind == "forbidden"
     await data.save_snapshot("demo-daniil", "s1", [{"object_id": "demo-orders-miro", "status": "requested"}])
     interns = await data.interns("demo-anna")
-    assert [item["user_id"] for item in interns] == ["demo-daniil"]
-    assert interns[0]["snapshot"]["id"] == "s1"
-    assert [item["user_id"] for item in await data.interns("demo-oleg")] == ["demo-daniil"]
+    by_id = {item["user_id"]: item for item in interns}
+    assert set(by_id) == {"demo-daniil", "Emil_Mardanov"}
+    assert by_id["demo-daniil"]["snapshot"]["id"] == "s1"
+    assert by_id["Emil_Mardanov"]["snapshot"] is None
+    assert {item["user_id"] for item in await data.interns("demo-oleg")} == {"demo-daniil", "Emil_Mardanov"}
 
 
 async def test_st2_rest_1_seed_questions_answers_and_faq_rights():

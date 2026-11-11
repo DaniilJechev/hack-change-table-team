@@ -44,3 +44,8 @@ users:
     github: demo-petr
     jira: demo.petr
     google: petr@example.invalid
+- user_id: Emil_Mardanov
+  display_name: Эмиль
+  role: intern
+  team_id: demo-orders
+  mentor_id: demo-anna

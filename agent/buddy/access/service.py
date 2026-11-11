@@ -181,7 +181,10 @@ class AccessService:
         mentioned = {
             item["id"]
             for item in catalog
-            if any(word in text for word in (runtime.data.target(item["id"]) or {}).get("keywords", []))
+            if any(
+                word in text
+                for word in (item.get("target") or runtime.data.target(item["id"]) or {}).get("keywords", [])
+            )
         }
         note = ""
         if not mentioned:

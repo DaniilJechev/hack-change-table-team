@@ -24,7 +24,7 @@ func validText(value string, max int) bool {
 }
 func validURL(value string) bool {
 	u, err := url.Parse(value)
-	return err == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Host != "" && u.User == nil
+	return err == nil && len(value) <= 2048 && !strings.ContainsAny(value, " \t\r\n") && (u.Scheme == "http" || u.Scheme == "https") && u.Hostname() != "" && u.User == nil
 }
 func noRows(err error) error {
 	if errors.Is(err, sql.ErrNoRows) {
@@ -92,15 +92,16 @@ func (s *Store) TeamCard(ctx context.Context, actor Profile, section string, ver
 }
 
 type CatalogObject struct {
-	ID         string   `json:"id" yaml:"id"`
-	Instrument string   `json:"instrument" yaml:"instrument"`
-	Name       string   `json:"name" yaml:"name"`
-	URL        string   `json:"url" yaml:"url"`
-	RequestURL string   `json:"request_url,omitempty" yaml:"request_url,omitempty"`
-	OwnerID    string   `json:"owner_id" yaml:"owner_id"`
-	Roles      []string `json:"roles" yaml:"roles"`
-	Forbidden  bool     `json:"forbidden" yaml:"forbidden"`
-	Reason     string   `json:"reason,omitempty" yaml:"reason,omitempty"`
+	Target     map[string]any `json:"target,omitempty" yaml:"target,omitempty"`
+	ID         string         `json:"id" yaml:"id"`
+	Instrument string         `json:"instrument" yaml:"instrument"`
+	Name       string         `json:"name" yaml:"name"`
+	URL        string         `json:"url" yaml:"url"`
+	RequestURL string         `json:"request_url,omitempty" yaml:"request_url,omitempty"`
+	OwnerID    string         `json:"owner_id" yaml:"owner_id"`
+	Roles      []string       `json:"roles" yaml:"roles"`
+	Forbidden  bool           `json:"forbidden" yaml:"forbidden"`
+	Reason     string         `json:"reason,omitempty" yaml:"reason,omitempty"`
 }
 
 func (o CatalogObject) visible(role string) bool {

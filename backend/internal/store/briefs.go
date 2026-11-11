@@ -2,7 +2,9 @@ package store
 
 import (
 	"context"
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"time"
@@ -21,12 +23,13 @@ type BriefItem struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 type Brief struct {
-	ID        string      `json:"id"`
-	Items     []BriefItem `json:"items"`
-	Status    string      `json:"status"`
-	CreatedAt time.Time   `json:"created_at"`
-	SentAt    *time.Time  `json:"sent_at"`
-	ReadAt    *time.Time  `json:"read_at"`
+	ID        string            `json:"id"`
+	Items     []BriefItem       `json:"items"`
+	Status    string            `json:"status"`
+	CreatedAt time.Time         `json:"created_at"`
+	SentAt    *time.Time        `json:"sent_at"`
+	ReadAt    *time.Time        `json:"read_at"`
+	Links     map[string]string `json:"redirect_tokens"`
 }
 
 func (s *Store) SaveBrief(ctx context.Context, actor Profile, input Brief) (Brief, error) {
@@ -51,13 +54,31 @@ func (s *Store) SaveBrief(ctx context.Context, actor Profile, input Brief) (Brie
 		}
 	}
 	raw, _ := json.Marshal(input.Items)
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return input, err
+	}
+	defer tx.Rollback()
 	var id string
-	err := s.db.QueryRowContext(ctx, `INSERT INTO briefs(user_id,brief_id,items) VALUES($1,$2,$3)
+	err = tx.QueryRowContext(ctx, `INSERT INTO briefs(user_id,brief_id,items) VALUES($1,$2,$3)
  ON CONFLICT(user_id,brief_id) DO UPDATE SET items=briefs.items WHERE briefs.items=excluded.items RETURNING brief_id`, actor.UserID, input.ID, string(raw)).Scan(&id)
 	if errors.Is(err, sql.ErrNoRows) {
 		return input, ErrConflict
 	}
 	if err != nil {
+		return input, err
+	}
+	for _, item := range input.Items {
+		var bytes [32]byte
+		if _, err := rand.Read(bytes[:]); err != nil {
+			return input, err
+		}
+		if _, err := tx.ExecContext(ctx, `INSERT INTO brief_links(token,user_id,brief_id,item_id,url) VALUES($1,$2,$3,$4,$5)
+ ON CONFLICT(user_id,brief_id,item_id) DO NOTHING`, hex.EncodeToString(bytes[:]), actor.UserID, id, item.ID, item.URL); err != nil {
+			return input, err
+		}
+	}
+	if err := tx.Commit(); err != nil {
 		return input, err
 	}
 	return s.Brief(ctx, actor, id)
@@ -69,15 +90,47 @@ func (s *Store) Brief(ctx context.Context, actor Profile, id string) (Brief, err
 	if err != nil {
 		return out, noRows(err)
 	}
-	err = json.Unmarshal(raw, &out.Items)
-	return out, err
+	if err := json.Unmarshal(raw, &out.Items); err != nil {
+		return out, err
+	}
+	out.Links = map[string]string{}
+	rows, err := s.db.QueryContext(ctx, `SELECT item_id,token FROM brief_links WHERE user_id=$1 AND brief_id=$2`, actor.UserID, id)
+	if err != nil {
+		return out, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var item, token string
+		if err := rows.Scan(&item, &token); err != nil {
+			return out, err
+		}
+		out.Links[item] = token
+	}
+	return out, rows.Err()
 }
 func (s *Store) BriefStatus(ctx context.Context, actor Profile, id, status string) (Brief, error) {
+	return s.BriefDelivery(ctx, actor, id, status, nil)
+}
+
+func (s *Store) BriefDelivery(ctx context.Context, actor Profile, id, status string, calendar map[string]any) (Brief, error) {
 	if status != "sent" && status != "failed" {
 		return Brief{}, ErrInvalid
 	}
-	result, err := s.db.ExecContext(ctx, `UPDATE briefs SET status=$3,sent_at=CASE WHEN $3='sent' THEN coalesce(sent_at,now()) ELSE sent_at END
- WHERE user_id=$1 AND brief_id=$2 AND (status<>'sent' OR $3='sent')`, actor.UserID, id, status)
+	var snapshot any
+	if calendar != nil {
+		if status != "sent" {
+			return Brief{}, ErrInvalid
+		}
+		raw, err := json.Marshal(calendar)
+		if err != nil || len(raw) > 512<<10 {
+			return Brief{}, ErrInvalid
+		}
+		snapshot = string(raw)
+	}
+	result, err := s.db.ExecContext(ctx, `UPDATE briefs SET status=$3,
+ calendar=CASE WHEN status<>'sent' AND $3='sent' THEN $4::jsonb ELSE calendar END,
+ sent_at=CASE WHEN $3='sent' THEN coalesce(sent_at,clock_timestamp()) ELSE sent_at END
+ WHERE user_id=$1 AND brief_id=$2 AND (status<>'sent' OR $3='sent')`, actor.UserID, id, status, snapshot)
 	if err != nil {
 		return Brief{}, err
 	}

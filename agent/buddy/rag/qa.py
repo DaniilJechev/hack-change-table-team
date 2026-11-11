@@ -95,5 +95,5 @@ class PlaybookService:
             ],
         )
         if self.team is not None and runtime is not None:
-            response = await self.team.record(response, question, context, runtime)
+            response = await self.team.record(response, question, context, runtime, "h3")
         return response

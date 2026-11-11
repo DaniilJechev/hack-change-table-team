@@ -216,7 +216,13 @@ class SeedData(BriefState):
         return deepcopy(entry)
 
     async def record_bot_answer(
-        self, user_id: str, question_id: str, text: str, answer: str, sources: list[str]
+        self,
+        user_id: str,
+        question_id: str,
+        text: str,
+        answer: str,
+        sources: list[str],
+        capability: str = "h2",
     ) -> dict:
         if not answer.strip() or not sources:
             raise DataError("invalid")
@@ -224,7 +230,7 @@ class SeedData(BriefState):
         record = self.questions[question_id]
         if record.get("bot_answer") and (record["bot_answer"], record["bot_sources"]) != (answer, sources):
             raise DataError("conflict")
-        record.update(bot_answer=answer, bot_sources=list(sources))
+        record.update(bot_answer=answer, bot_sources=list(sources), capability=capability)
         return deepcopy(record)
 
     async def rate_bot_answer(self, user_id: str, question_id: str, helpful: bool) -> None:
