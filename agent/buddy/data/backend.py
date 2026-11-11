@@ -261,7 +261,15 @@ class BackendData:
             raise
 
     async def save_brief(self, user_id: str, brief_id: str, items: list[dict]) -> dict:
-        return await self._rest("POST", "/api/v1/briefs", user_id, {"id": brief_id, "items": items})
+        stored = [
+            {
+                **item,
+                **({"source": "google_calendar"} if item.get("source") == "calendar" else {}),
+                **({"priority_class": "information"} if item.get("priority_class") == "info" else {}),
+            }
+            for item in items
+        ]
+        return await self._rest("POST", "/api/v1/briefs", user_id, {"id": brief_id, "items": stored})
 
     async def brief_status(
         self, user_id: str, brief_id: str, status: str, calendar: dict | None = None, at: str = ""
@@ -280,7 +288,13 @@ class BackendData:
         await self._rest("POST", path, user_id, body)
 
     async def brief(self, user_id: str, brief_id: str) -> dict:
-        return await self._rest("GET", "/api/v1/briefs/" + quote(brief_id, safe=""), user_id)
+        record = await self._rest("GET", "/api/v1/briefs/" + quote(brief_id, safe=""), user_id)
+        for item in record.get("items", []):
+            if item.get("source") == "google_calendar":
+                item["source"] = "calendar"
+            if item.get("priority_class") == "information":
+                item["priority_class"] = "info"
+        return record
 
     async def last_brief_sent(self, user_id: str) -> str | None:
         return (await self._rest("GET", "/api/v1/brief-state", user_id))["last_sent"]

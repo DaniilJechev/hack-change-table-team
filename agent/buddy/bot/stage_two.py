@@ -19,16 +19,38 @@ def team_menu() -> InlineKeyboardMarkup:
 
 
 def keyboard(actions: list[Action]) -> InlineKeyboardMarkup | None:
-    rows = [
-        [
+    rows = []
+    ratings = {}
+    for action in actions:
+        if not (action.url or action.data):
+            continue
+        button = (
             InlineKeyboardButton(text=action.label, url=action.url)
             if action.url
             else InlineKeyboardButton(text=action.label, callback_data=action.data)
-        ]
-        for action in actions
-        if action.url or action.data
-    ]
+        )
+        if not action.url and (action.data or "").startswith(("brief:positive:", "brief:negative:")):
+            brief_id = action.data.split(":", 2)[2]
+            if brief_id not in ratings:
+                ratings[brief_id] = []
+                rows.append(ratings[brief_id])
+            ratings[brief_id].append(button)
+            ratings[brief_id].sort(key=lambda item: item.callback_data.startswith("brief:negative:"))
+        else:
+            rows.append([button])
     return InlineKeyboardMarkup(inline_keyboard=rows) if rows else None
+
+
+async def hide_brief_feedback(message: Message, brief_id: str) -> None:
+    if message.reply_markup is None:
+        return
+    removed = {f"brief:{kind}:{brief_id}" for kind in ("positive", "negative", "read")}
+    rows = [
+        [button for button in row if button.callback_data not in removed]
+        for row in message.reply_markup.inline_keyboard
+    ]
+    rows = [row for row in rows if row]
+    await message.edit_reply_markup(reply_markup=InlineKeyboardMarkup(inline_keyboard=rows) if rows else None)
 
 
 def response_menu(case: str, response: ExecutorResponse | None = None):
@@ -245,7 +267,10 @@ async def choose(
         await message.answer("Хорошо, в FAQ не сохраняю.")
     elif kind == "brief":
         action, _, brief_id = value.partition(":")
-        await send(message, profile, await agent_service.brief_signal(action, brief_id, profile))
+        response = await agent_service.brief_signal(action, brief_id, profile)
+        if action in {"positive", "negative"} and response.feedback_saved:
+            await hide_brief_feedback(message, brief_id)
+        await send(message, profile, response)
     elif kind == "rate":
         target, _, mark = value.rpartition(":")
         await send(message, profile, await agent_service.rate(target, mark == "1", profile))
