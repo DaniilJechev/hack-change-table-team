@@ -63,6 +63,10 @@ grafana-setup:
 stage4-check:
 	$(PYTHON) infra/stage_four_probe.py --compose "$(COMPOSE)"
 
+.PHONY: github-check
+github-check:
+	$(PYTHON) infra/github_probe.py --compose "$(COMPOSE)" --user "$(USER_ID)"
+
 invite:
 	$(COMPOSE) exec -T backend backend invite --user "$(USER_ID)" --ttl "$(or $(TTL),24h)"
 

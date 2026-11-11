@@ -61,21 +61,22 @@ async def call(runtime, context, server: str, tool: str, arguments: dict):
 async def github(context, runtime, target: dict, login: str, since: datetime) -> Collected:
     result = Collected()
     owner, repo = target["owner"], target["repo"]
-    listed = await call(
-        runtime,
-        context,
-        "github",
-        "list_pull_requests",
-        {"owner": owner, "repo": repo, "state": "open", "perPage": 10},
-    )
+    live = not context.demo
+    arguments = {"owner": owner, "repo": repo, "state": "open", "perPage": 10}
+    if live:
+        arguments.update(state="all", perPage=100, sort="updated", direction="desc")
+    listed = await call(runtime, context, "github", "list_pull_requests", arguments)
     mine = []
     for pull in rows(listed, "pull_requests", "items"):
         number, url = pull.get("number"), pull.get("html_url") or ""
         title = f"PR #{number} «{pull.get('title', '')}»"
         updated = moment(pull.get("updated_at"))
         if login_of(pull.get("user")) == login:
-            mine.append((number, title, url))
-        elif login in {login_of(item) for item in pull.get("requested_reviewers") or []}:
+            if not live or (updated and updated > since):
+                mine.append((number, title, url))
+        elif (not live or pull.get("state") == "open") and login in {
+            login_of(item) for item in pull.get("requested_reviewers") or []
+        }:
             if updated and updated > since:
                 result.items.append(
                     BriefItem(
@@ -89,13 +90,19 @@ async def github(context, runtime, target: dict, login: str, since: datetime) ->
                         created_at=updated,
                     )
                 )
-    for number, title, url in mine[:3]:
+    for number, title, url in mine if live else mine[:3]:
         reviews = await call(
             runtime,
             context,
             "github",
             "pull_request_read",
-            {"method": "get_reviews", "owner": owner, "repo": repo, "pullNumber": number},
+            {
+                "method": "get_reviews",
+                "owner": owner,
+                "repo": repo,
+                "pullNumber": number,
+                **({"perPage": 100} if live else {}),
+            },
         )
         latest: dict[str, dict] = {}
         for review in rows(reviews, "reviews", "items"):
@@ -126,6 +133,48 @@ async def github(context, runtime, target: dict, login: str, since: datetime) ->
                     created_at=review["at"],
                 )
             )
+        if live:
+            for method in ("get_comments", "get_review_comments"):
+                value = await call(
+                    runtime,
+                    context,
+                    "github",
+                    "pull_request_read",
+                    {
+                        "method": method,
+                        "owner": owner,
+                        "repo": repo,
+                        "pullNumber": number,
+                        "perPage": 100,
+                    },
+                )
+                comments = rows(value, "comments", "items")
+                if method == "get_review_comments":
+                    comments = [
+                        comment
+                        for thread in rows(value, "review_threads")
+                        for comment in rows(thread, "comments")
+                    ]
+                for comment in comments:
+                    at = moment(comment.get("updated_at") or comment.get("created_at"))
+                    author = login_of(comment.get("user") or comment.get("author"))
+                    link = comment.get("html_url") or comment.get("url") or ""
+                    if not at or at <= since or not author or author == login:
+                        continue
+                    result.items.append(
+                        BriefItem(
+                            id=item_id(
+                                context.user_id, "gh", owner, repo, number, method, link, at.isoformat()
+                            ),
+                            source="github",
+                            type="pr_comment",
+                            title=f"{title} — новый комментарий ({author})",
+                            url=link,
+                            priority_class="people",
+                            related_task=task_key(title),
+                            created_at=at,
+                        )
+                    )
     return result
 
 

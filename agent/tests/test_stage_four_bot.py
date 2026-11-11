@@ -53,8 +53,8 @@ async def test_st4_demo_1_brief_and_playbook_full_flow_in_telegram():
         assert "▶ Главное сегодня: исправить замечания в PR #45" in brief.text
         assert brief.text.count("https://example.invalid/") == 5 and "Источники:" in brief.text
         labels = [button.text for button in buttons(brief)]
-        assert labels == ["Ещё 3", "✅ Прочитал", "👍", "👎"]
-        brief_id = data_of(brief, "brief:read:").rsplit(":", 1)[1]
+        assert labels == ["Ещё 3", "👍", "👎"]
+        brief_id = data_of(brief, "brief:positive:").rsplit(":", 1)[1]
         assert app.service.brief_messages == {(42, len(app.session.sent)): brief_id}
         assert "отправлено 1, прочитано 0%" in (await app.send("/stats")).text  # no signal yet
         await app.callback(data_of(brief, "brief:more:"))
@@ -145,7 +145,7 @@ async def test_st4_live_1_scheduled_brief_loop_and_flows_without_runtime():
         task.cancel()
         await asyncio.gather(task, return_exceptions=True)
         morning = next(message for message in app.session.sent if "Утренний бриф" in message.text)
-        assert morning.chat_id == 42 and [b.text for b in buttons(morning)][1] == "✅ Прочитал"
+        assert morning.chat_id == 42 and [b.text for b in buttons(morning)][1:] == ["👍", "👎"]
         assert (await fixtures.data.last_brief_sent("demo-daniil")) is not None
         assert await app.service.briefs_due() == []  # once per day
         await reply(app, "Спасибо!", to=list(app.service.brief_messages)[0][1])

@@ -57,3 +57,5 @@ class ExecutorResponse(Contract):
     links: list[str] = Field(default_factory=list)
     # Set for a stored daily brief: the bot confirms delivery and attaches read signals to it.
     brief_id: str | None = None
+    # Internal UI acknowledgment; never inferred from user-visible wording or serialized for LLM.
+    feedback_saved: bool = Field(default=False, exclude=True)

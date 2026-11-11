@@ -21,6 +21,7 @@ var (
 type Store struct {
 	db           *sql.DB
 	flagDefaults map[string]bool
+	github       *githubSource
 }
 
 // Open never includes the DSN or driver error in its error messages.

@@ -16,7 +16,7 @@ STEPS = [
     ("Вход в демо", ["/demo"]),
     (
         "H0 · утренний бриф",
-        ["/brief", "button:brief:more:", "button:brief:read:", "Есть что по PR?", "Что нового?"],
+        ["/brief", "button:brief:more:", "button:brief:positive:", "Есть что по PR?", "Что нового?"],
     ),
     ("H0 · статистика и настройки", ["/stats", "/settings quiet on"]),
     ("H1 · доступы", ["Что с моими доступами?", "button:mark:", "Какие доступы нужны для ORD-118?"]),
