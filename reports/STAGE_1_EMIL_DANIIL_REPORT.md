@@ -32,7 +32,7 @@
 | CLI | Команды discover, call и auth-miro. По умолчанию offline; настоящие подключения требуют явного --live. |
 
 Основные файлы: agent/buddy/mcp_hub/{config,transport,policy,hub,fixtures,oauth,cli}.py.
-Инструкция: [mcp/CLIENTS.md](mcp/CLIENTS.md). Поля настроек: [mcp/clients.env.example](mcp/clients.env.example).
+Инструкция: [mcp/CLIENTS.md](../mcp/CLIENTS.md). Поля настроек: [mcp/clients.env.example](../mcp/clients.env.example).
 
 ### Имена инструментов и их статус
 
