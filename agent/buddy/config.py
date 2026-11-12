@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     brief_time: str = Field(default="09:30", pattern=r"^([01]\d|2[0-3]):[0-5]\d$")
     brief_timezone: str = "Europe/Moscow"
     redirect_base_url: str = ""
+    # ST4-GRAPH-2: request pipeline — deterministic LangGraph StateGraph or the original Router → Executor.
+    agent_engine: Literal["legacy", "graph"] = "graph"
+    # FR-MEM-06: dialog memory (graph engine only). Live mode stores it in Redis when REDIS_URL is set.
+    memory_enabled: bool = True
+    redis_url: str = ""
 
     @model_validator(mode="after")
     def validate_live(self) -> "Settings":

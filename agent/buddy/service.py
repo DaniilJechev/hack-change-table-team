@@ -1,18 +1,36 @@
+import os
+
 from buddy.demo.controller import DemoController
 from buddy.executors.core import Context, Registry
+from buddy.graph import build_graph
+from buddy.memory import Memory
 from buddy.router.service import Router
 from buddy.runtime import Runtime
-from buddy.schemas import ExecutorResponse
+from buddy.schemas import ExecutorResponse, RouteDecision
 
 
 class AgentService:
     """Router → Executor plus H1/H2 interactive flows (marks, escalation, answers, FAQ, monitoring)."""
 
     def __init__(
-        self, router: Router, *, demo_mode: bool, live: Runtime | None = None, settings=None, llm=None
+        self,
+        router: Router,
+        *,
+        demo_mode: bool,
+        live: Runtime | None = None,
+        settings=None,
+        llm=None,
+        memory: Memory | None = None,
     ):
         self.router = router
         self.executors = Registry(llm=llm, settings=settings)
+        engine = getattr(settings, "agent_engine", None) or os.environ.get("AGENT_ENGINE", "graph")
+        if engine not in {"legacy", "graph"}:
+            raise ValueError("AGENT_ENGINE must be legacy or graph")
+        self.engine = engine
+        # FR-MEM-06: in process by default; app.py passes a Redis store for live mode.
+        self.memory = memory or Memory(enabled=getattr(settings, "memory_enabled", True))
+        self.graph = build_graph(router, self.executors, self.memory, llm) if engine == "graph" else None
         self.brief_messages: dict[tuple[int, int], str] = {}
         self.demo = DemoController(demo_mode)
         self.live = live
@@ -38,6 +56,11 @@ class AgentService:
         return self.chats.get(user_id)
 
     async def handle(self, text: str, context: Context):
+        if self.graph is not None:
+            state = await self.graph.ainvoke(
+                {"text": text, "context": context, "runtime": self.runtime(context)}
+            )
+            return state["decision"], state["response"]
         decision = await self.router.route(text, context=context)
         response = await self.executors.execute(
             decision.case, decision.params, context, self.runtime(context), text
@@ -45,6 +68,13 @@ class AgentService:
         return decision, response
 
     async def trigger(self, case: str, context: Context):
+        if self.graph is not None:
+            # Scheduled cases (brief_render, access_events) are not Router cases: skip schema validation.
+            decision = RouteDecision.model_construct(case=case, params={})
+            state = await self.graph.ainvoke(
+                {"context": context, "runtime": self.runtime(context), "decision": decision}
+            )
+            return state["response"]
         return await self.executors.trigger(case, context, self.runtime(context))
 
     async def mark(self, object_id: str, context: Context) -> ExecutorResponse:
@@ -65,7 +95,13 @@ class AgentService:
             return ExecutorResponse(result="Передача вопросов сейчас недоступна."), []
         return await self.executors.team.escalate(kind, context, runtime)
 
+    async def reset(self, context: Context) -> ExecutorResponse:
+        """FR-MEM-03: /reset forgets the dialog window of this user and team."""
+        await self.memory.clear(context)
+        return ExecutorResponse(result="Контекст диалога очищен. Следующий вопрос начнём с чистого листа.")
+
     def clear_demo(self, telegram_user: int) -> None:
+        self.memory.clear_demo(telegram_user)
         self.awaiting.pop(telegram_user, None)
         self.awaiting_card.pop(telegram_user, None)
         for cache in (

@@ -116,12 +116,17 @@ services:
       BRIEF_TIME: ${BRIEF_TIME:-09:30}
       BRIEF_TIMEZONE: ${BRIEF_TIMEZONE:-Europe/Moscow}
       REDIRECT_BASE_URL: ${REDIRECT_BASE_URL:-}
+      AGENT_ENGINE: ${AGENT_ENGINE:-graph}
+      MEMORY_ENABLED: ${MEMORY_ENABLED:-true}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     volumes:
       - hf_models:/models
     ports:
       - '127.0.0.1:${AGENT_PORT:-8081}:8081'
     depends_on:
       backend:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     healthcheck:
       test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health', timeout=2)"]

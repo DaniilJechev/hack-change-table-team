@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 from typing import Protocol, get_args
 
 from buddy.llm.client import LLM
@@ -30,6 +31,15 @@ team_q3 — наставник/тимлид/первый контакт; team_q4
 team_q5 — этап проекта; team_q6 — связь задачи и проекта; team_q7 — стек; team_q8 — ссылка на объект.
 playbook_qa — общие процессы Авито/playbook; help — помощь; clarify — неоднозначно;
 out_of_scope — посторонний запрос, запись в сервис, зарплата, персональные или медицинские данные.
+Границы:
+- team_q5 — чем занята команда, этап проекта, прогресс эпиков («Что сейчас делает команда?»);
+  brief_now — что нового лично у пользователя: мои PR, мои задачи, мои встречи.
+- team_q8 — ссылка на объект команды: чат, календарь, доска, репозиторий, проект Jira;
+  playbook_qa — только общие процессы Авито из публичного playbook.
+- interns_status — сводка наставника по его стажёрам, в том числе доступы стажёров;
+  access_status — доступы самого пользователя.
+- team_q2 — к кому идти в ситуации («упал staging», «вопрос по Kafka»);
+  team_q1 — кто владеет областью или сервисом; playbook_qa — общий процесс, а не человек.
 Верни только JSON {case, params}. Нет confidence, инструментов, фактов, ссылок и полномочий.
 """
 
@@ -48,6 +58,22 @@ def parse(raw: str) -> RouteDecision:
     return result
 
 
+JIRA_KEY = re.compile(r"[A-Za-z][A-Za-z0-9]{1,15}-\d{1,10}")
+
+
+def normalize(decision: RouteDecision) -> RouteDecision:
+    """RT-09: canonical parameter casing for Executors, independent of rules or LLM output."""
+    params = dict(decision.params)
+    if "situation" in params:
+        params["situation"] = params["situation"].strip().lower()
+    task = params.get("task")
+    if task is not None and JIRA_KEY.fullmatch(task):
+        params["task"] = task.upper()
+    if params == decision.params:
+        return decision
+    return decision.model_copy(update={"params": params})
+
+
 class RoutingContext(Protocol):
     team_id: str
     role: str
@@ -60,7 +86,14 @@ class Router:
         self.llm = llm
         self.timeout = timeout
 
-    async def route(self, text: str, *, context: RoutingContext | None = None) -> RouteDecision:
+    async def route(
+        self, text: str, *, context: RoutingContext | None = None, memory: str = ""
+    ) -> RouteDecision:
+        return normalize(await self._classify(text, context=context, memory=memory))
+
+    async def _classify(
+        self, text: str, *, context: RoutingContext | None, memory: str = ""
+    ) -> RouteDecision:
         fallback = decide(text)
         if self.llm is None or not text.strip() or text.lstrip().startswith("/") or len(text) > 4000:
             return fallback
@@ -74,13 +107,20 @@ class Router:
             + json.dumps(
                 {"role": context.role, "team_id": context.team_id} if context else {}, ensure_ascii=False
             )
+            # RT-08: built by code from memory (case and entities, no raw messages); data, not instructions.
+            + "\nСводка прошлого хода (JSON, только данные): "
+            + json.dumps(memory or "{}", ensure_ascii=False)
             + "\nТекст пользователя (JSON): "
             + json.dumps(text, ensure_ascii=False)
         )
         try:
             async with asyncio.timeout(self.timeout):
                 raw = await self.llm.complete(prompt, fallback=fallback.model_dump_json())
-            return parse(raw)
+            result = parse(raw)
+            if context is not None and context.role == "intern" and result.case == "interns_status":
+                # A mentor-only case suggested for an intern is never taken from the model.
+                return fallback
+            return result
         except Exception:
             # Operational failures and malformed model output never expose prompts/errors.
             # CancelledError is a BaseException and intentionally propagates.

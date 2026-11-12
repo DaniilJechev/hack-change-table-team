@@ -12,10 +12,13 @@ dependencies = [
   "aiohttp>=3.11,<4",
   "httpx>=0.28,<1",
   "jsonschema>=4.26,<5",
+  "langgraph>=1.0,<2",
   "mcp>=1.28,<2",
   "pydantic>=2.11,<3",
   "pydantic-settings>=2.10,<3",
   "PyYAML>=6,<7",
+  # FR-MEM-06: dialog memory in live mode (the compose Redis); demo and tests keep it in process.
+  "redis>=5.2,<8",
   "tzdata>=2025.1",
 ]
 

@@ -11,6 +11,7 @@ from buddy.config import Settings
 from buddy.data.backend import BackendData
 from buddy.executors.core import format_response
 from buddy.llm.client import create_llm
+from buddy.memory import Memory, RedisStore
 from buddy.router.service import Router
 from buddy.runtime import Runtime
 from buddy.service import AgentService
@@ -82,7 +83,12 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         else None
     )
     llm = None if settings.demo_mode else create_llm(settings)
-    service = AgentService(Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm)
+    memory = None
+    if settings.redis_url and not settings.demo_mode:  # pragma: no cover - needs a Redis server
+        memory = Memory(RedisStore.from_url(settings.redis_url), enabled=settings.memory_enabled)
+    service = AgentService(
+        Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm, memory=memory
+    )
     bot = None
     polling = None
     monitor = None

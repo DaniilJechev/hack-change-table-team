@@ -16,7 +16,18 @@ STEPS = [
     ("Вход в демо", ["/demo"]),
     (
         "H0 · утренний бриф",
-        ["/brief", "button:brief:more:", "button:brief:positive:", "Есть что по PR?", "Что нового?"],
+        [
+            "/brief",
+            # Context memory (FR-H0-12): follow-ups about the brief that was just delivered.
+            "подробнее про 2-й пункт",
+            "что с PR #45?",
+            "подробнее про 9-й пункт",
+            "button:brief:more:",
+            "button:brief:positive:",
+            "Есть что по PR?",
+            "а по календарю?",
+            "Что нового?",
+        ],
     ),
     ("H0 · статистика и настройки", ["/stats", "/settings quiet on"]),
     ("H1 · доступы", ["Что с моими доступами?", "button:mark:", "Какие доступы нужны для ORD-118?"]),
@@ -39,6 +50,10 @@ STEPS = [
     (
         "H3 · playbook",
         ["Что такое Zero Bug Policy?", "Что такое юниты и кластеры?", "Какой пароль от Wi-Fi в офисе?"],
+    ),
+    (
+        "Память · уточнения по playbook и /reset",
+        ["Что такое Zero Bug Policy?", "а кто за неё отвечает?", "подробнее", "/reset", "подробнее"],
     ),
     ("H0 · следующее утро", ["/demo next", "/brief"]),
     ("Роль наставника", ["/demo mentor", "/interns", "/stats"]),
@@ -70,7 +85,8 @@ async def run() -> str:
         "# Протокол полного прогона демо-сценария (Этап 4)",
         "",
         "Получен командой `python scripts/demo_transcript.py`: настоящий диспетчер aiogram, офлайн-сессия,",
-        "`DEMO_MODE=true`, поиск по playbook в режиме `bm25`, без LLM и без внешних аккаунтов.",
+        "`DEMO_MODE=true`, движок `AGENT_ENGINE=graph` с контекстной памятью в процессе,",
+        "поиск по playbook в режиме `bm25`, без LLM и без внешних аккаунтов.",
         "Все данные команды синтетические (`example.invalid`); ответы H3 — по публичному AvitoTech Playbook.",
     ]
     try:
