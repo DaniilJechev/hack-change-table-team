@@ -83,6 +83,12 @@ class AgentService:
             return ExecutorResponse(result="Данные доступов сейчас недоступны.")
         return await self.executors.access.mark(context, runtime, object_id)
 
+    async def request_access(self, object_id: str, context: Context) -> ExecutorResponse:
+        runtime = self.runtime(context)
+        if runtime is None:
+            return ExecutorResponse(result="Данные доступов сейчас недоступны.")
+        return await self.executors.access.request(context, runtime, object_id)
+
     async def reminder(self, object_id: str, context: Context) -> ExecutorResponse:
         runtime = self.runtime(context)
         if runtime is None:

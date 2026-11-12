@@ -415,7 +415,10 @@ class TeamService:
                 response.result += "\nДоступа пока нет."
                 if item.request_url:
                     response.actions.insert(0, Action(label="Где запросить доступ", url=item.request_url))
-                response.actions.insert(1, Action(label="Я запросил", data="mark:" + item.object_id))
+                if item.status == "missing" and item.request_status in {"", "error"}:
+                    response.actions.insert(
+                        1, Action(label="Запросить доступ", data="request:" + item.object_id)
+                    )
         return response
 
     async def escalate(self, kind: str, context: Context, runtime: Runtime):

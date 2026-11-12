@@ -101,7 +101,7 @@ async def test_fr_h2_03_q7_stack_and_q8_links_with_access():
     board, *_ = await ask("team_q8", "Где доска планирования?", {"object": "доска"})
     assert "Miro" in board.result and "Доступа пока нет" in board.result
     assert board.actions[0].label == "Где запросить доступ"
-    assert board.actions[1].data == "mark:demo-orders-miro"
+    assert board.actions[1].data == "request:demo-orders-miro"
     granted, *_ = await ask("team_q8", "", {"object": "доска"}, step=1)
     assert "Доступ: ✅ есть" in granted.result
     listing, *_ = await ask("team_q8")

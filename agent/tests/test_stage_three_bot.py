@@ -30,8 +30,8 @@ async def test_st3_demo_1_h1_and_h2_full_flow_in_telegram():
         status = await app.send("Что с моими доступами?")
         assert "Ваши доступы" in status.text and "Источники:" in status.text
         assert any(button.url for button in buttons(status))
-        await app.callback(callback_of([status], "mark:demo-orders-miro"))
-        assert "Отметил" in app.session.sent[-1].text
+        await app.callback(callback_of([status], "request:demo-orders-miro"))
+        assert "на согласовании" in app.session.sent[-1].text
         await app.callback("remind:demo-orders-miro")
         assert "Олег, добрый день" in app.session.sent[-1].text
         task = await app.send("Какие доступы нужны для ORD-118?")
