@@ -183,4 +183,9 @@ def summary_for_llm(turns: list[Turn]) -> str:
     if not turns:
         return "{}"
     last = turns[-1]
-    return json.dumps({"case": last.case, "entities": last.entities}, ensure_ascii=False)
+    summary: dict = {"case": last.case, "entities": last.entities}
+    # FR-MEM-04: the latest brief stays visible to the Router a few turns later (IDs only).
+    brief = next((t for t in reversed(turns) if t.case == "brief_now" and t.entities.get("brief")), None)
+    if brief is not None and brief is not last:
+        summary["brief"] = {k: brief.entities[k] for k in ("brief", "pr", "task") if k in brief.entities}
+    return json.dumps(summary, ensure_ascii=False)

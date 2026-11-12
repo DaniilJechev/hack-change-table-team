@@ -176,7 +176,7 @@ def test_fr_mem_05_rules_cover_short_continuations():
     assert followup.resolve("второй пункт", [brief]).params["item"] == "2"
     assert followup.resolve("пункт 3", [brief]).params["item"] == "3"
     assert followup.resolve("что с PR #45?", [brief]).params == {"brief_id": "br-1", "pr": "45"}
-    assert followup.resolve("а по календарю?", [brief]).params == {"source": "calendar"}
+    assert followup.resolve("а по календарю?", [brief]).params == {"brief_id": "br-1", "source": "calendar"}
     playbook = Turn(
         case="playbook_qa", params={"query": "Что такое Zero Bug Policy?"}, entities={"chunks": ["a", "b"]}
     )
@@ -301,3 +301,38 @@ async def test_rt_08_followup_with_new_task_key():
     await service.handle("Какие доступы нужны для ORD-118?", context)
     decision, _ = await service.handle("а для ORD-120?", context)
     assert decision == RouteDecision(case="access_task_analysis", params={"task": "ORD-120"})
+
+
+def test_fr_mem_05_brief_followups_work_within_the_window():
+    """B-02 (live run 12.11): the brief is several turns back, not the last turn."""
+    brief = Turn(case="brief_now", entities={"brief": ["br-1"], "pr": ["45"], "task": ["ORD-121"]})
+    turns = [brief, Turn(case="team_q7"), Turn(case="playbook_qa"), Turn(case="out_of_scope")]
+    assert followup.resolve("что там с PR #45?", turns).params == {"brief_id": "br-1", "pr": "45"}
+    assert followup.resolve("что с ORD-121?", turns).params == {"brief_id": "br-1", "task": "ORD-121"}
+    assert followup.resolve("что там по Jira напомни", turns).params == {"brief_id": "br-1", "source": "jira"}
+    # Objects that are not in the brief, and source words without a follow-up cue, go to the Router.
+    assert followup.resolve("что там с PR #99?", turns) is None
+    assert followup.resolve("что с ORD-999?", turns) is None
+    assert followup.resolve("какие задачи в jira", turns) is None
+    # A task key after an access/team question keeps that case.
+    access = [brief, Turn(case="access_task_analysis", params={"task": "ORD-118"})]
+    assert followup.resolve("а ORD-121?", access).case == "access_task_analysis"
+
+
+def test_fr_mem_05_brief_entities_merge_across_followups():
+    first = Turn(case="brief_now", entities={"brief": ["br-1"], "pr": ["45", "47"], "task": ["ORD-121"]})
+    narrowed = Turn(case="brief_now", entities={"brief": ["br-1"], "pr": ["45"]})
+    turns = [first, narrowed, Turn(case="team_q7")]
+    assert followup.resolve("что с PR #47?", turns).params == {"brief_id": "br-1", "pr": "47"}
+    assert followup.resolve("что с ORD-121?", turns).params["task"] == "ORD-121"
+
+
+def test_fr_mem_04_summary_keeps_reference_to_earlier_brief():
+    brief = Turn(case="brief_now", entities={"brief": ["br-1"], "brief_items": ["i-1"], "pr": ["45"]})
+    summary = json.loads(summary_for_llm([brief, Turn(case="team_q7", entities={"person": ["demo-petr"]})]))
+    assert summary == {
+        "case": "team_q7",
+        "entities": {"person": ["demo-petr"]},
+        "brief": {"brief": ["br-1"], "pr": ["45"]},
+    }
+    assert "brief" not in json.loads(summary_for_llm([brief]))

@@ -46,6 +46,21 @@ async def test_fr_h2_03_q2_route_and_fr_h2_04_first_contact():
     assert "первый контакт — Олег" in other.result
 
 
+async def test_fr_h2_03_q2_route_matches_topic_not_generic_words():
+    # Route «вопрос по Kafka»: «вопрос» is generic, the topic is Kafka.
+    text = "к кому обращаться если у меня проблемы с Kafka?"
+    route, *_ = await ask("team_q2", text, {"situation": "проблемы с kafka"})
+    assert "сначала Пётр" in route.result and "60 мин" in route.result
+    assert route.links == ["https://example.invalid/team/demo-orders/routing/kafka"]
+
+
+async def test_fr_h2_03_q2_area_owner_before_first_contact():
+    owner, *_ = await ask("team_q2", "К кому идти по интеграциям?", {"situation": "интеграции"})
+    assert "Пётр (Инженер интеграций)" in owner.result
+    assert "через Олег" in owner.result  # Пётр: direct_allowed false, via Олег
+    assert owner.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
+
+
 async def test_fr_h2_03_q3_mentor_lead_first_contact():
     response, *_ = await ask("team_q3", "Кто мой наставник?")
     assert "наставник — Анна" in response.result and "Тимлид — Олег" in response.result
@@ -160,3 +175,19 @@ async def test_rt_06_registry_routes_cases_and_formats_links():
     mentor = Context("demo-anna", "demo-orders", "mentor", True, 1)
     assert "Доступы стажёров" in (await registry.execute("interns_status", {}, mentor, runtime)).result
     assert "Могу помочь" in (await registry.execute("help", {}, context, runtime)).result
+
+
+async def test_fr_h2_04_not_found_names_first_contact_with_link():
+    """B-03 (live run 12.11): no responsible for the topic — first contact, not «knows best»."""
+    response, *_ = await ask("team_q1", "Кто у нас занимается бэкендом?", {"area": "бэкенд"})
+    assert "Ответственного по теме в карточке нет. Первый контакт в команде — Олег" in response.result
+    assert "лучше всего знает" not in response.result
+    assert response.links == ["https://example.invalid/team/demo-orders/people/demo-oleg"]
+    assert [action.data for action in response.actions] == ["esc:resp", "esc:mentor", "esc:defer"]
+
+
+async def test_fr_h2_04_not_found_names_responsible_with_link():
+    response, *_ = await ask("team_q7", "Почему у нас Kafka, а не RabbitMQ?")
+    assert "По теме лучше всего знает Пётр (Инженер интеграций)." in response.result
+    assert response.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
+    assert not any((action.data or "").startswith("rate:bot:") for action in response.actions)

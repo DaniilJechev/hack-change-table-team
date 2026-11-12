@@ -171,3 +171,42 @@ async def test_fr_h0_12_follow_up_through_agent_service():
     assert pr.links == [PR45]
     _, missing = await service.handle("подробнее про 9-й пункт", context)
     assert missing.result == "В последнем брифе нет пункта 9." and missing.links == []
+
+
+async def test_fr_h0_12_live_run_followups_after_other_questions():
+    """B-02 (live run 12.11): /brief, then other questions, then follow-ups about the brief."""
+    service = AgentService(Router(), demo_mode=True, settings=Settings(_env_file=None, agent_engine="graph"))
+    service.demo.command(1)
+    context = service.demo.context(1)
+    _, first = await service.handle("/brief", context)
+    others = ("кто у нас занимается по Kafka?", "расскажи про ценности и миссию авито", "напиши рецепт борща")
+    for text in others:
+        await service.handle(text, context)
+    decision, jira = await service.handle("что там по Jira напомни", context)
+    assert decision.params["source"] == "jira" and jira.result.startswith("Jira в брифе:")
+    assert "Git:" not in jira.result and jira.links and all("/jira/" in link for link in jira.links)
+    _, pr = await service.handle("что там с PR #45?", context)
+    assert pr.result.startswith("PR #45 в брифе:") and pr.links == [PR45]
+    _, task = await service.handle("что с ORD-121?", context)
+    assert task.result.startswith("ORD-121 в брифе:") and "ORD-121" in task.links[0]
+    assert first.links  # the brief itself had links
+
+
+async def test_fr_h0_12_source_missing_in_stored_brief_falls_back_to_source_brief():
+    runtime, context = demo()
+    service = BriefService()
+    git = await service.now_brief(context, runtime, source="github")
+    calendar = await service.item(context, runtime, git.entities["brief"][0], source="calendar")
+    assert "Календарь:" in calendar.result and "Git:" not in calendar.result
+    assert all("/calendar/" in link for link in calendar.links)
+    unknown = await service.item(context, runtime, git.entities["brief"][0])
+    assert unknown.result == "В последнем брифе нет такого пункта." and unknown.links == []
+
+
+async def test_fr_h0_12_task_missing_falls_back_to_jira_brief():
+    runtime, context = demo()
+    service = BriefService()
+    full = await brief(service, runtime, context)
+    answer = await service.item(context, runtime, full.brief_id, task="ORD-999")
+    assert answer.result.startswith("В последнем брифе нет ORD-999.")
+    assert all("/jira/" in link for link in answer.links)

@@ -227,7 +227,9 @@ class BriefService:
         while len(self.drafts) > 512:
             self.drafts.pop(next(iter(self.drafts)))
         title = "☀️ Утренний бриф" if scheduled else "Бриф"
-        lines = [f"{title} на {now.strftime('%d.%m')}:"]
+        # FR-H0-13: the demo has a fixed synthetic day; say so instead of passing it off as today.
+        day = now.strftime("%d.%m") + (" (учебный день демо)" if context.demo else "")
+        lines = [f"{title} на {day}:"]
         if main:
             lines.append(f"▶ Главное сегодня: {main}")
         lines += [f"{number}. {texts.get(item.id) or item.line()}" for number, item in enumerate(shown, 1)]
@@ -328,27 +330,44 @@ class BriefService:
         )
 
     async def item(
-        self, context: Context, runtime, brief_id: str, *, item: str = "", pr: str = ""
+        self,
+        context: Context,
+        runtime,
+        brief_id: str,
+        *,
+        item: str = "",
+        pr: str = "",
+        task: str = "",
+        source: str = "",
     ) -> ExecutorResponse:
-        """FR-H0-12: a follow-up about one item of the user's brief, chosen by code by number or PR."""
+        """FR-H0-12: a follow-up about items of the user's brief, chosen by code: number/PR/task/source."""
         draft = await self._draft(brief_id, context, runtime)
         ordered = [] if draft is None or draft.context != context else draft.shown + draft.hidden
         number = int(item) if str(item).isdigit() else 0
+        pr, task = str(pr).lstrip("#"), str(task).upper()
+        fallback = ""
         if number:
             chosen = [(number, ordered[number - 1])] if 0 < number <= len(ordered) else []
             missing = f"В последнем брифе нет пункта {number}."
             title = f"Пункт {number} из брифа:"
+        elif pr:
+            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if pr in pr_numbers(entry)]
+            missing, title, fallback = f"В последнем брифе нет PR #{pr}.", f"PR #{pr} в брифе:", "github"
+        elif task:
+            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if entry.related_task == task]
+            missing, title, fallback = f"В последнем брифе нет {task}.", f"{task} в брифе:", "jira"
+        elif source in SOURCE_TITLE:
+            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if entry.source == source]
+            missing, title, fallback = "", f"{SOURCE_TITLE[source]} в брифе:", source
         else:
-            pr = str(pr).lstrip("#")
-            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if pr and pr in pr_numbers(entry)]
-            missing = f"В последнем брифе нет PR #{pr}." if pr else "В последнем брифе нет такого пункта."
-            title = f"PR #{pr} в брифе:"
+            chosen, missing, title = [], "В последнем брифе нет такого пункта.", ""
         if not chosen:
-            if number or not pr:
+            if not fallback:
                 return ExecutorResponse(result=missing)
-            # FR-H0-07: no such PR in memory, answer with the usual Git-only brief.
-            fresh = await self.now_brief(context, runtime, source="github")
-            fresh.result = f"{missing}\n{fresh.result}"
+            # FR-H0-07: nothing like this in the stored brief, answer with the usual one-source brief.
+            fresh = await self.now_brief(context, runtime, source=fallback)
+            if missing:
+                fresh.result = f"{missing}\n{fresh.result}"
             return fresh
         lines = [title]
         for position, entry in chosen:
