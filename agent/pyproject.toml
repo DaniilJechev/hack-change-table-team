@@ -26,6 +26,8 @@ dependencies = [
 dev = ["pytest>=8.4,<9", "pytest-asyncio>=1.2,<2", "pytest-cov>=6,<8", "ruff>=0.12,<1"]
 # Only for RAG_SEARCH_MODE=vector|rrf: local embeddings and pgvector access. BM25 mode needs none of it.
 rag = ["sentence-transformers>=3.4,<6", "torch>=2.4", "psycopg[binary]>=3.2,<4"]
+# Developer tool: `langgraph dev` opens LangGraph Studio on buddy/graph/studio.py (state and prompts).
+studio = ["langgraph-cli[inmem]>=0.4,<1"]
 
 # CPU-only torch: no CUDA libraries (several GB) on a laptop or in the agent image.
 [tool.uv.sources]
