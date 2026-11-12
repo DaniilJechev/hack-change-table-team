@@ -72,10 +72,11 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 			return errors.New("cannot open seed users file")
 		}
 		defer file.Close()
-		var documents [2]*os.File
+		var documents [3]*os.File
 		for i, setting := range []struct{ env, path string }{
 			{"SEED_TEAM_CARD_PATH", filepath.Join(filepath.Dir(path), "team_cards", "demo-orders.yaml")},
 			{"SEED_ACCESS_CATALOG_PATH", filepath.Join(filepath.Dir(path), "access_catalog.yaml")},
+			{"SEED_MOCK_SERVICES_PATH", filepath.Join(filepath.Dir(path), "mock_services.json")},
 		} {
 			name := getenv(setting.env)
 			explicit := name != ""
@@ -92,14 +93,17 @@ func execute(ctx context.Context, args []string, getenv func(string) string, out
 			defer document.Close()
 			documents[i] = document
 		}
-		var card, catalog io.Reader
+		var card, catalog, mocks io.Reader
 		if documents[0] != nil {
 			card = documents[0]
 		}
 		if documents[1] != nil {
 			catalog = documents[1]
 		}
-		if err := database.SeedData(startup, file, card, catalog); err != nil {
+		if documents[2] != nil {
+			mocks = documents[2]
+		}
+		if err := database.SeedDataWithMocks(startup, file, card, catalog, mocks); err != nil {
 			return fmt.Errorf("seed import failed: %w", err)
 		}
 		_, err = fmt.Fprintln(output, "Synthetic users and team data imported")

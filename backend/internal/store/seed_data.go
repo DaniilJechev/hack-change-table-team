@@ -36,6 +36,19 @@ func decodeYAML(source io.Reader, target any) error {
 // SeedData imports existing users and team documents in one transaction. An absent
 // document is allowed for identity-only CLI callers. It never erases personal data.
 func (s *Store) SeedData(ctx context.Context, users, cardSource, catalogSource io.Reader) error {
+	return s.SeedDataWithMocks(ctx, users, cardSource, catalogSource, nil)
+}
+
+// SeedDataWithMocks keeps profiles, catalog and simulation rules in one import transaction.
+func (s *Store) SeedDataWithMocks(ctx context.Context, users, cardSource, catalogSource, mockSource io.Reader) error {
+	var mockRules []MockRule
+	if mockSource != nil {
+		var err error
+		mockRules, err = decodeMockSeed(mockSource)
+		if err != nil {
+			return err
+		}
+	}
 	var input struct {
 		Users []struct {
 			Profile             `yaml:",inline"`
@@ -169,6 +182,9 @@ func (s *Store) SeedData(ctx context.Context, users, cardSource, catalogSource i
 				return err
 			}
 		}
+	}
+	if err := seedMockRules(ctx, tx, mockRules); err != nil {
+		return err
 	}
 	return tx.Commit()
 }

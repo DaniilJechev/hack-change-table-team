@@ -17,6 +17,7 @@ func DataHandler(data *store.Store, key string) http.Handler {
 	mux := http.NewServeMux()
 	actor := auth.Actor
 	stageFourRoutes(mux, data)
+	mockServicesRoutes(mux, data)
 	mux.HandleFunc("GET /api/v1/flags", func(w http.ResponseWriter, r *http.Request) {
 		v, e := data.Flags(r.Context(), actor(r.Context()))
 		result(w, v, e)
