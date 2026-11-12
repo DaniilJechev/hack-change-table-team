@@ -217,6 +217,7 @@ def build(root: Path = ROOT):
     (data / "seed.json").write_text(
         json.dumps(bundle, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
+    (data / "mock_services.json").write_bytes((ROOT / "seed/mock_services.json").read_bytes())
     (data / "scenario.json").write_text(
         json.dumps(scenario, ensure_ascii=False, indent=2) + "\n", encoding="utf-8", newline="\n"
     )
