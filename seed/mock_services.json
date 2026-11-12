@@ -1,0 +1,10 @@
+{
+  "synthetic": true,
+  "access_rules": [
+    {"team_id": "demo-orders", "object_id": "demo-orders-github", "status": "granted", "reason": "Учебный доступ выдан", "error_code": ""},
+    {"team_id": "demo-orders", "object_id": "demo-orders-jira", "status": "granted", "reason": "Учебный доступ выдан", "error_code": ""},
+    {"team_id": "demo-orders", "object_id": "demo-orders-miro", "status": "pending", "reason": "Ожидает согласования владельца", "error_code": "", "demo_steps": {"step_2": "granted", "step_3": "granted"}},
+    {"team_id": "demo-orders", "object_id": "demo-orders-google_calendar", "status": "granted", "reason": "Учебный доступ выдан", "error_code": ""},
+    {"team_id": "demo-orders", "object_id": "demo-orders-telegram", "status": "granted", "reason": "Учебный доступ выдан", "error_code": ""}
+  ]
+}

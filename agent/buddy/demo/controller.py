@@ -94,6 +94,7 @@ class DemoController:
             if self._bundle is None:
                 self._bundle = load_bundle(self.data / "seed.json")
             session.data = SeedData(self._bundle)
+        session.data.set_mock_step(self.steps[session.step])
         return Runtime(
             data=session.data,
             gateway=hub,

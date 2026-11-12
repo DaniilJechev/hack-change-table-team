@@ -1135,6 +1135,180 @@ paths:
           $ref: '#/components/responses/Error'
         '503':
           $ref: '#/components/responses/Error'
+  /api/v1/mock/access-requests:
+    post:
+      summary: 'ИМИТАЦИЯ: запросить доступ к разрешённому объекту; повтор безопасен'
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Результат имитации; simulated=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockAccessRequest'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockAccessInput'
+    get:
+      summary: 'ИМИТАЦИЯ: собственные заявки'
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Результат имитации; simulated=true
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MockAccessRequest'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/mock/access-requests/{id}:
+    parameters:
+    - name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    patch:
+      summary: 'ИМИТАЦИЯ: тимлид завершает согласование своей команды'
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Результат имитации; simulated=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockAccessRequest'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockAccessDecision'
+  /api/v1/mock/progress:
+    get:
+      summary: 'ИМИТАЦИЯ: собственный прогресс стажёра'
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Результат имитации; simulated=true
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MockProgressItem'
+                required:
+                - items
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/mock/progress/{item}:
+    parameters:
+    - name: item
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 1
+        maxLength: 128
+    put:
+      summary: 'ИМИТАЦИЯ: отметить собственный пункт прогресса'
+      security:
+      - buddyKey: []
+        buddyUser: []
+      responses:
+        '200':
+          description: Результат имитации; simulated=true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MockProgressItem'
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '403':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '409':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MockProgressInput'
 components:
   securitySchemes:
     buddyKey:
@@ -1790,6 +1964,119 @@ components:
         id: *id016
       required:
       - id
+    MockAccessInput:
+      type: object
+      additionalProperties: false
+      properties:
+        object_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+      required:
+      - object_id
+    MockAccessDecision:
+      type: object
+      additionalProperties: false
+      properties:
+        status:
+          type: string
+          enum:
+          - granted
+          - denied
+        reason:
+          type: string
+          maxLength: 1000
+          default: ''
+      required:
+      - status
+    MockAccessRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        team_id:
+          type: string
+        object_id:
+          type: string
+        status:
+          type: string
+          enum:
+          - granted
+          - pending
+          - denied
+          - error
+        reason:
+          type: string
+        error_code:
+          type: string
+          enum:
+          - ''
+          - service_unavailable
+          - service_unconfigured
+          - rate_limited
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        simulated:
+          type: boolean
+          enum:
+          - true
+      required:
+      - id
+      - user_id
+      - team_id
+      - object_id
+      - status
+      - reason
+      - error_code
+      - created_at
+      - updated_at
+      - simulated
+    MockProgressInput:
+      type: object
+      additionalProperties: false
+      properties:
+        completed:
+          type: boolean
+      required:
+      - completed
+    MockProgressItem:
+      type: object
+      additionalProperties: false
+      properties:
+        item_id:
+          type: string
+          enum:
+          - equator_presentation
+        title:
+          type: string
+        completed:
+          type: boolean
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+        simulated:
+          type: boolean
+          enum:
+          - true
+      required:
+      - item_id
+      - title
+      - completed
+      - completed_at
+      - updated_at
+      - simulated
   responses:
     Profile:
       description: Привязанный профиль из БД

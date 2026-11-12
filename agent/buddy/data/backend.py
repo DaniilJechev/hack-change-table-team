@@ -174,6 +174,30 @@ class BackendData:
         items = (await self._read(user_id, "access_marks_get")).get("items") or []
         return {item["object_id"]: item["requested_at"] for item in items}
 
+    async def request_access(self, user_id: str, object_id: str) -> dict:
+        return await self._rest("POST", "/api/v1/mock/access-requests", user_id, {"object_id": object_id})
+
+    async def access_requests(self, user_id: str) -> list[dict]:
+        return (await self._rest("GET", "/api/v1/mock/access-requests", user_id))["items"]
+
+    async def resolve_access_request(
+        self, user_id: str, request_id: str, status: str, reason: str = ""
+    ) -> dict:
+        return await self._rest(
+            "PATCH",
+            "/api/v1/mock/access-requests/" + quote(request_id, safe=""),
+            user_id,
+            {"status": status, "reason": reason},
+        )
+
+    async def progress(self, user_id: str) -> list[dict]:
+        return (await self._rest("GET", "/api/v1/mock/progress", user_id))["items"]
+
+    async def mark_progress(self, user_id: str, item_id: str, completed: bool = True) -> dict:
+        return await self._rest(
+            "PUT", "/api/v1/mock/progress/" + quote(item_id, safe=""), user_id, {"completed": completed}
+        )
+
     async def mark_requested(self, user_id: str, object_id: str) -> str:
         value = await self._rest("PUT", "/api/v1/access-marks/" + quote(object_id, safe=""), user_id)
         return value.get("requested_at", "")

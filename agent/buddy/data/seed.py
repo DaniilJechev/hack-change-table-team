@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from buddy.data.base import DataError
 from buddy.data.briefs import BriefState
+from buddy.data.mock_services import MockServicesState
 from buddy.demo.contracts import TeamCard
 
 BUNDLE = Path(__file__).resolve().parents[1] / "demo" / "data" / "seed.json"
@@ -21,7 +22,7 @@ def load_bundle(path: Path = BUNDLE) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-class SeedData(BriefState):
+class SeedData(BriefState, MockServicesState):
     def __init__(self, bundle: dict | None = None, *, clock: Callable[[], datetime] | None = None):
         bundle = deepcopy(bundle if bundle is not None else load_bundle())
         self.users = {user["user_id"]: user for user in bundle["users"]}
@@ -35,6 +36,10 @@ class SeedData(BriefState):
         self.faq: dict[str, dict] = {}
         self.card_version = 1
         self.team_flags: dict[str, dict[str, bool]] = {}
+        mock_rules = bundle.get("mock_services")
+        if mock_rules is None:
+            mock_rules = json.loads(BUNDLE.with_name("mock_services.json").read_text())
+        self._mock_init(mock_rules)
         # Yesterday's calendar of the synthetic day: the first demo brief compares against it.
         self._briefs()["calendar"].update(deepcopy(bundle.get("calendar_baseline", {})))
 
