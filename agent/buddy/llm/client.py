@@ -50,6 +50,6 @@ class CompatibleLLM:
 
 
 def create_llm(settings: Settings) -> LLM:
-    if settings.demo_mode or settings.llm_provider == "fake":
+    if (settings.demo_mode and not settings.llm_in_demo) or settings.llm_provider == "fake":
         return FakeLLM()
     return CompatibleLLM(settings)

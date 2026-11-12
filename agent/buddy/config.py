@@ -33,6 +33,8 @@ class Settings(BaseSettings):
     # ST4-GRAPH-2: request pipeline — deterministic LangGraph StateGraph or the original Router → Executor.
     agent_engine: Literal["legacy", "graph"] = "graph"
     # FR-MEM-06: dialog memory (graph engine only). Live mode stores it in Redis when REDIS_URL is set.
+    # Demo data stays on fixtures, but Router/brief/H3 use the real LLM (needs LLM_MODEL and LLM_API_KEY).
+    llm_in_demo: bool = False
     memory_enabled: bool = True
     redis_url: str = ""
 
@@ -40,6 +42,9 @@ class Settings(BaseSettings):
     def validate_live(self) -> "Settings":
         if bool(self.backend_url) != bool(self.buddy_service_key.get_secret_value()):
             raise ValueError("BACKEND_URL and BUDDY_SERVICE_KEY must be configured together")
+        if self.demo_mode and self.llm_in_demo:
+            if self.llm_provider == "fake" or not self.llm_model or not self.llm_api_key.get_secret_value():
+                raise ValueError("LLM_IN_DEMO requires LLM_PROVIDER, LLM_MODEL and LLM_API_KEY")
         if not self.demo_mode:
             if not self.telegram_bot_token.get_secret_value():
                 raise ValueError("Live mode requires TELEGRAM_BOT_TOKEN")

@@ -33,10 +33,13 @@ async def test_fr_h1_01_fr_h1_02_fr_h1_03_status_checks_every_tool_in_place():
     response = await AccessService().status(context, runtime)
     lines = response.result.splitlines()
     assert lines[0] == "Ваши доступы:"
-    assert len(lines) == 8  # title + 5 tools + forbidden object + read-only note
-    assert "✅ GitHub" in response.result and "✅ Jira" in response.result
+    assert len(lines) == 4  # title + missing Miro + forbidden object + read-only note
+    # FR-UI-01: tools that are fine are folded when something needs attention.
+    granted = response.folded[0]
+    assert granted.startswith("Доступ есть (4):")
+    assert "✅ GitHub" in granted and "✅ Jira" in granted
     assert "⬜ Miro" in response.result and "Олег" in response.result
-    assert "✅ Google Calendar" in response.result and "✅ Telegram" in response.result
+    assert "✅ Google Calendar" in granted and "✅ Telegram" in granted
     assert "⛔ GitHub — Закрытая конфигурация production" in response.result
     assert "ничего не меняет" in lines[-1]
     labels = [action.label for action in response.actions]
@@ -75,9 +78,10 @@ async def test_fr_h1_05_task_analysis_shows_only_mentioned_objects():
     _, runtime, context = demo()
     response = await AccessService().task(context, runtime, "ord-118")
     assert response.result.startswith("Для задачи ORD-118 нужны доступы:")
-    assert "GitHub — Репозиторий" in response.result and "Miro" in response.result
-    assert "Google Calendar" in response.result and "production" in response.result
-    assert "Telegram" not in response.result and "Jira — Проект" not in response.result
+    shown = "\n".join([response.result, *response.folded])  # FR-UI-01: granted tools are folded
+    assert "GitHub — Репозиторий" in response.folded[0] and "Miro" in response.result
+    assert "Google Calendar" in shown and "production" in response.result
+    assert "Telegram" not in shown and "Jira — Проект" not in shown
     assert response.links[0] == "https://example.invalid/jira/browse/ORD-118"
 
 

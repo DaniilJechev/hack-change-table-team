@@ -1,9 +1,13 @@
+from functools import partial
+
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, User
 
 from buddy.bot.identity import IdentityClient, IdentityError
 from buddy.executors.core import TEAM_MENU, Context, format_response
+from buddy.render import to_html
 from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
@@ -110,6 +114,15 @@ def prefix(profile: Context) -> str:
     return "Демо: синтетический сценарий.\n" if profile.demo else ""
 
 
+async def rich(method, response: ExecutorResponse, head: str = "", **kwargs):
+    """FR-UI-01: HTML with expandable quotes; plain text when Telegram rejects the markup."""
+    try:
+        html = to_html(response.result, response.folded, response.links, head)
+        return await method(text=html, parse_mode="HTML", **kwargs)
+    except TelegramBadRequest:
+        return await method(text=head + format_response(response), parse_mode=None, **kwargs)
+
+
 async def send(
     message: Message,
     profile: Context,
@@ -118,10 +131,11 @@ async def send(
     agent_service: AgentService | None = None,
 ):
     try:
-        sent = await message.answer(
-            prefix(profile) + format_response(response),
+        sent = await rich(
+            message.answer,
+            response,
+            prefix(profile),
             reply_markup=response_menu(case, response),
-            parse_mode=None,
             disable_web_page_preview=True,
         )
     except Exception:
@@ -142,11 +156,11 @@ async def deliver(message: Message, agent_service: AgentService, profile: Contex
         if chat is None:
             missed.append(user_id)
             continue
-        await message.bot.send_message(
-            chat,
-            prefix(profile) + format_response(note),
+        await rich(
+            partial(message.bot.send_message, chat),
+            note,
+            prefix(profile),
             reply_markup=keyboard(note.actions),
-            parse_mode=None,
             disable_web_page_preview=True,
         )
     return missed

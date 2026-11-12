@@ -18,7 +18,7 @@ from buddy.schemas import ExecutorResponse
 
 FAMILIES = ("brief", "playbook", "team", "access", "template")
 # Follow-up parameters produced by code from memory; a stored turn keeps only user-facing parameters.
-INTERNAL = frozenset({"brief_id", "item", "pr", "chunks"})
+INTERNAL = frozenset({"brief_id", "item", "pr", "chunks", "items"})
 ACCESS = frozenset({"access_status", "access_task_analysis", "interns_status", "access_events"})
 
 
@@ -67,7 +67,7 @@ def build_graph(router: Router, registry: Registry, memory: Memory | None = None
         turns = state.get("turns", [])
         if state.get("decision") is not None or not turns:
             return {}
-        decision = followup.resolve(state.get("text", ""), turns)
+        decision = followup.resolve(state.get("text", ""), turns, titles=registry.brief.titles)
         if decision is not None:
             return {"decision": decision, "followup": True}
         # Optional LLM rewrite: validated by schema, any failure leaves the Router on the original text.

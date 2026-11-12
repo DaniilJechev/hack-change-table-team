@@ -55,6 +55,8 @@ class ExecutorResponse(Contract):
     citations: list[Citation] = Field(default_factory=list)
     actions: list[Action] = Field(default_factory=list)
     links: list[str] = Field(default_factory=list)
+    # FR-UI-01: secondary blocks chosen by the executor; Telegram shows them as expandable quotes.
+    folded: list[str] = Field(default_factory=list)
     # Set for a stored daily brief: the bot confirms delivery and attaches read signals to it.
     brief_id: str | None = None
     # FR-MEM-01: object IDs for the dialog memory (brief, brief_items, chunks, …); never shown to the user.

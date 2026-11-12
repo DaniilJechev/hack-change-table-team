@@ -15,9 +15,30 @@ from buddy.runtime import Runtime
 from buddy.schemas import Action, ExecutorResponse
 
 NOT_FOUND = "В карточке и FAQ команды ответа нет."
+FOLD_PEOPLE = 3
+
+
+def person_named(people: list[dict], text: str) -> dict | None:
+    """A card person named in the text, in any case form: «Олег», «олега», «Пётр», «петру»."""
+    value = text.casefold().replace("ё", "е")
+    for person in people:
+        stem = person["name"].casefold().replace("ё", "е").rstrip("аяеиоуыюь")
+        if len(stem) >= 3 and re.search(rf"\b{re.escape(stem)}", value):
+            return person
+    return None
+
+
+def people_count(number: int) -> str:
+    """«2 человека», «5 человек», «12 человек»."""
+    few = number % 10 in (2, 3, 4) and number % 100 not in (12, 13, 14)
+    return f"{number} человека" if few else f"{number} человек"
+
+
 UNAVAILABLE = "Данные команды сейчас недоступны. Попробуйте позже."
 WHY = ("почему", "зачем", "для чего")
 STOP = {"почему", "зачем", "кому", "писать", "можно", "нужно", "через", "которые", "какой", "какая", "какие"}
+# Words that describe any situation; a q2 route matches by its topic («вопрос по Kafka» → Kafka).
+GENERIC = {"вопрос", "вопросы", "проблема", "проблемы", "ситуация"}
 OBJECT_WORDS = {
     "github": ("репозитор", "github", "git", "код", "pr"),
     "jira": ("jira", "задач", "эпик"),
@@ -52,9 +73,10 @@ class TeamService:
     def _key(context: Context) -> str:
         return AccessService.key(context)
 
-    def _answer(self, case: str, text: str, links: list[str], extra: list[Action] | None = None):
+    def _answer(self, case: str, text: str, links: list[str], extra: list[Action] | None = None, folded=None):
         return ExecutorResponse(
             result=text,
+            folded=folded or [],
             links=list(dict.fromkeys(link for link in links if link)),
             actions=[*(extra or []), *rating(case)],
         )
@@ -72,8 +94,20 @@ class TeamService:
             actions.append(Action(label=f"Спросить: {target['name']}", data="esc:resp"))
         actions.append(Action(label="Спросить наставника", data="esc:mentor"))
         actions.append(Action(label="Отложить на 1:1", data="esc:defer"))
-        hint = f" По теме лучше всего знает {target['name']}." if target else ""
-        return ExecutorResponse(result=NOT_FOUND + hint, actions=actions)
+        # FR-H2-04: an expert only when the card names one for the topic; otherwise the first contact.
+        text, links = NOT_FOUND, []
+        if target:
+            who = f"{target['name']} ({target['role']})" if target.get("role") else target["name"]
+            if responsible and target is people.get(responsible):
+                text = f"{NOT_FOUND} По теме лучше всего знает {who}."
+            else:  # B-08: «no answer» is said once
+                text = (
+                    "В карточке и FAQ ответа нет."
+                    f" Первый контакт в команде — {who}: он подскажет, к кому идти."
+                )
+            url = str(target.get("contact_url", ""))
+            links = [url] if url.startswith(("https://", "http://")) else []
+        return ExecutorResponse(result=text, actions=actions, links=links)
 
     async def _faq(self, context, runtime, question: str) -> ExecutorResponse | None:
         for word in words(question):
@@ -125,7 +159,8 @@ class TeamService:
         capability: str = "h2",
     ) -> ExecutorResponse:
         """Store a sourced bot answer so that its [Помогло]/[Не помогло] rating has an owner."""
-        if response.links:
+        rated = any((action.data or "").startswith("rate:bot:") for action in response.actions)
+        if response.links and rated:  # a «not found» with a contact link has nothing to rate
             question_id = "b-" + uuid.uuid4().hex[:16]
             try:
                 await runtime.data.record_bot_answer(
@@ -167,10 +202,21 @@ class TeamService:
     async def _team_q1(self, params, question, card, context, runtime):
         area = (params.get("area") or "").casefold()
         people = card.get("people", [])
+        named = person_named(people, f"{area} {question}")
+        if named and not any(
+            item.casefold() in area for person in people for item in person.get("areas", [])
+        ):
+            # B-14: «за что отвечает Олег?» — that person's areas, not the whole list or «not found».
+            who = f"{named['name']} ({named['role']})"
+            text = f"{who} отвечает за: {', '.join(named.get('areas', []))}."
+            return self._answer("team_q1", text, [named.get("contact_url", "")])
         if not area:
             lines = [
                 f"{person['name']} ({person['role']}): {', '.join(person['areas'])}" for person in people
             ]
+            if len(lines) > FOLD_PEOPLE:  # FR-UI-01: a long team list is folded
+                title = f"Кто за что отвечает — {people_count(len(lines))}, список ниже."
+                return self._answer("team_q1", title, [card["source_url"]], folded=["\n".join(lines)])
             return self._answer("team_q1", "Кто за что отвечает:\n" + "\n".join(lines), [card["source_url"]])
         found = [
             person
@@ -185,11 +231,12 @@ class TeamService:
         )
 
     async def _team_q2(self, params, question, card, context, runtime):
-        situation = " ".join(filter(None, [params.get("situation"), question])).casefold()
+        situation = " ".join(filter(None, [params.get("situation"), question])).casefold().replace("ё", "е")
         people = {person["user_id"]: person for person in card.get("people", [])}
         for route in card.get("routing", []):
-            if route["situation"].casefold() in situation or all(
-                word in situation for word in words(route["situation"])
+            topic = [word for word in words(route["situation"]) if word not in GENERIC]
+            if route["situation"].casefold() in situation or (
+                topic and all(word in situation for word in topic)
             ):
                 then = people.get(route["then_id"], {}).get("name", route["then_id"])
                 text = (
@@ -197,6 +244,25 @@ class TeamService:
                     f"если нет ответа за {route['wait_minutes']} мин — {then}."
                 )
                 return self._answer("team_q2", text, [route["source_url"]])
+        # No route: the owner of the area named in the situation, before the generic first contact.
+        # A 6-letter prefix covers Russian endings («интеграции» / «по интеграциям»).
+        owners = [
+            person
+            for person in card.get("people", [])
+            if any(word[:6] in situation for area in person.get("areas", []) for word in words(area))
+        ]
+        if owners:
+            lines = ["Готового маршрута для этой ситуации нет."]
+            for person in owners:
+                line = f"По этой теме — {person['name']} ({person['role']})."
+                rule = next(
+                    (r for r in card.get("do_not_disturb", []) if r["person_id"] == person["user_id"]), None
+                )
+                if rule and not rule.get("direct_allowed", True):
+                    via = people.get(rule.get("via_id"), {}).get("name", rule.get("via_id"))
+                    line += f" Напрямую писать ограничено — через {via}."
+                lines.append(line)
+            return self._answer("team_q2", "\n".join(lines), [person["contact_url"] for person in owners])
         first = next((person for person in card.get("people", []) if person.get("first_contact")), None)
         if first:
             text = (

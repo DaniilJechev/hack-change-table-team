@@ -49,7 +49,7 @@ async def test_st4_demo_1_brief_and_playbook_full_flow_in_telegram():
     try:
         await app.send("/demo")
         brief = await app.send("/brief")
-        assert brief.text.startswith("Демо: синтетический сценарий.\nБриф на 11.11:")
+        assert brief.text.startswith("Демо: синтетический сценарий.\nБриф на 11.11 (учебный день демо):")
         assert "▶ Главное сегодня: исправить замечания в PR #45" in brief.text
         assert brief.text.count("https://example.invalid/") == 5 and "Источники:" in brief.text
         labels = [button.text for button in buttons(brief)]

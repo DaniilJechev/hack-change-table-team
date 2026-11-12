@@ -4,7 +4,7 @@ from buddy.access.service import AccessService
 from buddy.demo.controller import DemoController
 from buddy.executors.context import Context
 from buddy.executors.core import Registry, format_response
-from buddy.team.service import TeamService
+from buddy.team.service import TeamService, people_count
 
 
 def demo(step: int = 0):
@@ -28,12 +28,13 @@ async def test_fr_h2_03_q1_responsible_area_with_source():
     assert response.actions[0].data.startswith("rate:bot:b-")
     assert response.actions[0].data.endswith(":1") and response.actions[1].data.endswith(":0")
     listing, *_ = await ask("team_q1")
-    assert "Кто за что отвечает" in listing.result and "Олег" in listing.result
+    assert listing.result == "Кто за что отвечает — 4 человека, список ниже."  # FR-UI-01: folded list
+    assert "Олег" in listing.folded[0] and len(listing.folded[0].splitlines()) == 4
 
 
 async def test_fr_h2_05_q1_unknown_area_not_found_with_escalation_buttons():
     response, team, _, context = await ask("team_q1", "Кто отвечает за биллинг?", {"area": "биллинг"})
-    assert response.result.startswith("В карточке и FAQ команды ответа нет.")
+    assert response.result.startswith("В карточке и FAQ ответа нет.")
     assert [action.data for action in response.actions] == ["esc:resp", "esc:mentor", "esc:defer"]
     assert team.pending[AccessService.key(context)]["responsible"] == "demo-oleg"  # first contact
 
@@ -44,6 +45,21 @@ async def test_fr_h2_03_q2_route_and_fr_h2_04_first_contact():
     assert route.links == ["https://example.invalid/team/demo-orders/routing/staging"]
     other, *_ = await ask("team_q2", "Сломался принтер в офисе")
     assert "первый контакт — Олег" in other.result
+
+
+async def test_fr_h2_03_q2_route_matches_topic_not_generic_words():
+    # Route «вопрос по Kafka»: «вопрос» is generic, the topic is Kafka.
+    text = "к кому обращаться если у меня проблемы с Kafka?"
+    route, *_ = await ask("team_q2", text, {"situation": "проблемы с kafka"})
+    assert "сначала Пётр" in route.result and "60 мин" in route.result
+    assert route.links == ["https://example.invalid/team/demo-orders/routing/kafka"]
+
+
+async def test_fr_h2_03_q2_area_owner_before_first_contact():
+    owner, *_ = await ask("team_q2", "К кому идти по интеграциям?", {"situation": "интеграции"})
+    assert "Пётр (Инженер интеграций)" in owner.result
+    assert "через Олег" in owner.result  # Пётр: direct_allowed false, via Олег
+    assert owner.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
 
 
 async def test_fr_h2_03_q3_mentor_lead_first_contact():
@@ -160,3 +176,33 @@ async def test_rt_06_registry_routes_cases_and_formats_links():
     mentor = Context("demo-anna", "demo-orders", "mentor", True, 1)
     assert "Доступы стажёров" in (await registry.execute("interns_status", {}, mentor, runtime)).result
     assert "Могу помочь" in (await registry.execute("help", {}, context, runtime)).result
+
+
+async def test_fr_h2_04_not_found_names_first_contact_with_link():
+    """B-03 (live run 12.11): no responsible for the topic — first contact, not «knows best»."""
+    response, *_ = await ask("team_q1", "Кто у нас занимается бэкендом?", {"area": "бэкенд"})
+    # B-08: «no answer» is said once.
+    assert response.result == (
+        "В карточке и FAQ ответа нет. Первый контакт в команде — Олег (Тимлид): он подскажет, к кому идти."
+    )
+    assert "лучше всего знает" not in response.result
+    assert response.links == ["https://example.invalid/team/demo-orders/people/demo-oleg"]
+    assert [action.data for action in response.actions] == ["esc:resp", "esc:mentor", "esc:defer"]
+
+
+async def test_fr_h2_04_not_found_names_responsible_with_link():
+    response, *_ = await ask("team_q7", "Почему у нас Kafka, а не RabbitMQ?")
+    assert "По теме лучше всего знает Пётр (Инженер интеграций)." in response.result
+    assert response.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
+    assert not any((action.data or "").startswith("rate:bot:") for action in response.actions)
+
+
+def test_fr_ui_01_team_list_title_declines_people_count():
+    assert [people_count(n) for n in (1, 2, 4, 5, 12, 22)] == [
+        "1 человек",
+        "2 человека",
+        "4 человека",
+        "5 человек",
+        "12 человек",
+        "22 человека",
+    ]

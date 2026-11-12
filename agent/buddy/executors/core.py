@@ -9,8 +9,10 @@ from pydantic import ValidationError
 from buddy.executors.context import Context
 from buddy.mcp_hub.errors import ToolDenied
 from buddy.mcp_hub.policy import READ_TOOLS, permitted
+from buddy.render import to_plain
+from buddy.router.rules import MENU_CHOICES
 from buddy.router.service import CASES
-from buddy.schemas import ExecutorResponse
+from buddy.schemas import Action, ExecutorResponse
 
 TEAM_MENU = (
     ("team_q1", "Кто отвечает за область?"),
@@ -23,6 +25,18 @@ TEAM_MENU = (
     ("team_q8", "Где найти объект?"),
 )
 SCHEDULED = ("brief_render", "access_events")
+# RT-03: the refusal text is chosen by code from the request; HR BP only for salary, personal, medical data.
+PERSONAL = re.compile(
+    r"зарплат|оклад|получать|преми|персональн|паспорт|снилс|\bинн\b|диагноз|болезн|больничн|медицин"
+)
+OUT_OF_SCOPE_HR = (
+    "Я помогаю с онбордингом. Вопросы о зарплате и персональных данных — к HR BP; "
+    "остальные вопросы можно обсудить с наставником. /help — возможности."
+)
+OUT_OF_SCOPE = (
+    "Это вне моей темы: я помогаю с онбордингом — бриф, доступы, вопросы о команде и playbook. "
+    "С остальным поможет наставник. /help — возможности."
+)
 
 
 class Gateway(Protocol):
@@ -76,18 +90,21 @@ class ToolScope:
             )
 
 
-def template(case: str, params: dict | None = None) -> ExecutorResponse:
+def template(case: str, params: dict | None = None, text: str = "") -> ExecutorResponse:
     if case == "help":
         text = "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов."
         if (params or {}).get("menu") == "team":
             text = "Выберите один из восьми типов вопросов о команде:"
+    elif case == "clarify" and (params or {}).get("options") == MENU_CHOICES:
+        # RT-03: an unclear text without access or a person — the team question types and /help.
+        return ExecutorResponse(
+            result="Не понял вопрос. Выберите тип вопроса о команде или напишите /help — что я умею.",
+            actions=[Action(label=title, data="case:" + name) for name, title in TEAM_MENU],
+        )
     elif case == "clarify":
         text = "Уточните: вас интересует доступ к инструменту или человек, которому можно написать?"
     elif case == "out_of_scope":
-        text = (
-            "Я помогаю с онбордингом. Вопросы о зарплате и персональных данных — к HR BP; "
-            "остальные вопросы можно обсудить с наставником. /help — возможности."
-        )
+        text = OUT_OF_SCOPE_HR if PERSONAL.search(text.casefold()) else OUT_OF_SCOPE
     elif case.startswith("team_q"):
         text = (
             "Тип вопроса распознан. Ответы по данным команды пока не подключены. /ask — выбрать тип вопроса."
@@ -170,11 +187,18 @@ class Registry:
                 return await self.playbook.details(chunks, params.get("query") or text, context, runtime)
             return await self.playbook.answer(params.get("query") or text, context, runtime)
         if runtime is None:
-            return template(case, params)
+            return template(case, params, text)
         if case == "brief_now" and params.get("brief_id"):
-            # FR-H0-12: a follow-up about an item of a stored brief (by number or PR), resolved from memory.
+            # FR-H0-12: a follow-up about items of a stored brief (number, PR, task, source), from memory.
             return await self.brief.item(
-                context, runtime, params["brief_id"], item=params.get("item", ""), pr=params.get("pr", "")
+                context,
+                runtime,
+                params["brief_id"],
+                item=params.get("item", ""),
+                pr=params.get("pr", ""),
+                task=params.get("task", ""),
+                source=params.get("source", ""),
+                items=params.get("items", ""),
             )
         if case in {"brief_now", "brief_render"}:
             return await self.brief.now_brief(
@@ -192,7 +216,7 @@ class Registry:
             )
         if case.startswith("team_q"):
             return await self.team.answer(case, params, text, context, runtime)
-        return template(case, params)
+        return template(case, params, text)
 
     async def run_tools(self, case: str, context: Context, gateway: Gateway, calls: list[dict]):
         scope = ToolScope(case, context, gateway)
@@ -210,5 +234,4 @@ class Registry:
 
 def format_response(response: ExecutorResponse) -> str:
     """Links are appended by code; executors never put URLs into their text."""
-    links = list(dict.fromkeys(response.links))
-    return response.result + ("\nИсточники:\n" + "\n".join(links) if links else "")
+    return to_plain(response.result, response.folded, response.links)
