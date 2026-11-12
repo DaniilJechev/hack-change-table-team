@@ -44,7 +44,7 @@ async def test_fr_h1_01_fr_h1_02_fr_h1_03_status_checks_every_tool_in_place():
     assert "ничего не меняет" in lines[-1]
     labels = [action.label for action in response.actions]
     assert any(label.startswith("Где запросить") for label in labels)
-    assert any(action.data == "mark:demo-orders-miro" for action in response.actions)
+    assert any(action.data == "request:demo-orders-miro" for action in response.actions)
     assert all(link.startswith("https://example.invalid/") for link in response.links)
     assert "https" not in response.result  # links are appended by code, not inside executor text
 
@@ -220,7 +220,7 @@ async def test_fr_h1_02_unknown_status_offers_no_request_and_keeps_saved_status(
     runtime.gateway.call.side_effect = SourceUnavailable("down")
     response = await service.status(context, runtime)
     assert "❔ Miro" in response.result
-    assert not any(action.data == "mark:demo-orders-miro" for action in response.actions)
+    assert not any(action.data == "request:demo-orders-miro" for action in response.actions)
     assert service.previous[AccessService.key(context)]["demo-orders-miro"] == "missing"
 
 

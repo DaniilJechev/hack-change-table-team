@@ -1,7 +1,8 @@
-"""H1 executors: access status, task analysis, monitoring, «я запросил», mentor summary. Read-only."""
+"""H1: read-only real checks plus explicitly simulated access requests and monitoring."""
 
 import json
 import uuid
+from dataclasses import replace
 from datetime import datetime
 
 from buddy.access.checker import AccessChecker, AccessItem, payload
@@ -28,6 +29,24 @@ ICONS = {
 }
 SNAPSHOT_STATUSES = {"granted", "missing", "requested", "stale", "forbidden"}
 UNAVAILABLE = "Данные доступов сейчас недоступны. Попробуйте позже."
+REQUEST_ERRORS = {
+    "service_unavailable": "Сервис имитации временно недоступен. Попробуйте позже.",
+    "service_unconfigured": "Правило имитации не настроено. Обратитесь к наставнику.",
+    "rate_limited": "Слишком много учебных заявок. Попробуйте позже.",
+}
+
+
+def request_note(status: str, reason: str, code: str) -> str:
+    if status == "granted":
+        return "Сервис доступов (имитация): доступ выдан. Реальные права проверяются отдельно."
+    if status == "pending":
+        return "Сервис доступов (имитация): заявка на согласовании."
+    if status == "denied":
+        return "Сервис доступов (имитация): отказ. Причина: " + reason + ". Обсудите с наставником."
+    if status == "error":
+        safe = code if code in REQUEST_ERRORS else "service_unavailable"
+        return f"Заявка не прошла (имитация). Код: {safe}. {REQUEST_ERRORS[safe]}"
+    return ""
 
 
 def _short(value: str, limit: int = 40) -> str:
@@ -60,8 +79,26 @@ class AccessService:
         if only is not None:
             catalog = [item for item in catalog if item["id"] in only]
         marks = await runtime.data.access_marks(context.user_id)
+        requests = {
+            record["object_id"]: record for record in await runtime.data.access_requests(context.user_id)
+        }
+        # An already completed simulation must not keep producing stale approval reminders.
+        marks = {
+            obj: at
+            for obj, at in marks.items()
+            if obj not in requests or requests[obj]["status"] == "pending"
+        }
         checker = AccessChecker(runtime.gateway, runtime.telegram, runtime.data.target)
-        return await checker.check(case, profile, catalog, marks, runtime.clock())
+        items = await checker.check(case, profile, catalog, marks, runtime.clock())
+        return [
+            replace(
+                item,
+                request_status=requests.get(item.object_id, {}).get("status", ""),
+                request_reason=requests.get(item.object_id, {}).get("reason", ""),
+                request_error=requests.get(item.object_id, {}).get("error_code", ""),
+            )
+            for item in items
+        ]
 
     def _render(self, items: list[AccessItem], people: dict[str, str], now: datetime, title: str):
         lines, actions, links = [title], [], []
@@ -74,9 +111,12 @@ class AccessService:
                 line = head + f": доступа нет. Запросить у владельца: {owner}"
                 if item.request_url:
                     actions.append(Action(label=_short("Где запросить: " + item.name), url=item.request_url))
-                actions.append(
-                    Action(label=_short("Я запросил: " + item.name), data="mark:" + item.object_id)
-                )
+                if item.request_status in {"", "error"}:
+                    actions.append(
+                        Action(
+                            label=_short("Запросить доступ: " + item.name), data="request:" + item.object_id
+                        )
+                    )
             elif item.status == "requested":
                 line = head + f": запрошено {_since(item.requested_at, now)} назад, ждём выдачи"
             elif item.status == "stale":
@@ -90,9 +130,12 @@ class AccessService:
                 line = head + ": стажёрам не выдаётся. " + (item.reason or "Обсудите с наставником.")
             else:
                 line = head + ": не удалось проверить, попробуйте позже"
+            note = request_note(item.request_status, item.request_reason, item.request_error)
+            if note and item.status != "forbidden":
+                line += "\n" + note
             lines.append(line)
             links.append(item.url)
-        lines.append("Бот только проверяет доступы и ничего не меняет в сервисах.")
+        lines.append("Бот ничего не меняет в реальных сервисах; заявки выполняются только в имитации.")
         # FR-UI-01: when something needs attention, the tools that are fine go under the fold.
         granted = [line for line, item in zip(lines[1:], items, strict=False) if item.status == "granted"]
         folded = []
@@ -227,6 +270,37 @@ class AccessService:
         return ExecutorResponse(
             result=f"Отметил: доступ к «{name}» запрошен ({when}). Проверю, когда он появится, и напишу."
         )
+
+    async def request(self, context: Context, runtime: Runtime, object_id: str) -> ExecutorResponse:
+        try:
+            catalog = {obj["id"]: obj for obj in await runtime.data.access_catalog(context.user_id)}
+            obj = catalog.get(object_id)
+            if obj is None or obj.get("forbidden"):
+                return ExecutorResponse(
+                    result="Этот объект нельзя запросить: он не найден или запрещён. Обсудите с наставником."
+                )
+            items = await self._items("access_status", context, runtime, {object_id})
+            if not items or items[0].status == "unknown":
+                return ExecutorResponse(
+                    result="Не удалось проверить доступ. Заявку не отправлял; попробуйте позже."
+                )
+            if items[0].status == "granted":
+                return ExecutorResponse(
+                    result="Доступ уже подтверждён в инструменте. Заявка не нужна.", links=[obj["url"]]
+                )
+            record = await runtime.data.request_access(context.user_id, object_id)
+        except DataError as error:
+            if error.kind in {"forbidden", "not_found"}:
+                return ExecutorResponse(
+                    result="Этот объект нельзя запросить: он не найден или запрещён. Обсудите с наставником."
+                )
+            return ExecutorResponse(
+                result="Не удалось получить результат заявки. Код: " + error.kind + ". Попробуйте позже."
+            )
+        note = request_note(record.get("status", ""), record.get("reason", ""), record.get("error_code", ""))
+        if not note:
+            return ExecutorResponse(result=UNAVAILABLE)
+        return ExecutorResponse(result=f"«{obj['name']}»\n{note}", links=[obj["url"]])
 
     async def reminder(self, context: Context, runtime: Runtime, object_id: str) -> ExecutorResponse:
         try:

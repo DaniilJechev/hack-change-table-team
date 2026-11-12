@@ -33,6 +33,9 @@ class AccessItem:
     reason: str = ""
     requested_at: str = ""
     error: str = ""
+    request_status: str = ""
+    request_reason: str = ""
+    request_error: str = ""
 
 
 class Gateway(Protocol):

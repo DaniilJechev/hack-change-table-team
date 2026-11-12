@@ -11,7 +11,19 @@ from buddy.render import to_html
 from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
-CALLBACKS = ("case:", "mentor:", "mark:", "remind:", "esc:", "ans:", "faq:", "nofaq:", "rate:", "brief:")
+CALLBACKS = (
+    "case:",
+    "mentor:",
+    "request:",
+    "mark:",
+    "remind:",
+    "esc:",
+    "ans:",
+    "faq:",
+    "nofaq:",
+    "rate:",
+    "brief:",
+)
 
 
 def team_menu() -> InlineKeyboardMarkup:
@@ -268,6 +280,8 @@ async def choose(
         return
     if kind == "mark":
         await send(message, profile, await agent_service.mark(value, profile))
+    elif kind == "request":
+        await send(message, profile, await agent_service.request_access(value, profile))
     elif kind == "remind":
         await send(message, profile, await agent_service.reminder(value, profile))
     elif kind == "esc":
