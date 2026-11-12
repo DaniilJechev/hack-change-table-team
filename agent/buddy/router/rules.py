@@ -102,7 +102,11 @@ def decide(text: str) -> RouteDecision:
     # B-12/B-13: «что там в Jira?», «что мне нужно сделать по плану?» — the user's own brief.
     if re.search(r"^что (там|у меня) (в|по) ", value) and brief_source(value) and not PLAYBOOK.search(value):
         return RouteDecision(case="brief_now", params=brief_source(value))
-    if re.search(r"что (мне )?(нужно|надо|стоит) (сделать|делать)|что (мне )?делать сегодня|по плану", value):
+    if re.search(
+        r"что (мне )?(нужно|надо|стоит) (сделать|делать)|что (мне )?делать сегодня|по плану|план на сегодня"
+        r"|какой (у меня )?план|повтори.*(план|бриф)",
+        value,
+    ):
         return RouteDecision(case="brief_now")
     if task_id and any(word in value for word in ("связ", "зачем", "эпик", "проект", "часть", "вклад")):
         return RouteDecision(case="team_q6", params={"task": task_id})

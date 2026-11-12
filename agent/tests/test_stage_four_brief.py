@@ -311,7 +311,8 @@ async def test_fr_h0_07_single_source_request_and_no_changes_answer():
         empty.result.startswith("Изменений нет.")
         and "Ближайшее: Учебный стендап — 11.11 10:30." in empty.result
     )
-    assert empty.links == ["https://example.invalid/calendar/event/demo-standup"]
+    assert empty.links[0] == "https://example.invalid/calendar/event/demo-standup"
+    assert set(full.links) <= set(empty.links)  # FR-H0-14: the last brief is reminded, its items folded
     assert (await router.route("/brief jira")).params == {"source": "jira"}
     assert (await router.route("Что нового в календаре и Jira?")).params == {}
 

@@ -54,6 +54,8 @@ async def test_fr_h0_14_follow_up_after_no_changes_uses_last_brief():
 def test_rt_03_my_plan_goes_to_the_brief():
     assert decide("что там сейчас по плану нужно сделать?").case == "brief_now"
     assert decide("что мне надо сделать сегодня").case == "brief_now"
+    assert decide("какой план на сегодня?").case == "brief_now"
+    assert decide("повтори прошлый план").case == "brief_now"
     assert decide("что там в Jira?").params == {"source": "jira"}
     assert decide("что там в playbook про ревью").case == "playbook_qa"
 
@@ -68,3 +70,18 @@ async def test_fr_h2_11_areas_of_a_named_person():
         assert answer.links == ["https://example.invalid/team/demo-orders/people/demo-oleg"]
     _, kafka = await service.handle("кто отвечает за Kafka?", context)
     assert "Пётр" in kafka.result  # an area question still finds the owner by area
+
+
+async def test_fr_h0_14_no_changes_reminds_the_last_brief():
+    """B-15 (live run 13:15): «какой план на сегодня?» after the brief — not just «Изменений нет»."""
+    service, context = demo()
+    _, first = await service.handle("/brief", context)
+    await service.brief_delivered(first, context, True)
+    _, again = await service.handle("какой план на сегодня?", context)
+    assert again.result.startswith("Изменений нет.")
+    assert "Главное по последнему брифу: исправить замечания в PR #45" in again.result
+    lines = again.folded[0].splitlines()
+    assert lines[0] == "Пункты последнего брифа:" and lines[1].startswith("1. ") and len(lines) == 9
+    assert set(first.links) <= set(again.links)
+    _, jira = await service.handle("/brief jira", context)
+    assert jira.folded == []  # a one-source quick look stays short

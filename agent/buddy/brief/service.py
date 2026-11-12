@@ -215,7 +215,19 @@ class BriefService:
         if last is not None:
             # B-13: «Изменений нет» keeps the last brief reachable for follow-ups («что там в Jira?»).
             draft = self.drafts[last]
-            response.entities = entities(last, draft.shown + draft.hidden)
+            items = draft.shown + draft.hidden
+            response.entities = entities(last, items)
+            if len(sources) > 1 and items:
+                # B-15: «какой план на сегодня?» after the brief — remind the last brief, items folded.
+                chosen = main_action(items)
+                if chosen:
+                    main = ACTION_TEXT[chosen.type].format(title=chosen.title.split(" — ")[0])
+                    response.result += f"\nГлавное по последнему брифу: {main}."
+                else:
+                    response.result += "\nПоследний бриф — ниже."
+                lines = [f"{number}. {item.line()}" for number, item in enumerate(items, 1)]
+                response.folded = ["Пункты последнего брифа:\n" + "\n".join(lines)]
+                response.links += [self.link(item, draft.tokens) for item in items]
         return response
 
     @staticmethod
