@@ -4,7 +4,7 @@ import re
 from typing import Protocol, get_args
 
 from buddy.llm.client import LLM
-from buddy.router.rules import clarify, decide
+from buddy.router.rules import TEAM_CHOICES, clarify, decide
 from buddy.schemas import Case, RouteDecision
 
 CASES = get_args(Case)
@@ -35,7 +35,8 @@ team_q3 — наставник/тимлид/первый контакт; team_q4
 team_q5 — этап проекта; team_q6 — связь задачи и проекта; team_q7 — стек; team_q8 — ссылка на объект.
 playbook_qa — общие процессы Авито/playbook; help — помощь; clarify — неоднозначно;
 out_of_scope — посторонний запрос, запись в сервис, зарплата, персональные или медицинские данные.
-Просьба дать/выдать/получить доступ — access_status (статус и где запросить), не out_of_scope.
+Просьба дать/выдать/получить доступ к инструменту — access_status, не out_of_scope;
+«доступ к <человеку>» («Нужен доступ к Анне») — clarify.
 Границы:
 - team_q5 — чем занята команда, этап проекта, прогресс эпиков («Что сейчас делает команда?»);
   brief_now — что нового лично у пользователя: мои PR, мои задачи, мои встречи.
@@ -128,6 +129,10 @@ class Router:
             result = parse(raw)
             if context is not None and context.role == "intern" and result.case == "interns_status":
                 # A mentor-only case suggested for an intern is never taken from the model.
+                return fallback
+            person_access = "доступ" in text.casefold() and fallback.params.get("options") == TEAM_CHOICES
+            if result.case in ACCESS_CASES and person_access:
+                # RT-03: «доступ к Анне» — access or the person? The rules' clarify wins over a guess.
                 return fallback
             if result.case == "out_of_scope" and fallback.case in ACCESS_CASES:
                 # B-10: «дай доступ к Miro» is the bot's own topic; the access rules win over a refusal.

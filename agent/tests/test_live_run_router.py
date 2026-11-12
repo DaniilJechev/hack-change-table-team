@@ -59,3 +59,11 @@ async def test_rt_03_real_refusals_stay_out_of_scope():
     llm = FakeLLM('{"case": "out_of_scope"}')
     assert (await Router(llm).route("выдай права на репозиторий")).case == "out_of_scope"
     assert (await Router(llm).route("напиши рецепт борща")).case == "out_of_scope"
+
+
+async def test_rt_03_access_to_a_person_stays_clarify_when_llm_says_access():
+    """Holdout-15 on Haiku after the B-10 prompt: «Нужен доступ к Анне» went to access_status."""
+    decision = await Router(FakeLLM('{"case": "access_status"}')).route("Нужен доступ к Анне")
+    assert decision.case == "clarify" and decision.params == {"options": TEAM_CHOICES}
+    tool = await Router(FakeLLM('{"case": "access_status"}')).route("дай доступ к Miro")
+    assert tool.case == "access_status"
