@@ -149,7 +149,7 @@ async def test_fr_h0_03_fr_h0_04_brief_has_five_items_more_button_and_main_actio
     lines = response.result.splitlines()
     assert lines[1].startswith("▶ Главное сегодня: исправить замечания в PR #45")
     assert lines[2].startswith("1. 🔴 Git: PR #45") and len(lines) == 7 and len(response.links) == 5
-    assert response.actions[0].label == "Ещё 3" and response.actions[1].label == "✅ Прочитал"
+    assert response.actions[0].label == "Ещё 3" and response.actions[1].label == "👍"
     await service.delivered(response.brief_id, runtime, True)
     more = await service.signal("more", response.brief_id, context, runtime)
     assert more.result.splitlines()[1].startswith("6.") and len(more.links) == 3

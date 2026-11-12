@@ -59,3 +59,5 @@ class ExecutorResponse(Contract):
     brief_id: str | None = None
     # FR-MEM-01: object IDs for the dialog memory (brief, brief_items, chunks, …); never shown to the user.
     entities: dict[str, list[str]] = Field(default_factory=dict)
+    # Internal UI acknowledgment; never inferred from user-visible wording or serialized for LLM.
+    feedback_saved: bool = Field(default=False, exclude=True)

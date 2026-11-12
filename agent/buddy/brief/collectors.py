@@ -1,7 +1,7 @@
 """Read-only collectors of changes for the morning brief (FR-H0-01): GitHub, Jira, Google Calendar.
 
-Every call goes through the Hub allowlist of the `brief_now` case. Tool arguments carry no time
-filters: results are filtered by code against the moment of the last successfully sent brief.
+Every call goes through the Hub allowlist of the `brief_now` case. Demo arguments have no time
+filters. Live results are also filtered by code since the last successfully sent brief.
 """
 
 import hashlib
@@ -61,21 +61,22 @@ async def call(runtime, context, server: str, tool: str, arguments: dict):
 async def github(context, runtime, target: dict, login: str, since: datetime) -> Collected:
     result = Collected()
     owner, repo = target["owner"], target["repo"]
-    listed = await call(
-        runtime,
-        context,
-        "github",
-        "list_pull_requests",
-        {"owner": owner, "repo": repo, "state": "open", "perPage": 10},
-    )
+    live = not context.demo
+    arguments = {"owner": owner, "repo": repo, "state": "open", "perPage": 10}
+    if live:
+        arguments.update(state="all", perPage=100, sort="updated", direction="desc")
+    listed = await call(runtime, context, "github", "list_pull_requests", arguments)
     mine = []
     for pull in rows(listed, "pull_requests", "items"):
         number, url = pull.get("number"), pull.get("html_url") or ""
         title = f"PR #{number} «{pull.get('title', '')}»"
         updated = moment(pull.get("updated_at"))
         if login_of(pull.get("user")) == login:
-            mine.append((number, title, url))
-        elif login in {login_of(item) for item in pull.get("requested_reviewers") or []}:
+            if not live or (updated and updated > since):
+                mine.append((number, title, url))
+        elif (not live or pull.get("state") == "open") and login in {
+            login_of(item) for item in pull.get("requested_reviewers") or []
+        }:
             if updated and updated > since:
                 result.items.append(
                     BriefItem(
@@ -89,13 +90,19 @@ async def github(context, runtime, target: dict, login: str, since: datetime) ->
                         created_at=updated,
                     )
                 )
-    for number, title, url in mine[:3]:
+    for number, title, url in mine if live else mine[:3]:
         reviews = await call(
             runtime,
             context,
             "github",
             "pull_request_read",
-            {"method": "get_reviews", "owner": owner, "repo": repo, "pullNumber": number},
+            {
+                "method": "get_reviews",
+                "owner": owner,
+                "repo": repo,
+                "pullNumber": number,
+                **({"perPage": 100} if live else {}),
+            },
         )
         latest: dict[str, dict] = {}
         for review in rows(reviews, "reviews", "items"):
@@ -126,6 +133,48 @@ async def github(context, runtime, target: dict, login: str, since: datetime) ->
                     created_at=review["at"],
                 )
             )
+        if live:
+            for method in ("get_comments", "get_review_comments"):
+                value = await call(
+                    runtime,
+                    context,
+                    "github",
+                    "pull_request_read",
+                    {
+                        "method": method,
+                        "owner": owner,
+                        "repo": repo,
+                        "pullNumber": number,
+                        "perPage": 100,
+                    },
+                )
+                comments = rows(value, "comments", "items")
+                if method == "get_review_comments":
+                    comments = [
+                        comment
+                        for thread in rows(value, "review_threads")
+                        for comment in rows(thread, "comments")
+                    ]
+                for comment in comments:
+                    at = moment(comment.get("updated_at") or comment.get("created_at"))
+                    author = login_of(comment.get("user") or comment.get("author"))
+                    link = comment.get("html_url") or comment.get("url") or ""
+                    if not at or at <= since or not author or author == login:
+                        continue
+                    result.items.append(
+                        BriefItem(
+                            id=item_id(
+                                context.user_id, "gh", owner, repo, number, method, link, at.isoformat()
+                            ),
+                            source="github",
+                            type="pr_comment",
+                            title=f"{title} — новый комментарий ({author})",
+                            url=link,
+                            priority_class="people",
+                            related_task=task_key(title),
+                            created_at=at,
+                        )
+                    )
     return result
 
 
@@ -135,36 +184,54 @@ def task_key(text: str) -> str:
 
 
 async def jira(context, runtime, target: dict, login: str, since: datetime, now: datetime) -> Collected:
+    from buddy.brief import jira_changes
+
     result = Collected()
     project = target["project_key"]
-    found = await call(
-        runtime,
-        context,
-        "jira",
-        "jira_search",
-        {
-            "jql": f'project = {project} AND (assignee = "{login}" OR comment ~ "{login}") '
-            "ORDER BY updated DESC",
-            "fields": "summary,status,assignee,duedate,created,updated,comment",
-            "limit": 20,
-        },
+    found = (
+        await call(
+            runtime,
+            context,
+            "jira",
+            "jira_search",
+            {
+                "jql": f'project = {project} AND (assignee = "{login}" OR comment ~ "{login}") '
+                "ORDER BY updated DESC",
+                "fields": "summary,status,assignee,duedate,created,updated,comment",
+                "limit": 20,
+            },
+        )
+        if context.demo
+        else None
     )
-    for issue in rows(found, "issues", "items"):
+    issues = (
+        rows(found, "issues", "items")
+        if context.demo
+        else await jira_changes.issues(context, runtime, target, login, since, now)
+    )
+    for issue in issues:
         key, url = issue.get("key") or "", issue.get("url") or ""
         title = f"{key} «{issue.get('summary', '')}»"
-        mine = login_of(issue.get("assignee")) == login
+        mine = login_of(issue.get("assignee")) == login if context.demo else issue["_mine"]
+        if not context.demo:
+            result.items.extend(jira_changes.changes(context, issue, login, since, now))
         status = issue.get("status")
         status = (status.get("name") if isinstance(status, dict) else status) or ""
         for comment in rows(issue.get("comments") or issue.get("comment"), "comments"):
             at = moment(comment.get("created"))
             author = login_of(comment.get("author"))
-            if at and at > since and author != login and login in str(comment.get("body", "")).casefold():
+            mention = login in str(comment.get("body", "")).casefold()
+            own_comment = jira_changes.matches(comment.get("author"), login)
+            personal = mine or issue.get("_was_mine", False)
+            if at and since < at <= now and not own_comment and (mention or personal):
                 result.items.append(
                     BriefItem(
                         id=item_id(context.user_id, "jira", key, "comment", comment.get("id")),
                         source="jira",
-                        type="jira_mention",
-                        title=f"{title} — вас упомянули ({author})",
+                        type="jira_mention" if mention else "jira_comment",
+                        title=f"{title} — "
+                        + ("вас упомянули" if mention else "новый комментарий")
+                        + (f" ({author[:30]})" if author else ""),
                         url=comment.get("url") or (f"{url}?focusedCommentId={comment['id']}" if url else ""),
                         priority_class="people",
                         related_task=key,
@@ -172,7 +239,12 @@ async def jira(context, runtime, target: dict, login: str, since: datetime, now:
                     )
                 )
         created = moment(issue.get("created"))
-        if mine and created and created > since:
+        if (
+            mine
+            and created
+            and since < created <= now
+            and not any(item.related_task == key and item.type == "jira_assigned" for item in result.items)
+        ):
             result.items.append(
                 BriefItem(
                     id=item_id(context.user_id, "jira", key, "assigned"),

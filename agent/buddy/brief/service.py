@@ -241,7 +241,6 @@ class BriefService:
             response.actions.append(Action(label=f"Ещё {len(hidden)}", data=f"brief:more:{brief_id}"))
         if persisted:
             response.actions += [
-                Action(label="✅ Прочитал", data=f"brief:read:{brief_id}"),
                 Action(label="👍", data=f"brief:positive:{brief_id}"),
                 Action(label="👎", data=f"brief:negative:{brief_id}"),
             ]
@@ -324,7 +323,8 @@ class BriefService:
         if not await self._event(context, runtime, brief_id, kind):
             return ExecutorResponse(result="Не удалось сохранить отметку. Попробуйте позже.")
         return ExecutorResponse(
-            result="Отметил: бриф прочитан." if kind == "read" else "Спасибо за оценку брифа!"
+            result="Отметил: бриф прочитан." if kind == "read" else "Спасибо за оценку брифа!",
+            feedback_saved=kind in {"positive", "negative"},
         )
 
     async def item(

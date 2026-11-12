@@ -56,6 +56,9 @@ func (s *Store) UserProfile(ctx context.Context, actor Profile) (UserProfile, er
 		return p, noRows(err)
 	}
 	err = json.Unmarshal(raw, &p.Logins)
+	if err == nil {
+		s.githubProfile(&p)
+	}
 	return p, err
 }
 
@@ -136,6 +139,7 @@ func (s *Store) AccessCatalog(ctx context.Context, actor Profile, objects []stri
 			return nil, err
 		}
 		if obj.visible(actor.Role) && (len(objects) == 0 || filter[obj.ID]) {
+			s.githubObject(actor, &obj)
 			out = append(out, obj)
 		}
 	}

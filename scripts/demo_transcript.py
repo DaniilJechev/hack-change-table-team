@@ -23,7 +23,7 @@ STEPS = [
             "что с PR #45?",
             "подробнее про 9-й пункт",
             "button:brief:more:",
-            "button:brief:read:",
+            "button:brief:positive:",
             "Есть что по PR?",
             "а по календарю?",
             "Что нового?",

@@ -306,6 +306,21 @@ class TeamService:
         text = (params.get("object") or question).casefold()
         links = {item["service"]: item["url"] for item in card.get("links", [])}
         wanted = [service for service, keys in OBJECT_WORDS.items() if any(key in text for key in keys)]
+        # Live repository coordinates belong to the authorized catalog, not the demo card.
+        if not wanted or wanted[0] == "github":
+            try:
+                configured = next(
+                    (
+                        obj
+                        for obj in await runtime.data.access_catalog(context.user_id)
+                        if obj["instrument"] == "github" and not obj.get("forbidden") and obj.get("target")
+                    ),
+                    None,
+                )
+                if configured:
+                    links["github"] = configured["url"]
+            except DataError:
+                return ExecutorResponse(result=UNAVAILABLE)
         if not wanted:
             lines = [TITLES.get(INSTRUMENTS.get(service, service), service) for service in links]
             return self._answer("team_q8", "Ссылки команды:\n" + "\n".join(lines), list(links.values()))

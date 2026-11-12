@@ -35,7 +35,7 @@ https://example.invalid/github/demo-buddy/orders-onboarding/pull/47
 https://example.invalid/jira/browse/ORD-121
 https://example.invalid/calendar/event/demo-sync-ord-101
 ```
-Кнопки: [Ещё 3] · [✅ Прочитал] · [👍] · [👎]
+Кнопки: [Ещё 3] · [👍] · [👎]
 
 **Пользователь:** подробнее про 2-й пункт
 
@@ -82,7 +82,7 @@ https://example.invalid/calendar/event/demo-retro
 
 ```
 Демо: синтетический сценарий.
-Отметил: бриф прочитан.
+Спасибо за оценку брифа!
 ```
 
 **Пользователь:** Есть что по PR?
@@ -119,7 +119,7 @@ https://example.invalid/calendar/event/demo-standup
 ```
 Демо: синтетический сценарий.
 Статистика брифов:
-Даниил — отправлено 1, прочитано 100% (цель ≥ 60%), с переходами 0%, 👍 0 / 👎 0
+Даниил — отправлено 1, прочитано 100% (цель ≥ 60%), с переходами 0%, 👍 1 / 👎 0
 ```
 
 **Пользователь:** /settings quiet on
@@ -159,7 +159,7 @@ https://example.invalid/team/demo-orders/objects/production-config
 
 ```
 Демо: синтетический сценарий.
-Отметил: доступ к «Доска планирования» запрошен (11.11 15:31). Проверю, когда он появится, и напишу.
+Отметил: доступ к «Доска планирования» запрошен (12.11 07:37). Проверю, когда он появится, и напишу.
 ```
 
 **Пользователь:** Какие доступы нужны для ORD-118?
@@ -293,7 +293,7 @@ https://example.invalid/jira/browse/ORD-100
 Ответ из FAQ команды на вопрос «Почему у нас Kafka, а не RabbitMQ?»:
 Нужна шина событий между сервисами.
 Источники:
-https://example.invalid/team/demo-orders/faq/f-q-b5c9b582ae6c4484
+https://example.invalid/team/demo-orders/faq/f-q-acb8121145564c07
 ```
 Кнопки: [Помогло] · [Не помогло]
 
@@ -412,7 +412,7 @@ https://example.invalid/jira/browse/ORD-118?focusedCommentId=5002
 https://example.invalid/jira/browse/ORD-118
 https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestreview-9002
 ```
-Кнопки: [✅ Прочитал] · [👍] · [👎]
+Кнопки: [👍] · [👎]
 
 ## Роль наставника
 
@@ -438,6 +438,6 @@ https://example.invalid/github/demo-buddy/orders-onboarding/pull/45#pullrequestr
 ```
 Демо: синтетический сценарий.
 Статистика брифов:
-Даниил — отправлено 2, прочитано 50% (цель ≥ 60%), с переходами 0%, 👍 0 / 👎 0
+Даниил — отправлено 2, прочитано 50% (цель ≥ 60%), с переходами 0%, 👍 1 / 👎 0
 Эмиль — брифов ещё не было
 ```

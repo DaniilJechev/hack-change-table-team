@@ -111,6 +111,8 @@ def member_in_response(instrument: str, value, login: str) -> bool | None:
     rows = (
         value if isinstance(value, list) else value.get(keys[instrument]) if isinstance(value, dict) else None
     )
+    if instrument == "github" and isinstance(value, dict) and rows is None:
+        rows = value.get("items")  # GitHub MCP v2.1.0 RepositoryCollaboratorsOutput.
     if not isinstance(rows, list):
         return None
     needle = login.casefold()
@@ -178,11 +180,22 @@ class AccessChecker:
         arguments = {key: target[key] for key in keys}
         if instrument == "miro":
             arguments = {"contentItemId": target["board_id"]}
-        return member_in_response(
-            instrument,
-            payload(await self.gateway.call(case, server, tool, {**arguments, **extra}, user_id=user)),
-            login,
-        )
+        page = 1
+        for _ in range(10):
+            params = {**arguments, **extra}
+            if page > 1:
+                params["page"] = page
+            value = payload(await self.gateway.call(case, server, tool, params, user_id=user))
+            member = member_in_response(instrument, value, login)
+            if member is not False or instrument != "github" or not isinstance(value, dict):
+                return member
+            next_page = value.get("nextPage", value.get("next_page", 0))
+            if not next_page:
+                return False
+            if not isinstance(next_page, int) or isinstance(next_page, bool) or next_page <= page:
+                return None
+            page = next_page
+        return None  # A truncated roster is not evidence of missing access.
 
     async def check(
         self, case: str, profile: dict, catalog: list[dict], marks: dict[str, str], now: datetime
