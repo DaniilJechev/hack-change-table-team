@@ -82,7 +82,7 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         if settings.backend_url and settings.buddy_service_key.get_secret_value()
         else None
     )
-    llm = None if settings.demo_mode else create_llm(settings)
+    llm = None if settings.demo_mode and not settings.llm_in_demo else create_llm(settings)
     memory = None
     if settings.redis_url and not settings.demo_mode:  # pragma: no cover - needs a Redis server
         memory = Memory(RedisStore.from_url(settings.redis_url), enabled=settings.memory_enabled)

@@ -67,6 +67,15 @@ def test_st0_config_1_invalid_live_configuration(kwargs):
         config(**kwargs)
 
 
+def test_st0_config_1_llm_in_demo():
+    settings = config(llm_in_demo=True, llm_provider="openrouter", llm_model="m", llm_api_key="k")
+    assert settings.demo_mode
+    assert isinstance(create_llm(settings), CompatibleLLM)
+    assert isinstance(create_llm(config()), FakeLLM)
+    with pytest.raises(ValidationError, match="LLM_IN_DEMO"):
+        config(llm_in_demo=True, llm_provider="openrouter", llm_model="m")
+
+
 def test_st0_config_1_secrets_and_env(monkeypatch):
     monkeypatch.setenv("LLM_PROVIDER", "compatible")
     monkeypatch.setenv("LLM_MODEL", "local/model")
