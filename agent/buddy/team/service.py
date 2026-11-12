@@ -18,10 +18,22 @@ NOT_FOUND = "В карточке и FAQ команды ответа нет."
 FOLD_PEOPLE = 3
 
 
+def person_named(people: list[dict], text: str) -> dict | None:
+    """A card person named in the text, in any case form: «Олег», «олега», «Пётр», «петру»."""
+    value = text.casefold().replace("ё", "е")
+    for person in people:
+        stem = person["name"].casefold().replace("ё", "е").rstrip("аяеиоуыюь")
+        if len(stem) >= 3 and re.search(rf"\b{re.escape(stem)}", value):
+            return person
+    return None
+
+
 def people_count(number: int) -> str:
     """«2 человека», «5 человек», «12 человек»."""
     few = number % 10 in (2, 3, 4) and number % 100 not in (12, 13, 14)
     return f"{number} человека" if few else f"{number} человек"
+
+
 UNAVAILABLE = "Данные команды сейчас недоступны. Попробуйте позже."
 WHY = ("почему", "зачем", "для чего")
 STOP = {"почему", "зачем", "кому", "писать", "можно", "нужно", "через", "которые", "какой", "какая", "какие"}
@@ -190,6 +202,14 @@ class TeamService:
     async def _team_q1(self, params, question, card, context, runtime):
         area = (params.get("area") or "").casefold()
         people = card.get("people", [])
+        named = person_named(people, f"{area} {question}")
+        if named and not any(
+            item.casefold() in area for person in people for item in person.get("areas", [])
+        ):
+            # B-14: «за что отвечает Олег?» — that person's areas, not the whole list or «not found».
+            who = f"{named['name']} ({named['role']})"
+            text = f"{who} отвечает за: {', '.join(named.get('areas', []))}."
+            return self._answer("team_q1", text, [named.get("contact_url", "")])
         if not area:
             lines = [
                 f"{person['name']} ({person['role']}): {', '.join(person['areas'])}" for person in people

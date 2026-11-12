@@ -198,6 +198,7 @@ class Registry:
                 pr=params.get("pr", ""),
                 task=params.get("task", ""),
                 source=params.get("source", ""),
+                items=params.get("items", ""),
             )
         if case in {"brief_now", "brief_render"}:
             return await self.brief.now_brief(

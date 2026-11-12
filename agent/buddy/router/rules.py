@@ -10,6 +10,7 @@ MENU_CHOICES = "Типы вопросов о команде | /help"
 ACCESS_OR_PERSON = re.compile(
     r"доступ|прав[аоу]?\b|человек|люд|кто\b|кого|кому|ком\b|наставник|тимлид|коллег|олег|анн|петр|даниил"
 )
+PLAYBOOK = re.compile(r"playbook|плейбук|регламент")
 # FR-H2-03 Q1 without an area: the whole team, «кто за что отвечает».
 TEAM_LIST = ("кто за что", "кто чем занимается", "кто есть кто", "кто в команде", "список команды")
 
@@ -19,6 +20,8 @@ def clarify(value: str) -> RouteDecision:
     value = value.casefold().replace("ё", "е")
     options = TEAM_CHOICES if ACCESS_OR_PERSON.search(value) else MENU_CHOICES
     return RouteDecision(case="clarify", params={"options": options})
+
+
 TASK = re.compile(r"\b[A-Z][A-Z0-9]{1,15}-\d{1,10}\b", re.I)
 
 
@@ -96,6 +99,11 @@ def decide(text: str) -> RouteDecision:
         for word in ("бриф", "что нового", "изменил", "изменени", "обновлени", "обзор дня", "есть что по")
     ) or re.search(r"^что (у меня )?по ", value):
         return RouteDecision(case="brief_now", params=brief_source(value))
+    # B-12/B-13: «что там в Jira?», «что мне нужно сделать по плану?» — the user's own brief.
+    if re.search(r"^что (там|у меня) (в|по) ", value) and brief_source(value) and not PLAYBOOK.search(value):
+        return RouteDecision(case="brief_now", params=brief_source(value))
+    if re.search(r"что (мне )?(нужно|надо|стоит) (сделать|делать)|что (мне )?делать сегодня|по плану", value):
+        return RouteDecision(case="brief_now")
     if task_id and any(word in value for word in ("связ", "зачем", "эпик", "проект", "часть", "вклад")):
         return RouteDecision(case="team_q6", params={"task": task_id})
     if any(
@@ -190,6 +198,7 @@ def decide(text: str) -> RouteDecision:
     if any(
         word in value
         for word in (
+            "за что отвечает",
             "кто отвечает",
             "кто поддерживает",
             "кто у нас по",

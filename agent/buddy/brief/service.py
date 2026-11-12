@@ -182,7 +182,25 @@ class BriefService:
             main = worded
         return texts, main
 
-    def _empty(self, merged, missing: list[str], sources: tuple[str, ...]) -> ExecutorResponse:
+    def last_brief(self, context: Context) -> str | None:
+        """B-13: the latest full brief shown to this user in this process (newest draft first)."""
+        return next(
+            (
+                key
+                for key, draft in reversed(self.drafts.items())
+                if draft.context == context and draft.persisted
+            ),
+            None,
+        )
+
+    def titles(self, brief_id: str) -> list[tuple[str, str]]:
+        """B-11: (item_id, title) of a brief in memory, for follow-ups by an item's name."""
+        draft = self.drafts.get(brief_id)
+        return [] if draft is None else [(item.id, item.title) for item in draft.shown + draft.hidden]
+
+    def _empty(
+        self, merged, missing: list[str], sources: tuple[str, ...], context: Context | None = None
+    ) -> ExecutorResponse:
         scope = f" по источнику {SOURCE_TITLE[sources[0]]}" if len(sources) == 1 else ""
         text, links = f"Изменений{scope} нет.", []
         nearest = sorted(
@@ -192,7 +210,13 @@ class BriefService:
             first = nearest[0]
             text += f"\nБлижайшее: {first['title']} — {first['at'].strftime('%d.%m %H:%M')}."
             links.append(first["url"])
-        return ExecutorResponse(result=text + self._missing(missing), links=links)
+        response = ExecutorResponse(result=text + self._missing(missing), links=links)
+        last = self.last_brief(context) if context is not None else None
+        if last is not None:
+            # B-13: «Изменений нет» keeps the last brief reachable for follow-ups («что там в Jira?»).
+            draft = self.drafts[last]
+            response.entities = entities(last, draft.shown + draft.hidden)
+        return response
 
     @staticmethod
     def _missing(missing: list[str]) -> str:
@@ -206,7 +230,7 @@ class BriefService:
             return ExecutorResponse(result=UNAVAILABLE)
         ranked = rank(merged.items)
         if not ranked:
-            return self._empty(merged, missing, sources)
+            return self._empty(merged, missing, sources, context)
         shown, hidden = ranked[:LIMIT], ranked[LIMIT:]
         chosen = main_action(ranked)
         main = ACTION_TEXT[chosen.type].format(title=chosen.title.split(" — ")[0]) if chosen else ""
@@ -339,6 +363,7 @@ class BriefService:
         pr: str = "",
         task: str = "",
         source: str = "",
+        items: str = "",
     ) -> ExecutorResponse:
         """FR-H0-12: a follow-up about items of the user's brief, chosen by code: number/PR/task/source."""
         draft = await self._draft(brief_id, context, runtime)
@@ -356,6 +381,11 @@ class BriefService:
         elif task:
             chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if entry.related_task == task]
             missing, title, fallback = f"В последнем брифе нет {task}.", f"{task} в брифе:", "jira"
+        elif items:
+            # B-11: items chosen by code from their titles («что за учебный стендап?»).
+            wanted = set(items.split(","))
+            chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if entry.id in wanted]
+            missing, title = "В последнем брифе нет такого пункта.", "Из брифа:"
         elif source in SOURCE_TITLE:
             chosen = [(n, entry) for n, entry in enumerate(ordered, 1) if entry.source == source]
             missing, title, fallback = "", f"{SOURCE_TITLE[source]} в брифе:", source

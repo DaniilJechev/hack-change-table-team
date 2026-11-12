@@ -30,6 +30,9 @@ PRONOUN = re.compile(r"\b(н?е[её]|н?его|это|этого|этом|эт�
 ITEM = re.compile(r"(?:пункт\w*\s*(?:№\s*)?(\d{1,2})\b|(\d{1,2})\s*-?\s*(?:[йюиоы]\w*\s+)?пункт)")
 # A source follow-up a few turns after the brief: «что там по Jira», «напомни про встречи».
 REMIND = re.compile(r"\bтам\b|напомн")
+QUESTION_WORDS = frozenset(
+    {"такое", "такой", "такая", "расскажи", "подробнее", "напомни", "скажи", "этот", "этом", "этой", "сейчас"}
+)
 TASK_CASES = frozenset({"access_task_analysis", "team_q6"})
 PR = re.compile(r"(?:\bpr\b|\bпр\b|пулл?\s*реквест\w*|pull request)\s*(?:№|#)?\s*(\d{1,7})|#(\d{1,7})")
 REWRITE = """Перепиши уточняющий вопрос стажёра в самостоятельный вопрос по-русски.
@@ -71,6 +74,19 @@ def brief_refs(turns: list[Turn]) -> tuple[str, set[str], set[str]] | None:
     return brief_id, prs, tasks
 
 
+def stems(value: str) -> set[str]:
+    words = re.findall(r"[a-zа-я0-9]+", value.casefold().replace("ё", "е"))
+    return {word[:5] for word in words if len(word) >= 4 and word not in QUESTION_WORDS}
+
+
+def by_title(value: str, titles: list[tuple[str, str]]) -> list[str]:
+    """B-11: brief items whose title holds every content word of the question («что за учебный стендап?»)."""
+    asked = stems(value)
+    if not asked:
+        return []
+    return [item_id for item_id, title in titles if asked <= stems(title)]
+
+
 def looks_followup(text: str) -> bool:
     value = normalized(text)
     return (
@@ -80,7 +96,7 @@ def looks_followup(text: str) -> bool:
     )
 
 
-def resolve(text: str, turns: list[Turn]) -> RouteDecision | None:
+def resolve(text: str, turns: list[Turn], titles=None) -> RouteDecision | None:
     """Rule-based resolution. None means "not a follow-up": the Router handles the text as before."""
     if not turns or text.lstrip().startswith("/") or len(text) > MAX_FOLLOWUP * 2:
         return None
@@ -104,6 +120,9 @@ def resolve(text: str, turns: list[Turn]) -> RouteDecision | None:
         key = task.group(0).upper() if task else ""
         if key in tasks and last.case not in TASK_CASES and short:
             return RouteDecision(case="brief_now", params={"brief_id": brief_id, "task": key})
+        named = by_title(value, titles(brief_id)) if titles and short and not pr and not task else []
+        if named:
+            return RouteDecision(case="brief_now", params={"brief_id": brief_id, "items": ",".join(named)})
         source = brief_source(value)
         # An explicit PR or task that is not in the brief is a new question, not a source follow-up.
         cue = (last.case == "brief_now" and looks_followup(text)) or REMIND.search(value)
