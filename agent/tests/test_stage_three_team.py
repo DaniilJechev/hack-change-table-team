@@ -4,7 +4,7 @@ from buddy.access.service import AccessService
 from buddy.demo.controller import DemoController
 from buddy.executors.context import Context
 from buddy.executors.core import Registry, format_response
-from buddy.team.service import TeamService
+from buddy.team.service import TeamService, people_count
 
 
 def demo(step: int = 0):
@@ -28,12 +28,13 @@ async def test_fr_h2_03_q1_responsible_area_with_source():
     assert response.actions[0].data.startswith("rate:bot:b-")
     assert response.actions[0].data.endswith(":1") and response.actions[1].data.endswith(":0")
     listing, *_ = await ask("team_q1")
-    assert "Кто за что отвечает" in listing.result and "Олег" in listing.result
+    assert listing.result == "Кто за что отвечает — 4 человека, список ниже."  # FR-UI-01: folded list
+    assert "Олег" in listing.folded[0] and len(listing.folded[0].splitlines()) == 4
 
 
 async def test_fr_h2_05_q1_unknown_area_not_found_with_escalation_buttons():
     response, team, _, context = await ask("team_q1", "Кто отвечает за биллинг?", {"area": "биллинг"})
-    assert response.result.startswith("В карточке и FAQ команды ответа нет.")
+    assert response.result.startswith("В карточке и FAQ ответа нет.")
     assert [action.data for action in response.actions] == ["esc:resp", "esc:mentor", "esc:defer"]
     assert team.pending[AccessService.key(context)]["responsible"] == "demo-oleg"  # first contact
 
@@ -180,7 +181,10 @@ async def test_rt_06_registry_routes_cases_and_formats_links():
 async def test_fr_h2_04_not_found_names_first_contact_with_link():
     """B-03 (live run 12.11): no responsible for the topic — first contact, not «knows best»."""
     response, *_ = await ask("team_q1", "Кто у нас занимается бэкендом?", {"area": "бэкенд"})
-    assert "Ответственного по теме в карточке нет. Первый контакт в команде — Олег" in response.result
+    # B-08: «no answer» is said once.
+    assert response.result == (
+        "В карточке и FAQ ответа нет. Первый контакт в команде — Олег (Тимлид): он подскажет, к кому идти."
+    )
     assert "лучше всего знает" not in response.result
     assert response.links == ["https://example.invalid/team/demo-orders/people/demo-oleg"]
     assert [action.data for action in response.actions] == ["esc:resp", "esc:mentor", "esc:defer"]
@@ -191,3 +195,14 @@ async def test_fr_h2_04_not_found_names_responsible_with_link():
     assert "По теме лучше всего знает Пётр (Инженер интеграций)." in response.result
     assert response.links == ["https://example.invalid/team/demo-orders/people/demo-petr"]
     assert not any((action.data or "").startswith("rate:bot:") for action in response.actions)
+
+
+def test_fr_ui_01_team_list_title_declines_people_count():
+    assert [people_count(n) for n in (1, 2, 4, 5, 12, 22)] == [
+        "1 человек",
+        "2 человека",
+        "4 человека",
+        "5 человек",
+        "12 человек",
+        "22 человека",
+    ]

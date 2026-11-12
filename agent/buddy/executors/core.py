@@ -9,8 +9,10 @@ from pydantic import ValidationError
 from buddy.executors.context import Context
 from buddy.mcp_hub.errors import ToolDenied
 from buddy.mcp_hub.policy import READ_TOOLS, permitted
+from buddy.render import to_plain
+from buddy.router.rules import MENU_CHOICES
 from buddy.router.service import CASES
-from buddy.schemas import ExecutorResponse
+from buddy.schemas import Action, ExecutorResponse
 
 TEAM_MENU = (
     ("team_q1", "Кто отвечает за область?"),
@@ -93,6 +95,12 @@ def template(case: str, params: dict | None = None, text: str = "") -> ExecutorR
         text = "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов."
         if (params or {}).get("menu") == "team":
             text = "Выберите один из восьми типов вопросов о команде:"
+    elif case == "clarify" and (params or {}).get("options") == MENU_CHOICES:
+        # RT-03: an unclear text without access or a person — the team question types and /help.
+        return ExecutorResponse(
+            result="Не понял вопрос. Выберите тип вопроса о команде или напишите /help — что я умею.",
+            actions=[Action(label=title, data="case:" + name) for name, title in TEAM_MENU],
+        )
     elif case == "clarify":
         text = "Уточните: вас интересует доступ к инструменту или человек, которому можно написать?"
     elif case == "out_of_scope":
@@ -225,5 +233,4 @@ class Registry:
 
 def format_response(response: ExecutorResponse) -> str:
     """Links are appended by code; executors never put URLs into their text."""
-    links = list(dict.fromkeys(response.links))
-    return response.result + ("\nИсточники:\n" + "\n".join(links) if links else "")
+    return to_plain(response.result, response.folded, response.links)

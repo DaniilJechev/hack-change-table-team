@@ -15,6 +15,13 @@ from buddy.runtime import Runtime
 from buddy.schemas import Action, ExecutorResponse
 
 NOT_FOUND = "В карточке и FAQ команды ответа нет."
+FOLD_PEOPLE = 3
+
+
+def people_count(number: int) -> str:
+    """«2 человека», «5 человек», «12 человек»."""
+    few = number % 10 in (2, 3, 4) and number % 100 not in (12, 13, 14)
+    return f"{number} человека" if few else f"{number} человек"
 UNAVAILABLE = "Данные команды сейчас недоступны. Попробуйте позже."
 WHY = ("почему", "зачем", "для чего")
 STOP = {"почему", "зачем", "кому", "писать", "можно", "нужно", "через", "которые", "какой", "какая", "какие"}
@@ -54,9 +61,10 @@ class TeamService:
     def _key(context: Context) -> str:
         return AccessService.key(context)
 
-    def _answer(self, case: str, text: str, links: list[str], extra: list[Action] | None = None):
+    def _answer(self, case: str, text: str, links: list[str], extra: list[Action] | None = None, folded=None):
         return ExecutorResponse(
             result=text,
+            folded=folded or [],
             links=list(dict.fromkeys(link for link in links if link)),
             actions=[*(extra or []), *rating(case)],
         )
@@ -75,19 +83,19 @@ class TeamService:
         actions.append(Action(label="Спросить наставника", data="esc:mentor"))
         actions.append(Action(label="Отложить на 1:1", data="esc:defer"))
         # FR-H2-04: an expert only when the card names one for the topic; otherwise the first contact.
-        hint, links = "", []
+        text, links = NOT_FOUND, []
         if target:
             who = f"{target['name']} ({target['role']})" if target.get("role") else target["name"]
             if responsible and target is people.get(responsible):
-                hint = f" По теме лучше всего знает {who}."
-            else:
-                hint = (
-                    " Ответственного по теме в карточке нет."
+                text = f"{NOT_FOUND} По теме лучше всего знает {who}."
+            else:  # B-08: «no answer» is said once
+                text = (
+                    "В карточке и FAQ ответа нет."
                     f" Первый контакт в команде — {who}: он подскажет, к кому идти."
                 )
             url = str(target.get("contact_url", ""))
             links = [url] if url.startswith(("https://", "http://")) else []
-        return ExecutorResponse(result=NOT_FOUND + hint, actions=actions, links=links)
+        return ExecutorResponse(result=text, actions=actions, links=links)
 
     async def _faq(self, context, runtime, question: str) -> ExecutorResponse | None:
         for word in words(question):
@@ -186,6 +194,9 @@ class TeamService:
             lines = [
                 f"{person['name']} ({person['role']}): {', '.join(person['areas'])}" for person in people
             ]
+            if len(lines) > FOLD_PEOPLE:  # FR-UI-01: a long team list is folded
+                title = f"Кто за что отвечает — {people_count(len(lines))}, список ниже."
+                return self._answer("team_q1", title, [card["source_url"]], folded=["\n".join(lines)])
             return self._answer("team_q1", "Кто за что отвечает:\n" + "\n".join(lines), [card["source_url"]])
         found = [
             person

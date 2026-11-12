@@ -1,5 +1,6 @@
 import asyncio
 from contextlib import suppress
+from functools import partial
 
 from aiogram import Bot
 from aiohttp import web
@@ -7,9 +8,9 @@ from aiohttp import web
 from buddy.access.checker import BotTelegram
 from buddy.bot.handlers import create_dispatcher
 from buddy.bot.identity import IdentityClient
+from buddy.bot.stage_two import keyboard, rich
 from buddy.config import Settings
 from buddy.data.backend import BackendData
-from buddy.executors.core import format_response
 from buddy.llm.client import create_llm
 from buddy.memory import Memory, RedisStore
 from buddy.router.service import Router
@@ -49,23 +50,21 @@ async def monitor_loop(service: AgentService, bot, seconds: int) -> None:
         await asyncio.sleep(seconds)
         for chat, response in await service.monitor_all():
             with suppress(Exception):
-                await bot.send_message(chat, format_response(response), parse_mode=None)
+                await rich(partial(bot.send_message, chat), response)
 
 
 async def brief_loop(service: AgentService, bot, seconds: int = 60) -> None:
     """Scheduler of morning briefs (FR-H0-06): checks once a minute whose brief is due."""
-    from buddy.bot.stage_two import keyboard
 
     while True:
         await asyncio.sleep(seconds)
         for chat, response, context in await service.briefs_due():
             ok = True
             try:
-                sent = await bot.send_message(
-                    chat,
-                    format_response(response),
+                sent = await rich(
+                    partial(bot.send_message, chat),
+                    response,
                     reply_markup=keyboard(response.actions),
-                    parse_mode=None,
                     disable_web_page_preview=True,
                 )
                 if response.brief_id:

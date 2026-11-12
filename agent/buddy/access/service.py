@@ -93,7 +93,15 @@ class AccessService:
             lines.append(line)
             links.append(item.url)
         lines.append("Бот только проверяет доступы и ничего не меняет в сервисах.")
-        return ExecutorResponse(result="\n".join(lines), actions=actions, links=list(dict.fromkeys(links)))
+        # FR-UI-01: when something needs attention, the tools that are fine go under the fold.
+        granted = [line for line, item in zip(lines[1:], items, strict=False) if item.status == "granted"]
+        folded = []
+        if granted and len(granted) < len(items):
+            lines = [line for line in lines if line not in granted]
+            folded = [f"Доступ есть ({len(granted)}):\n" + "\n".join(granted)]
+        return ExecutorResponse(
+            result="\n".join(lines), actions=actions, links=list(dict.fromkeys(links)), folded=folded
+        )
 
     async def _restore(self, context: Context, runtime: Runtime) -> None:
         key = self.key(context)
