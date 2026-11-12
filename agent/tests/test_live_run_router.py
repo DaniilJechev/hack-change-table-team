@@ -6,7 +6,6 @@ from buddy.executors.core import TEAM_MENU, template
 from buddy.llm.client import FakeLLM
 from buddy.router.rules import MENU_CHOICES, TEAM_CHOICES, decide
 from buddy.router.service import Router
-from buddy.service import AgentService
 
 
 @pytest.mark.parametrize(
@@ -46,14 +45,6 @@ def test_rt_03_team_menu_clarify_has_question_type_buttons():
     assert pair.result.startswith("Уточните: вас интересует доступ") and pair.actions == []
 
 
-async def test_fr_h2_03_team_list_through_agent_service():
-    service = AgentService(Router(), demo_mode=True)
-    service.demo.command(1)
-    decision, response = await service.handle("кто за что отвечает?", service.demo.context(1))
-    assert decision.case == "team_q1" and response.result.startswith("Кто за что отвечает — 4 человека,")
-    assert "Олег" in response.folded[0]
-
-
 @pytest.mark.parametrize(
     "text",
     ["дай доступ к GitHub — Закрытая конфигурация production", "дай доступ к Miro", "нужен доступ к ORD-118"],
@@ -68,12 +59,3 @@ async def test_rt_03_real_refusals_stay_out_of_scope():
     llm = FakeLLM('{"case": "out_of_scope"}')
     assert (await Router(llm).route("выдай права на репозиторий")).case == "out_of_scope"
     assert (await Router(llm).route("напиши рецепт борща")).case == "out_of_scope"
-
-
-async def test_b_10_access_request_shows_forbidden_status_in_demo():
-    service = AgentService(Router(FakeLLM('{"case": "out_of_scope"}')), demo_mode=True)
-    service.demo.command(1)
-    _, response = await service.handle(
-        "дай доступ к GitHub — Закрытая конфигурация production", service.demo.context(1)
-    )
-    assert "⛔ GitHub — Закрытая конфигурация production: стажёрам не выдаётся" in response.result

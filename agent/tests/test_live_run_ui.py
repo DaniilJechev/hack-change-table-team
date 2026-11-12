@@ -92,8 +92,3 @@ async def test_fr_h3_08_whole_list_of_values_is_given_and_folded(index):
     assert len(values) == 5 and any(link.endswith("mission-and-values.md#миссия") for link in response.links)
     assert response.folded[0].startswith("В какие ценности мы верим?\n1. Ценность № 1")
     assert len(response.folded[0].splitlines()) == 6
-
-
-async def test_fr_h3_08_single_section_is_not_expanded(index):
-    response = await PlaybookService(PlaybookSearch(index)).answer("Что такое Zero Bug Policy?", context())
-    assert response.folded == [] and 1 <= len(response.links) <= 4

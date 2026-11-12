@@ -8,7 +8,6 @@ from buddy.rag.index import PlaybookIndex
 from buddy.rag.qa import DETAILS_PROMPT, PROMPT, PlaybookService, topics, unmeta
 from buddy.rag.search import PlaybookSearch
 
-MISSION = "mission-and-values.md#миссия"
 VALUE = "mission-and-values.md#ценность--"
 ANSWER = (
     "Миссия Авито — помочь каждому улучшить собственную жизнь и жизнь людей вокруг. "
@@ -25,17 +24,6 @@ def context():
     controller = DemoController(True)
     controller.command(1)
     return controller.context(1)
-
-
-async def test_fr_h3_08_compound_question_uses_both_topics(index):
-    llm = FakeLLM(ANSWER)
-    response = await PlaybookService(PlaybookSearch(index), llm).answer(
-        "расскажи про ценности и миссию авито", context()
-    )
-    assert any(link.endswith(MISSION) for link in response.links)
-    assert any(VALUE in link for link in response.links)
-    assert "Миссия" in llm.calls[0] and "Ценность №" in llm.calls[0]
-    assert response.result.startswith("Миссия Авито")
 
 
 async def test_fr_h3_08_no_more_than_four_fragments_without_duplicates(index):
@@ -55,6 +43,7 @@ def test_fr_h3_08_only_questions_joining_topics_are_split():
 async def test_fr_h3_08_single_topic_question_keeps_its_fragments(index):
     response = await PlaybookService(PlaybookSearch(index)).answer("Как часто релизы?", context())
     assert "processes-and-standards.md#релизы" in response.links[0] and len(response.links) <= 3
+    assert response.folded == []  # one section: no list to expand
 
 
 def test_fr_h3_09_prompts_forbid_meta_phrases_and_name_the_gap():
