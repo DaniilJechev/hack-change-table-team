@@ -1,9 +1,13 @@
 import os
 
+from buddy.agent import Agent
 from buddy.demo.controller import DemoController
+from buddy.equator.service import EquatorService, local_pptx_gateway
 from buddy.executors.core import Context, Registry
 from buddy.graph import build_graph
+from buddy.llm.client import CompatibleLLM
 from buddy.memory import Memory
+from buddy.memory.store import DEFAULT_MAX_TURNS, DEFAULT_TTL_SECONDS
 from buddy.router.service import Router
 from buddy.runtime import Runtime
 from buddy.schemas import ExecutorResponse, RouteDecision
@@ -29,8 +33,18 @@ class AgentService:
             raise ValueError("AGENT_ENGINE must be legacy or graph")
         self.engine = engine
         # FR-MEM-06: in process by default; app.py passes a Redis store for live mode.
-        self.memory = memory or Memory(enabled=getattr(settings, "memory_enabled", True))
-        self.graph = build_graph(router, self.executors, self.memory, llm) if engine == "graph" else None
+        self.memory = memory or Memory(
+            max_turns=getattr(settings, "memory_max_turns", DEFAULT_MAX_TURNS),
+            ttl_seconds=getattr(settings, "memory_ttl_seconds", DEFAULT_TTL_SECONDS),
+            enabled=getattr(settings, "memory_enabled", True),
+        )
+        # FR-AG-01: FakeLLM (LLM_PROVIDER=fake, demo without LLM_IN_DEMO) keeps the Router path.
+        mode = getattr(settings, "agent_mode", "agent")
+        agent = Agent(llm, self.executors) if mode == "agent" and isinstance(llm, CompatibleLLM) else None
+        self.agent, self.llm = agent, llm
+        self.graph = (
+            build_graph(router, self.executors, self.memory, llm, agent) if engine == "graph" else None
+        )
         self.brief_messages: dict[tuple[int, int], str] = {}
         self.demo = DemoController(demo_mode)
         self.live = live
@@ -38,6 +52,14 @@ class AgentService:
         self.known: dict[str, Context] = {}
         self.awaiting: dict[int, tuple[str, str, Context]] = {}
         self.awaiting_card: dict[int, Context] = {}
+        self.equator = EquatorService(pptx_gateway=local_pptx_gateway() if demo_mode else None)
+
+    async def equator_check(self, name: str, data: bytes, context: Context):
+        """H4: rules-only deck check; returns the report and the stored check (or None)."""
+        return await self.equator.check(name, data, context, self.runtime(context))
+
+    async def equator_send(self, check_id: str, context: Context):
+        return await self.equator.send(check_id, context, self.runtime(context))
 
     def runtime(self, context: Context) -> Runtime | None:
         if context.demo and context.session is not None and self.demo.active(context.session):
@@ -110,6 +132,7 @@ class AgentService:
         self.memory.clear_demo(telegram_user)
         self.awaiting.pop(telegram_user, None)
         self.awaiting_card.pop(telegram_user, None)
+        self.equator.clear(telegram_user)
         for cache in (
             self.executors.access.previous,
             self.executors.team.pending,

@@ -51,7 +51,8 @@ async def test_st4_demo_1_brief_and_playbook_full_flow_in_telegram():
         brief = await app.send("/brief")
         assert brief.text.startswith("Демо: синтетический сценарий.\nБриф на 11.11 (учебный день демо):")
         assert "▶ Главное сегодня: исправить замечания в PR #45" in brief.text
-        assert brief.text.count("https://example.invalid/") == 5 and "Источники:" in brief.text
+        assert brief.text.count("https://example.invalid/") == 5 and "Источники" not in brief.text
+        assert '">[5]</a>' in brief.text  # FR-UI-03: footnotes, not a source list
         labels = [button.text for button in buttons(brief)]
         assert labels == ["Ещё 3", "👍", "👎"]
         brief_id = data_of(brief, "brief:positive:").rsplit(":", 1)[1]

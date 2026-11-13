@@ -1,4 +1,4 @@
-"""FR-MEM-01/02/06: a short dialog window per trusted user and team, kept in process or in Redis."""
+"""FR-MEM-01/02/06: a short dialog (last N turns) per trusted user and team, kept in process or in Redis."""
 
 import json
 import logging
@@ -11,8 +11,10 @@ from pydantic import BaseModel, Field, ValidationError
 
 from buddy.executors.context import Context
 
-WINDOW = 6
-TTL_SECONDS = 30 * 60
+# Defaults; live values come from MEMORY_MAX_TURNS / MEMORY_TTL_SECONDS (see config.py).
+# A "turn" is one handled request: the user's text plus the answer (two chat messages).
+DEFAULT_MAX_TURNS = 6
+DEFAULT_TTL_SECONDS = 30 * 60
 log = logging.getLogger(__name__)
 
 # FR-MEM-04: tokens, keys and authorization headers never reach the memory.
@@ -37,12 +39,15 @@ def entity(value: str) -> bool:
 
 
 class Turn(BaseModel):
-    """One handled request: never raw LLM output, only case, parameters, entities and a short summary."""
+    """One handled request: case, parameters, entities, a short summary and — FR-MEM-04 — the user's
+    text and the answer shown to the user (checked by code), never an unchecked LLM output."""
 
     case: str
     params: dict[str, str] = Field(default_factory=dict)
     entities: dict[str, list[str]] = Field(default_factory=dict)
     summary: str = ""
+    text: str = ""
+    answer: str = ""
     role: str = ""
     at: float = 0
 
@@ -52,8 +57,22 @@ class Turn(BaseModel):
                 "params": {k: redact(v) for k, v in self.params.items()},
                 "entities": {k: [item for item in v[:20] if entity(item)] for k, v in self.entities.items()},
                 "summary": redact(self.summary, 200),
+                "text": redact(self.text, 600),
+                "answer": redact(self.answer, 600),
             }
         )
+
+
+def history(turns: list[Turn]) -> list[dict]:
+    """FR-MEM-04: dialog replies for the agent; the Router summary stays without them."""
+    messages = []
+    for turn in turns:
+        if turn.text and turn.answer:
+            messages += [
+                {"role": "user", "content": turn.text},
+                {"role": "assistant", "content": turn.answer},
+            ]
+    return messages
 
 
 def key(context: Context) -> str:
@@ -72,8 +91,8 @@ class Store(Protocol):
 
 
 class InMemoryStore:
-    def __init__(self, window: int = WINDOW):
-        self.window = window
+    def __init__(self, max_turns: int = DEFAULT_MAX_TURNS):
+        self.max_turns = max_turns
         self.data: dict[str, list[Turn]] = {}
 
     async def load(self, name: str) -> list[Turn]:
@@ -82,7 +101,7 @@ class InMemoryStore:
     async def append(self, name: str, turn: Turn) -> None:
         turns = self.data.setdefault(name, [])
         turns.append(turn)
-        del turns[: -self.window]
+        del turns[: -self.max_turns]
 
     async def clear(self, name: str) -> None:
         self.data.pop(name, None)
@@ -93,16 +112,25 @@ class InMemoryStore:
 
 
 class RedisStore:
-    """Live mode (FR-MEM-06): list per user with LTRIM to the window and EXPIRE as the TTL."""
+    """Live mode (FR-MEM-06): list per user with LTRIM to max_turns and EXPIRE as the TTL."""
 
-    def __init__(self, client, window: int = WINDOW, ttl: int = TTL_SECONDS, prefix: str = "buddy:memory:"):
-        self.client, self.window, self.ttl, self.prefix = client, window, ttl, prefix
+    def __init__(
+        self,
+        client,
+        max_turns: int = DEFAULT_MAX_TURNS,
+        ttl_seconds: int = DEFAULT_TTL_SECONDS,
+        prefix: str = "buddy:memory:",
+    ):
+        self.client, self.max_turns, self.ttl_seconds, self.prefix = client, max_turns, ttl_seconds, prefix
 
     @classmethod
-    def from_url(cls, url: str) -> "RedisStore":  # pragma: no cover - needs a Redis server
+    def from_url(
+        cls, url: str, max_turns: int = DEFAULT_MAX_TURNS, ttl_seconds: int = DEFAULT_TTL_SECONDS
+    ) -> "RedisStore":  # pragma: no cover - needs a Redis server
         from redis.asyncio import Redis
 
-        return cls(Redis.from_url(url, socket_timeout=1, socket_connect_timeout=1, decode_responses=True))
+        client = Redis.from_url(url, socket_timeout=1, socket_connect_timeout=1, decode_responses=True)
+        return cls(client, max_turns, ttl_seconds)
 
     async def load(self, name: str) -> list[Turn]:
         turns = []
@@ -117,8 +145,8 @@ class RedisStore:
         name = self.prefix + name
         pipe = self.client.pipeline()
         pipe.rpush(name, turn.model_dump_json())
-        pipe.ltrim(name, -self.window, -1)
-        pipe.expire(name, self.ttl)
+        pipe.ltrim(name, -self.max_turns, -1)
+        pipe.expire(name, self.ttl_seconds)
         await pipe.execute()
 
     async def clear(self, name: str) -> None:
@@ -126,7 +154,7 @@ class RedisStore:
 
 
 class Memory:
-    """Window, TTL, role filter and fail-open behaviour on top of a store.
+    """Turn limit, TTL, role filter and fail-open behaviour on top of a store.
 
     Demo sessions always use their own in-process store, so the demo never needs Redis.
     """
@@ -135,13 +163,14 @@ class Memory:
         self,
         store: Store | None = None,
         *,
-        ttl: float = TTL_SECONDS,
+        max_turns: int = DEFAULT_MAX_TURNS,
+        ttl_seconds: float = DEFAULT_TTL_SECONDS,
         clock: Callable[[], float] = time.time,
         enabled: bool = True,
     ):
-        self.store = store or InMemoryStore()
-        self.demo_store = InMemoryStore()
-        self.ttl, self.clock, self.enabled = ttl, clock, enabled
+        self.store = store or InMemoryStore(max_turns)
+        self.demo_store = InMemoryStore(max_turns)
+        self.max_turns, self.ttl_seconds, self.clock, self.enabled = max_turns, ttl_seconds, clock, enabled
 
     def _store(self, context: Context) -> Store:
         return self.demo_store if context.demo else self.store
@@ -154,9 +183,9 @@ class Memory:
         except Exception:
             log.warning("memory unavailable, answering without it")
             return []
-        fresh = self.clock() - self.ttl
+        fresh = self.clock() - self.ttl_seconds
         # A role change (demo mentor/intern switch, profile update) makes earlier turns unusable.
-        return [turn for turn in turns if turn.at >= fresh and turn.role == context.role][-WINDOW:]
+        return [turn for turn in turns if turn.at >= fresh and turn.role == context.role][-self.max_turns :]
 
     async def save(self, context: Context, turn: Turn) -> None:
         if not self.enabled:

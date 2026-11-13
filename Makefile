@@ -2,9 +2,10 @@ COMPOSE ?= docker compose
 PYTHON ?= python
 GO ?= go
 UV ?= uv
+STUDIO_PORT ?= 2024
 OPENSPEC ?= openspec
 
-.PHONY: up demo down test cover smoke validate setup
+.PHONY: up demo down test cover smoke validate setup studio
 up:
 	$(COMPOSE) up --build -d --wait --wait-timeout 180
 	$(PYTHON) infra/setup_grafana.py --compose "$(COMPOSE)"
@@ -19,6 +20,11 @@ down:
 
 setup:
 	$(UV) sync --project agent --frozen --extra dev --python 3.12
+
+# LangGraph Studio: граф агента на демо-фикстурах, чат + состояния + трейсы. API: http://127.0.0.1:2024
+# --allow-blocking: демо читает фикстуры синхронно (os.getcwd, open); только для локального dev-сервера.
+studio:
+	$(UV) run --project agent --frozen --extra studio langgraph dev --config langgraph.json --no-browser --allow-blocking --port $(STUDIO_PORT)
 
 test:
 	$(PYTHON) infra/test_backend.py
@@ -48,7 +54,7 @@ validate-specs: validate
 
 dev: setup
 
-.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list buddy-check
+.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list buddy-check pptx-up pptx-list
 seed:
 	$(COMPOSE) exec -T backend backend seed
 
@@ -73,12 +79,19 @@ invite:
 test-backend-integration:
 	$(PYTHON) infra/test_backend.py
 
-MCP_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.mcp.yml
+MCP_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.mcp.yml -f docker-compose.powerpoint.yml
+PPTX_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.powerpoint.yml
 mcp-up:
-	$(MCP_COMPOSE) up --build -d --wait --wait-timeout 180 mcp-atlassian google-calendar-mcp
+	$(MCP_COMPOSE) up --build -d --wait --wait-timeout 180 mcp-atlassian google-calendar-mcp powerpoint-mcp
 
 mcp-down:
-	$(MCP_COMPOSE) stop mcp-atlassian google-calendar-mcp
+	$(MCP_COMPOSE) stop mcp-atlassian google-calendar-mcp powerpoint-mcp
+
+pptx-up:
+	$(PPTX_COMPOSE) up --build -d --wait --wait-timeout 180
+
+pptx-list:
+	$(UV) run --script infra/mcp_probe.py --compose "$(PPTX_COMPOSE)" --only powerpoint
 
 mcp-list:
 	$(UV) run --script infra/mcp_probe.py --compose "$(MCP_COMPOSE)"
@@ -95,12 +108,6 @@ setup-rag:
 # Embeddings from inside the running agent container (image built with AGENT_EXTRAS="--extra rag").
 ingest-compose:
 	$(COMPOSE) exec -T agent python -m buddy.rag.ingest --embed-only
-
-# Developer tool: LangGraph Studio on the demo graph — state after every node and full LLM prompts.
-# Needs `uv sync --project agent --extra studio`; --allow-blocking because demo fixtures are read from disk.
-.PHONY: studio
-studio:
-	cd agent && $(UV) run --frozen --extra studio langgraph dev --allow-blocking
 
 record-fixtures:
 	@echo "$@: not implemented until the corresponding roadmap stage"

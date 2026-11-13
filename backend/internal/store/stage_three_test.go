@@ -13,7 +13,7 @@ const uploadYAML = `synthetic: true
 team_id: orders
 name: Учебная команда
 people:
-  - {user_id: mentor, name: Наставник, role: Наставник, areas: [Kafka], contact_url: 'https://example.org/mentor', first_contact: true}
+  - {user_id: mentor, name: Наставник, role: Наставник, areas: [Kafka], about: Отвечает за Kafka, contact_url: 'https://example.org/mentor', first_contact: true}
 routing:
   - {situation: Kafka, go_to: Mentor, owner_id: mentor, wait_minutes: 30, then_id: lead, source_url: 'https://example.org/routing'}
 do_not_disturb:

@@ -39,7 +39,7 @@ var cardSchema = rules(map[string]string{"synthetic": "true", "team_id": "id", "
 	"stage": "stage", "notice": "text", "source_url": "url", "people": "people", "routing": "routing", "do_not_disturb": "dnd", "tools": "texts", "links": "links", "faq": "empty",
 })
 var stageSchema = rules(map[string]string{"epic_key": "id", "source_url": "url"}, nil)
-var personSchema = rules(map[string]string{"user_id": "id", "name": "text", "role": "text", "areas": "texts", "contact_url": "url"}, map[string]string{"first_contact": "bool"})
+var personSchema = rules(map[string]string{"user_id": "id", "name": "text", "role": "text", "areas": "texts", "contact_url": "url"}, map[string]string{"first_contact": "bool", "about": "text"})
 var routeSchema = rules(map[string]string{"situation": "text", "go_to": "text", "owner_id": "id", "wait_minutes": "minutes", "then_id": "id", "source_url": "url"}, nil)
 var dndSchema = rules(map[string]string{"person_id": "id", "direct_allowed": "bool", "reason": "text", "via_id": "id"}, nil)
 var linkSchema = rules(map[string]string{"service": "text", "url": "url"}, nil)

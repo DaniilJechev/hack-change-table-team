@@ -12,6 +12,8 @@ people:
   role: Backend-стажёр
   areas:
   - онбординг
+  about: 'Стажёр на испытательном сроке: разбирается с кодовой базой orders-api, ведёт
+    онбординг-задачи этапа ORD-100 и готовит презентацию к экваторной встрече.'
   contact_url: https://example.invalid/team/demo-orders/people/demo-daniil
 - user_id: demo-anna
   name: Анна
@@ -19,6 +21,8 @@ people:
   areas:
   - онбординг
   - ревью
+  about: 'Наставник Даниила: раз в неделю проводит 1:1, смотрит его pull request''ы
+    и помогает разобраться с процессами команды. Лучше писать в рабочие часы.'
   contact_url: https://example.invalid/team/demo-orders/people/demo-anna
 - user_id: demo-oleg
   name: Олег
@@ -27,6 +31,9 @@ people:
   - orders-api
   - надёжность
   first_contact: true
+  about: 'Тимлид команды: отвечает за архитектуру orders-api и надёжность сервиса,
+    дежурит по staging и принимает решения по спорным вопросам. Первый контакт, если
+    непонятно, к кому идти.'
   contact_url: https://example.invalid/team/demo-orders/people/demo-oleg
 - user_id: demo-petr
   name: Пётр
@@ -34,6 +41,9 @@ people:
   areas:
   - Kafka
   - интеграции
+  about: 'Инженер интеграций: настраивает обмен событиями через Kafka между сервисами
+    заказов и платежей и знает, почему шина устроена именно так. Вне рабочего времени
+    пишите через Олега.'
   contact_url: https://example.invalid/team/demo-orders/people/demo-petr
 routing:
 - situation: упал staging

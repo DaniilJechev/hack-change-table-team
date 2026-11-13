@@ -87,7 +87,7 @@ def test_st4_graph_1_guard_rejects_unknown_source():
     ) == template("help")
     assert guarded(None, "write_code") == template("out_of_scope")
     ok = ExecutorResponse(result="x", links=["https://github.com/avito-tech/playbook/blob/main/a.md#b"])
-    assert guarded(ok, "playbook_qa") is ok
+    assert guarded(ok, "playbook_qa") == ok.model_copy(update={"result": "x [1]"})  # FR-UI-03 footnote
 
 
 async def test_st4_graph_1_demo_runs_without_network(monkeypatch):

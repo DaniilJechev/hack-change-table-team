@@ -28,7 +28,7 @@ async def test_st3_demo_1_h1_and_h2_full_flow_in_telegram():
     try:
         await app.send("/demo")
         status = await app.send("Что с моими доступами?")
-        assert "Ваши доступы" in status.text and "Источники:" in status.text
+        assert "Ваши доступы" in status.text and '">[1]</a>' in status.text  # FR-UI-03
         assert any(button.url for button in buttons(status))
         await app.callback(callback_of([status], "request:demo-orders-miro"))
         assert "на согласовании" in app.session.sent[-1].text
@@ -62,7 +62,7 @@ async def test_st3_demo_1_h1_and_h2_full_flow_in_telegram():
         assert "Нет вопроса" in app.session.sent[-1].text
         assert "только наставнику" in (await app.send("/interns")).text
         stage = await app.send("На каком этапе проект?")
-        assert "ORD-100" in stage.text and stage.text.endswith("https://example.invalid/jira/browse/ORD-100")
+        assert "ORD-100" in stage.text and stage.text.endswith('<a href="https://example.invalid/jira/browse/ORD-100">[1]</a>')
     finally:
         await app.bot.session.close()
 

@@ -32,6 +32,7 @@ class Person(DataModel):
     role: str = Field(min_length=1)
     areas: list[str] = Field(min_length=1)
     first_contact: bool = False
+    about: str = ""
     contact_url: str
     _url = field_validator("contact_url")(object_url)
 

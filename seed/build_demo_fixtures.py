@@ -312,6 +312,8 @@ def build(root: Path = ROOT) -> None:
                     "Добавить фильтр по статусу в репозитории orders-onboarding, сверить план на доске "
                     "планирования в Miro и обсудить на стендапе. Конфигурацию production-config не менять."
                 ),
+                # H4 compares the status named on a slide with Jira.
+                "status": {"name": "In Progress"},
                 "url": resources["jira"]["url"],
             },
             "calendar": {
@@ -376,6 +378,25 @@ def build(root: Path = ROOT) -> None:
                         "progress": {"done": 6, "total": 11},
                         "url": resources["jira"]["epic_url"],
                     },
+                ),
+                # H4 training decks (fixtures/equator): ORD-999 has no fixture, i.e. no such issue.
+                *(
+                    (
+                        None,
+                        {"issue_key": key},
+                        {
+                            "key": key,
+                            "epic_key": "ORD-100",
+                            "team_id": "demo-orders",
+                            "summary": summary,
+                            "status": {"name": status},
+                            "url": "https://example.invalid/jira/browse/" + key,
+                        },
+                    )
+                    for key, summary, status in (
+                        ("ORD-115", "Валидация параметров фильтра", "Done"),
+                        ("ORD-121", "Учебный клиент Kafka", "To Do"),
+                    )
                 ),
             ],
         }

@@ -6,8 +6,8 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, User
 
 from buddy.bot.identity import IdentityClient, IdentityError
-from buddy.executors.core import TEAM_MENU, Context, format_response
-from buddy.render import to_html
+from buddy.executors.core import TEAM_MENU, Context
+from buddy.render import to_html, to_plain
 from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
@@ -23,6 +23,7 @@ CALLBACKS = (
     "nofaq:",
     "rate:",
     "brief:",
+    "equator:",
 )
 
 
@@ -127,12 +128,13 @@ def prefix(profile: Context) -> str:
 
 
 async def rich(method, response: ExecutorResponse, head: str = "", **kwargs):
-    """FR-UI-01: HTML with expandable quotes; plain text when Telegram rejects the markup."""
+    """FR-UI-02: HTML built by code; plain text when Telegram rejects the markup."""
     try:
         html = to_html(response.result, response.folded, response.links, head)
         return await method(text=html, parse_mode="HTML", **kwargs)
     except TelegramBadRequest:
-        return await method(text=head + format_response(response), parse_mode=None, **kwargs)
+        text = to_plain(response.result, response.folded, response.links, head)
+        return await method(text=text, parse_mode=None, **kwargs)
 
 
 async def send(
@@ -308,6 +310,10 @@ async def choose(
     elif kind == "rate":
         target, _, mark = value.rpartition(":")
         await send(message, profile, await agent_service.rate(target, mark == "1", profile))
+    elif kind == "equator":
+        from buddy.bot.equator import to_mentor
+
+        await to_mentor(message, agent_service, profile, value)
     else:
         result = await agent_service.trigger(value, profile)
         await send(message, profile, result, value, agent_service)

@@ -1,0 +1,40 @@
+# H4 PowerPoint MCP: needs no corporate account, so it is a separate opt-in overlay.
+# docker compose -f docker-compose.yml -f docker-compose.powerpoint.yml up --build -d
+services:
+  # H4: Office-PowerPoint-MCP-Server 2.0.7 reduced to two read tools (mcp/powerpoint/entrypoint.py).
+  powerpoint-mcp:
+    build: ./mcp/powerpoint
+    init: true
+    read_only: true
+    user: '10001:10001'
+    ports:
+      - '127.0.0.1:${MCP_POWERPOINT_PORT:-8002}:8000'
+    tmpfs:
+      - /tmp:uid=10001,gid=10001,mode=1777
+    volumes:
+      - presentations:/presentations:ro
+    environment:
+      HOST: 0.0.0.0
+      PORT: '8000'
+      PPTX_ROOT: /presentations
+      HOME: /tmp
+    healthcheck:
+      test: [CMD, python, -c, "import socket; socket.create_connection(('127.0.0.1', 8000), 2)"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+  agent:
+    environment:
+      PPTX_MCP_URL: http://powerpoint-mcp:8000/mcp
+      PPTX_UPLOAD_DIR: /presentations
+    volumes:
+      - presentations:/presentations
+volumes:
+  # Uploaded decks live in memory only and are deleted right after reading.
+  presentations:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: uid=10001,gid=10001,mode=0700

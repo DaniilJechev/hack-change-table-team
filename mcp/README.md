@@ -26,6 +26,7 @@
 | GitHub | `python /app/github_mcp.py`, stdio; env уже в agent | v2.1.0 | фиксированные `--read-only` и `--tools` |
 | Jira | `http://mcp-atlassian:8000/mcp/` | v0.24.1 | `READ_ONLY_MODE=true`, пять `ENABLED_TOOLS` |
 | Calendar | `http://google-calendar-mcp:3000/mcp` | npm 2.8.1 | шесть `ENABLED_TOOLS`, отключён `manage-accounts` |
+| PowerPoint (H4) | `http://powerpoint-mcp:8000/mcp` | PyPI office-powerpoint-mcp-server 2.0.7 | обёртка `powerpoint/entrypoint.py` оставляет `open_presentation` и `extract_presentation_text`, файлы — только из tmpfs `/presentations` |
 
 URL также переданы в `MCP_ATLASSIAN_URL` и `MCP_CALENDAR_URL`. Docker socket в
 agent не нужен. Все имена — в `tools.json`; это серверный набор, отдельные белые

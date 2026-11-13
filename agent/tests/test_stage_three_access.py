@@ -77,7 +77,7 @@ async def test_fr_h1_06_forbidden_or_unknown_objects_cannot_be_marked(object_id)
 async def test_fr_h1_05_task_analysis_shows_only_mentioned_objects():
     _, runtime, context = demo()
     response = await AccessService().task(context, runtime, "ord-118")
-    assert response.result.startswith("Для задачи ORD-118 нужны доступы:")
+    assert response.result.startswith("Для задачи ORD-118 [1] нужны доступы:")  # FR-UI-03: the task link
     shown = "\n".join([response.result, *response.folded])  # FR-UI-01: granted tools are folded
     assert "GitHub — Репозиторий" in response.folded[0] and "Miro" in response.result
     assert "Google Calendar" in shown and "production" in response.result
@@ -184,7 +184,7 @@ async def test_fr_h1_03_telegram_fixture_must_match(tmp_path):
     _, runtime, context = demo()
     runtime.telegram = FixtureTelegram(tmp_path, "step_1")
     response = await AccessService().status(context, runtime)
-    assert "❔ Telegram" in response.result
+    assert "❌ Telegram" in response.result
 
 
 def test_fr_h1_03_payload_and_contains_helpers():
@@ -219,7 +219,7 @@ async def test_fr_h1_02_unknown_status_offers_no_request_and_keeps_saved_status(
     runtime.gateway = AsyncMock()
     runtime.gateway.call.side_effect = SourceUnavailable("down")
     response = await service.status(context, runtime)
-    assert "❔ Miro" in response.result
+    assert "❌ Miro" in response.result
     assert not any(action.data == "request:demo-orders-miro" for action in response.actions)
     assert service.previous[AccessService.key(context)]["demo-orders-miro"] == "missing"
 

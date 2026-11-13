@@ -1,4 +1,6 @@
-"""Live run 12.11, round 3: folded blocks in Telegram (FR-UI-01/02), whole lists in H3 (B-01), B-07."""
+"""Live run 12.11, round 3: Telegram markup (FR-UI-02), whole lists in H3 (B-01), B-07.
+
+FR-UI-01 (expandable quotes) is removed by `openspec/changes/telegram-citations`: nothing is folded."""
 
 from unittest.mock import AsyncMock
 
@@ -13,30 +15,26 @@ from buddy.llm.client import FakeLLM
 from buddy.rag.index import PlaybookIndex
 from buddy.rag.qa import PROMPT, PlaybookService
 from buddy.rag.search import PlaybookSearch
-from buddy.render import plain, split_long, to_html
+from buddy.render import plain, to_html
 from buddy.schemas import ExecutorResponse
 
 LINKS = [f"https://example.invalid/{n}" for n in range(1, 6)]
 
 
-def test_fr_ui_01_folded_blocks_are_expandable_quotes():
+def test_fr_ui_02_secondary_blocks_follow_as_plain_text():
     html = to_html("Кто за что отвечает — 4 человек.", ["Олег (Тимлид)\nПётр"], LINKS[:2], "Демо.\n")
-    head = "Демо.\nКто за что отвечает — 4 человек.\n"
-    assert html.startswith(head + "<blockquote expandable>Олег (Тимлид)\nПётр")
-    assert html.endswith("Источники:\n" + "\n".join(LINKS[:2]))  # 1–3 links stay visible
+    head = (
+        f'Демо.\nКто за что отвечает — 4 человек. <a href="{LINKS[0]}">[1]</a> <a href="{LINKS[1]}">[2]</a>\n'
+    )
+    assert html == head + "Олег (Тимлид)\nПётр"  # FR-UI-03
 
 
-def test_fr_ui_01_long_source_list_is_folded():
-    html = to_html("Ответ.", [], LINKS)
-    assert html == "Ответ.\nИсточники:\n<blockquote expandable>" + "\n".join(LINKS) + "</blockquote>"
-
-
-def test_fr_ui_01_long_text_without_folded_blocks_folds_its_tail_between_lines():
-    text = "\n".join(f"{n}. пункт" for n in range(1, 15))
-    head, tail = split_long(text)
-    assert head.splitlines()[-1] == "6. пункт" and tail.startswith("7. пункт")
-    assert split_long("одно длинное предложение " * 60) == ("одно длинное предложение " * 60, "")
-    assert split_long("коротко") == ("коротко", "")
+def test_fr_ui_02_long_answer_is_not_folded():
+    """Telegram 13.11, 11:20: an agent answer about access was cut after its 6th line into a quote."""
+    text = "Вот как сейчас с доступами:\n\nЕсть (4):\n" + "\n".join(f"— пункт {n}" for n in range(1, 12))
+    text += "\n\nНет:\n— Miro, доска планирования: доступа нет"
+    html = to_html(text, [], [])
+    assert html == text and "blockquote" not in html
 
 
 def test_fr_ui_02_text_is_escaped_and_only_code_adds_tags():
@@ -48,7 +46,7 @@ def test_fr_ui_02_text_is_escaped_and_only_code_adds_tags():
 def test_b_07_markdown_emphasis_is_not_shown_as_asterisks():
     assert plain("**Миссия:** помогать. __Ценности:__ пять.") == "Миссия: помогать. Ценности: пять."
     response = ExecutorResponse(result="**Миссия**", folded=["список"], links=LINKS[:1])
-    assert format_response(response) == "Миссия\nсписок\nИсточники:\n" + LINKS[0]
+    assert format_response(response) == "Миссия [1]\nсписок\n[1] " + LINKS[0]
     assert "Markdown" in PROMPT
 
 
@@ -57,9 +55,9 @@ async def test_fr_ui_02_plain_text_when_telegram_rejects_markup():
     response = ExecutorResponse(result="**Ответ**", folded=["детали"], links=LINKS[:1])
     assert await rich(method, response, "Демо.\n", disable_web_page_preview=True) == "sent"
     first, second = method.await_args_list
-    assert first.kwargs["parse_mode"] == "HTML" and "<blockquote expandable>детали" in first.kwargs["text"]
+    assert first.kwargs["parse_mode"] == "HTML" and first.kwargs["text"].endswith("</a>\nдетали")
     assert second.kwargs == {
-        "text": "Демо.\nОтвет\nдетали\nИсточники:\n" + LINKS[0],
+        "text": "Демо.\nОтвет [1]\nдетали\n[1] " + LINKS[0],
         "parse_mode": None,
         "disable_web_page_preview": True,
     }

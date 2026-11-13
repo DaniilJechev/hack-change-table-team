@@ -56,8 +56,8 @@ async def test_fr_h1_01_access_links_reference_repo_project_and_board_once():
     try:
         await app.send("/demo")
         response = await app.send("/access")
-        assert "https://example.invalid/github/demo-buddy/orders-onboarding\n" in response.text
-        assert "https://example.invalid/jira/projects/ORD\n" in response.text
+        assert 'href="https://example.invalid/github/demo-buddy/orders-onboarding"' in response.text
+        assert 'href="https://example.invalid/jira/projects/ORD"' in response.text
         assert "/pull/45" not in response.text and "/browse/ORD-118" not in response.text
         board = await app.send("Где доска планирования?")
         assert "Miro" in board.text

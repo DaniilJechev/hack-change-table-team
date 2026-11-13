@@ -10,8 +10,8 @@ from pydantic import BaseModel, ConfigDict, Field, SecretStr, model_validator
 
 from buddy.mcp_hub.errors import ConfigurationError
 
-ServerName = Literal["github", "jira", "calendar", "miro"]
-SERVERS = ("github", "jira", "calendar", "miro")
+ServerName = Literal["github", "jira", "calendar", "miro", "powerpoint"]
+SERVERS = ("github", "jira", "calendar", "miro", "powerpoint")
 
 
 class ServerConfig(BaseModel):
@@ -44,7 +44,7 @@ class ServerConfig(BaseModel):
 def load_servers(env_file: Path) -> dict[str, ServerConfig]:
     # Only documented configuration keys are consumed; never borrow gh CLI credentials.
     values = dict(dotenv_values(env_file, interpolate=False)) if env_file.exists() else {}
-    prefixes = ("GITHUB_", "JIRA_", "GCAL_", "MIRO_", "MCP_ATLASSIAN_", "MCP_CALENDAR_")
+    prefixes = ("GITHUB_", "JIRA_", "GCAL_", "MIRO_", "PPTX_", "MCP_ATLASSIAN_", "MCP_CALENDAR_")
     values.update({key: value for key, value in os.environ.items() if key.startswith(prefixes)})
     for canonical, alias in (("JIRA_MCP_URL", "MCP_ATLASSIAN_URL"), ("GCAL_MCP_URL", "MCP_CALENDAR_URL")):
         if alias in os.environ and canonical not in os.environ:
@@ -55,7 +55,7 @@ def load_servers(env_file: Path) -> dict[str, ServerConfig]:
         values["GITHUB_MCP_COMMAND"] = sys.executable
         values["GITHUB_MCP_ARGS"] = '["/app/github_mcp.py"]'
     result = {}
-    prefixes = {"github": "GITHUB", "jira": "JIRA", "calendar": "GCAL", "miro": "MIRO"}
+    prefixes = {"github": "GITHUB", "jira": "JIRA", "calendar": "GCAL", "miro": "MIRO", "powerpoint": "PPTX"}
     for name, prefix in prefixes.items():
         kwargs = {"name": name, "url": values.get(prefix + "_MCP_URL") or ""}
         if name == "jira":

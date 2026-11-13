@@ -209,7 +209,7 @@ async def test_fr_h3_02_zero_bug_policy_answer_links_file_and_section(index):
         f"https://github.com/avito-tech/playbook/blob/{COMMIT}/development-principles.md"
         "#мы-работаем-по-zero-bug-policy"
     )
-    assert "https" not in response.result and "Источники:" in format_response(response)
+    assert "https" not in response.result and "\n[1] " + response.links[0] in format_response(response)
     assert "[1]" in llm.calls[0] and "https://" not in llm.calls[0]  # the LLM never sees links
     assert response.actions[0].data.startswith("rate:bot:b-")  # the rating belongs to a stored answer
 

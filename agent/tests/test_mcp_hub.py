@@ -34,7 +34,8 @@ SCENARIO = json.loads((ROOT / "seed/day_scenario.json").read_text(encoding="utf-
 
 
 def configs(**kwargs):
-    return {name: ServerConfig(name=name, **kwargs) for name in PROBE_TOOLS}
+    # The four stage-1 sources; the H4 PowerPoint server has its own tests (test_h4_equator.py).
+    return {name: ServerConfig(name=name, **kwargs) for name in PROBE_TOOLS if name != "powerpoint"}
 
 
 class FakeSession:
