@@ -610,3 +610,9 @@ def test_fr_ag_13_eval_flags_ai_text_tells():
     assert not run_agent.TELLS.search("✅ GitHub — orders-onboarding: доступ есть [S1]")
     row = next(row for row in run_agent.load() if row["id"] == "agent-003")
     assert row["expect"] == ["✅", "⬜", "⛔"]
+
+
+def test_fr_ag_13_system_prompt_keeps_one_fact_per_line():
+    from buddy.agent.loop import SYSTEM
+
+    assert "не сливай в абзац, каждый — с новой" in SYSTEM and "Главное — первой строкой" in SYSTEM
