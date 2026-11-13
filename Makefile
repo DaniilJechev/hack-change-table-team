@@ -109,12 +109,6 @@ setup-rag:
 ingest-compose:
 	$(COMPOSE) exec -T agent python -m buddy.rag.ingest --embed-only
 
-# Developer tool: LangGraph Studio on the demo graph — state after every node and full LLM prompts.
-# Needs `uv sync --project agent --extra studio`; --allow-blocking because demo fixtures are read from disk.
-.PHONY: studio
-studio:
-	cd agent && $(UV) run --frozen --extra studio langgraph dev --allow-blocking
-
 record-fixtures:
 	@echo "$@: not implemented until the corresponding roadmap stage"
 	@exit 1
