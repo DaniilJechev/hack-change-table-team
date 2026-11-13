@@ -229,9 +229,9 @@ def build_graph(
     def after_followup(state: AgentState) -> str:
         if state.get("decision"):
             return family(state["decision"].case)
-        return "agent" if agent is not None and agent_text(state.get("text", "")) else "route"
+        return "route"  # text for the agent never gets here: after_memory sends it to the agent directly
 
-    graph.add_conditional_edges("resolve_followup", after_followup, ["route", "agent", *FAMILIES])
+    graph.add_conditional_edges("resolve_followup", after_followup, ["route", *FAMILIES])
 
     def after_agent(state: AgentState) -> str:
         if state.get("response"):
