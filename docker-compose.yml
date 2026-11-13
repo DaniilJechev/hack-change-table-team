@@ -120,6 +120,8 @@ services:
       AGENT_MODE: ${AGENT_MODE:-agent}
       LLM_IN_DEMO: ${LLM_IN_DEMO:-false}
       MEMORY_ENABLED: ${MEMORY_ENABLED:-true}
+      MEMORY_MAX_TURNS: ${MEMORY_MAX_TURNS:-6}
+      MEMORY_TTL_SECONDS: ${MEMORY_TTL_SECONDS:-1800}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
     volumes:
       - hf_models:/models

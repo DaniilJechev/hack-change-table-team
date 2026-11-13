@@ -38,6 +38,9 @@ class Settings(BaseSettings):
     # Demo data stays on fixtures, but Router/brief/H3 use the real LLM (needs LLM_MODEL and LLM_API_KEY).
     llm_in_demo: bool = False
     memory_enabled: bool = True
+    # Dialog memory size: how many last turns (request + answer) are kept, and for how long.
+    memory_max_turns: int = Field(default=6, ge=1)
+    memory_ttl_seconds: int = Field(default=30 * 60, ge=1)
     redis_url: str = ""
 
     @model_validator(mode="after")

@@ -84,7 +84,12 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
     llm = None if settings.demo_mode and not settings.llm_in_demo else create_llm(settings)
     memory = None
     if settings.redis_url and not settings.demo_mode:  # pragma: no cover - needs a Redis server
-        memory = Memory(RedisStore.from_url(settings.redis_url), enabled=settings.memory_enabled)
+        memory = Memory(
+            RedisStore.from_url(settings.redis_url, settings.memory_max_turns, settings.memory_ttl_seconds),
+            max_turns=settings.memory_max_turns,
+            ttl_seconds=settings.memory_ttl_seconds,
+            enabled=settings.memory_enabled,
+        )
     service = AgentService(
         Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm, memory=memory
     )

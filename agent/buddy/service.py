@@ -6,6 +6,7 @@ from buddy.executors.core import Context, Registry
 from buddy.graph import build_graph
 from buddy.llm.client import CompatibleLLM
 from buddy.memory import Memory
+from buddy.memory.store import DEFAULT_MAX_TURNS, DEFAULT_TTL_SECONDS
 from buddy.router.service import Router
 from buddy.runtime import Runtime
 from buddy.schemas import ExecutorResponse, RouteDecision
@@ -31,7 +32,11 @@ class AgentService:
             raise ValueError("AGENT_ENGINE must be legacy or graph")
         self.engine = engine
         # FR-MEM-06: in process by default; app.py passes a Redis store for live mode.
-        self.memory = memory or Memory(enabled=getattr(settings, "memory_enabled", True))
+        self.memory = memory or Memory(
+            max_turns=getattr(settings, "memory_max_turns", DEFAULT_MAX_TURNS),
+            ttl_seconds=getattr(settings, "memory_ttl_seconds", DEFAULT_TTL_SECONDS),
+            enabled=getattr(settings, "memory_enabled", True),
+        )
         # FR-AG-01: FakeLLM (LLM_PROVIDER=fake, demo without LLM_IN_DEMO) keeps the Router path.
         mode = getattr(settings, "agent_mode", "agent")
         agent = Agent(llm, self.executors) if mode == "agent" and isinstance(llm, CompatibleLLM) else None
