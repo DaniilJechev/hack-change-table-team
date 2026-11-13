@@ -45,6 +45,13 @@ async def document(
     if profile is None:
         return
     expected = agent_service.awaiting_card.pop(message.from_user.id, None)
+    name = (message.document.file_name or "").lower()
+    if expected is None and not name.endswith((".yaml", ".yml")):
+        # H4: any other file outside /teamcard is a deck for the equator check (PDF/PPTX).
+        from buddy.bot.equator import deck
+
+        await deck(message, agent_service, profile)
+        return
     if expected is None or profile != expected:
         await message.answer("Сначала отправьте /teamcard от наставника или тимлида.")
         return

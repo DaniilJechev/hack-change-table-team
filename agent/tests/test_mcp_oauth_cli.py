@@ -117,7 +117,8 @@ def test_st1_mcp_1_cli_offline_and_error_codes(tmp_path, capsys):
     assert cli.main(["discover", *common, "--record"]) == 1
     assert json.loads(capsys.readouterr().out)["status"] == "configuration_error"
     assert cli.main(["discover", "--fixtures", str(tmp_path / "missing")]) == 1
-    assert len(json.loads(capsys.readouterr().out)["servers"]) == 4
+    # Four stage-1 sources plus the H4 PowerPoint server.
+    assert len(json.loads(capsys.readouterr().out)["servers"]) == 5
 
 
 @pytest.mark.parametrize(

@@ -1,0 +1,100 @@
+{
+  "server": "powerpoint",
+  "step": "step_3",
+  "origin": "recorded",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "tools": [
+    {
+      "name": "open_presentation",
+      "description": "Open an existing PowerPoint presentation from a file.",
+      "inputSchema": {
+        "properties": {
+          "file_path": {
+            "title": "File Path",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Id"
+          }
+        },
+        "required": [
+          "file_path"
+        ],
+        "title": "open_presentationArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "open_presentationOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Open Presentation",
+        "readOnlyHint": true
+      }
+    },
+    {
+      "name": "extract_presentation_text",
+      "description": "Extract all text content from all slides in the presentation.",
+      "inputSchema": {
+        "properties": {
+          "presentation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Presentation Id"
+          },
+          "include_slide_info": {
+            "default": true,
+            "title": "Include Slide Info",
+            "type": "boolean"
+          }
+        },
+        "title": "extract_presentation_textArguments",
+        "type": "object"
+      },
+      "outputSchema": {
+        "properties": {
+          "result": {
+            "additionalProperties": true,
+            "title": "Result",
+            "type": "object"
+          }
+        },
+        "required": [
+          "result"
+        ],
+        "title": "extract_presentation_textOutput",
+        "type": "object"
+      },
+      "annotations": {
+        "title": "Extract Presentation Text",
+        "readOnlyHint": true
+      }
+    }
+  ]
+}

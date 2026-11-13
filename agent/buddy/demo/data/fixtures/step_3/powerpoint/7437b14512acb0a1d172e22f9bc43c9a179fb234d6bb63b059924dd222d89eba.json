@@ -1,0 +1,169 @@
+{
+  "server": "powerpoint",
+  "tool": "extract_presentation_text",
+  "arguments": {
+    "presentation_id": "ab8982c50878df7a26b86af3d3d7532cfed14be171572647182c3e9397c18009",
+    "include_slide_info": false
+  },
+  "step": "step_3",
+  "origin": "recorded",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"success\": true,\n  \"presentation_id\": \"ab8982c50878df7a26b86af3d3d7532cfed14be171572647182c3e9397c18009\",\n  \"total_slides\": 5,\n  \"slides_with_text\": 5,\n  \"total_text_shapes\": 10,\n  \"slides_with_titles\": 5,\n  \"slides_with_tables\": 0,\n  \"slides_text\": [\n    {\n      \"slide_index\": 0,\n      \"text_content\": {\n        \"slide_title\": \"Привет!\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Привет!\",\n            \"placeholder_type\": \"CENTER_TITLE (3)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Subtitle 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Даниил\\nКоманда «Заказы»\",\n            \"placeholder_type\": \"SUBTITLE (4)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Привет!\\nПривет!\\nДаниил\\nКоманда «Заказы»\"\n      }\n    },\n    {\n      \"slide_index\": 1,\n      \"text_content\": {\n        \"slide_title\": \"Цели\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Цели\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Научиться всему\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Цели\\nЦели\\nНаучиться всему\"\n      }\n    },\n    {\n      \"slide_index\": 2,\n      \"text_content\": {\n        \"slide_title\": \"Что сделано\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Что сделано\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"ORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — готово: учебный клиент Kafka\\nORD-999 — сделано: ускорение поиска\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Что сделано\\nЧто сделано\\nORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — готово: учебный клиент Kafka\\nORD-999 — сделано: ускорение поиска\"\n      }\n    },\n    {\n      \"slide_index\": 3,\n      \"text_content\": {\n        \"slide_title\": \"Трудности\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Трудности\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Было сложно\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Трудности\\nТрудности\\nБыло сложно\"\n      }\n    },\n    {\n      \"slide_index\": 4,\n      \"text_content\": {\n        \"slide_title\": \"Спасибо за внимание\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Спасибо за внимание\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Вопросы?\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Спасибо за внимание\\nСпасибо за внимание\\nВопросы?\"\n      }\n    }\n  ],\n  \"all_presentation_text_combined\": \"=== SLIDE 1 ===\\nПривет!\\nПривет!\\nДаниил\\nКоманда «Заказы»\\n\\n=== SLIDE 2 ===\\nЦели\\nЦели\\nНаучиться всему\\n\\n=== SLIDE 3 ===\\nЧто сделано\\nЧто сделано\\nORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — готово: учебный клиент Kafka\\nORD-999 — сделано: ускорение поиска\\n\\n=== SLIDE 4 ===\\nТрудности\\nТрудности\\nБыло сложно\\n\\n=== SLIDE 5 ===\\nСпасибо за внимание\\nСпасибо за внимание\\nВопросы?\\n\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "success": true,
+        "presentation_id": "ab8982c50878df7a26b86af3d3d7532cfed14be171572647182c3e9397c18009",
+        "total_slides": 5,
+        "slides_with_text": 5,
+        "total_text_shapes": 10,
+        "slides_with_titles": 5,
+        "slides_with_tables": 0,
+        "slides_text": [
+          {
+            "slide_index": 0,
+            "text_content": {
+              "slide_title": "Привет!",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Привет!",
+                  "placeholder_type": "CENTER_TITLE (3)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Subtitle 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Даниил\nКоманда «Заказы»",
+                  "placeholder_type": "SUBTITLE (4)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Привет!\nПривет!\nДаниил\nКоманда «Заказы»"
+            }
+          },
+          {
+            "slide_index": 1,
+            "text_content": {
+              "slide_title": "Цели",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Цели",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Научиться всему",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Цели\nЦели\nНаучиться всему"
+            }
+          },
+          {
+            "slide_index": 2,
+            "text_content": {
+              "slide_title": "Что сделано",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Что сделано",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "ORD-118 — в работе: фильтр по статусу заказа\nORD-121 — готово: учебный клиент Kafka\nORD-999 — сделано: ускорение поиска",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Что сделано\nЧто сделано\nORD-118 — в работе: фильтр по статусу заказа\nORD-121 — готово: учебный клиент Kafka\nORD-999 — сделано: ускорение поиска"
+            }
+          },
+          {
+            "slide_index": 3,
+            "text_content": {
+              "slide_title": "Трудности",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Трудности",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Было сложно",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Трудности\nТрудности\nБыло сложно"
+            }
+          },
+          {
+            "slide_index": 4,
+            "text_content": {
+              "slide_title": "Спасибо за внимание",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Спасибо за внимание",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Вопросы?",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Спасибо за внимание\nСпасибо за внимание\nВопросы?"
+            }
+          }
+        ],
+        "all_presentation_text_combined": "=== SLIDE 1 ===\nПривет!\nПривет!\nДаниил\nКоманда «Заказы»\n\n=== SLIDE 2 ===\nЦели\nЦели\nНаучиться всему\n\n=== SLIDE 3 ===\nЧто сделано\nЧто сделано\nORD-118 — в работе: фильтр по статусу заказа\nORD-121 — готово: учебный клиент Kafka\nORD-999 — сделано: ускорение поиска\n\n=== SLIDE 4 ===\nТрудности\nТрудности\nБыло сложно\n\n=== SLIDE 5 ===\nСпасибо за внимание\nСпасибо за внимание\nВопросы?\n"
+      }
+    },
+    "isError": false
+  }
+}

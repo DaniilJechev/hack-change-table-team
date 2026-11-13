@@ -1,0 +1,27 @@
+{
+  "server": "powerpoint",
+  "tool": "open_presentation",
+  "arguments": {
+    "file_path": "f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63.pptx",
+    "id": "f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63"
+  },
+  "step": "step_1",
+  "origin": "recorded",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"presentation_id\": \"f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63\",\n  \"message\": \"Opened presentation f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63.pptx\",\n  \"slide_count\": 6\n}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "presentation_id": "f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63",
+        "message": "Opened presentation f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63.pptx",
+        "slide_count": 6
+      }
+    },
+    "isError": false
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "server": "powerpoint",
+  "tool": "extract_presentation_text",
+  "arguments": {
+    "presentation_id": "f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63",
+    "include_slide_info": false
+  },
+  "step": "step_1",
+  "origin": "recorded",
+  "captured_at": "2026-11-10T12:00:00+00:00",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"success\": true,\n  \"presentation_id\": \"f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63\",\n  \"total_slides\": 6,\n  \"slides_with_text\": 6,\n  \"total_text_shapes\": 12,\n  \"slides_with_titles\": 6,\n  \"slides_with_tables\": 0,\n  \"slides_text\": [\n    {\n      \"slide_index\": 0,\n      \"text_content\": {\n        \"slide_title\": \"Экваторная встреча\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Экваторная встреча\",\n            \"placeholder_type\": \"CENTER_TITLE (3)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Subtitle 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Даниил, стажёр команды «Заказы»\\nНаставник: Анна\\nСтажировка: сентябрь – ноябрь 2026\",\n            \"placeholder_type\": \"SUBTITLE (4)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Экваторная встреча\\nЭкваторная встреча\\nДаниил, стажёр команды «Заказы»\\nНаставник: Анна\\nСтажировка: сентябрь – ноябрь 2026\"\n      }\n    },\n    {\n      \"slide_index\": 1,\n      \"text_content\": {\n        \"slide_title\": \"Цели стажировки\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Цели стажировки\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Разобраться в сервисе заказов\\nЗакрыть задачи эпика фильтров ORD-100\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Цели стажировки\\nЦели стажировки\\nРазобраться в сервисе заказов\\nЗакрыть задачи эпика фильтров ORD-100\"\n      }\n    },\n    {\n      \"slide_index\": 2,\n      \"text_content\": {\n        \"slide_title\": \"Выполненные задачи\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Выполненные задачи\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"ORD-115 — готово: валидация параметров фильтра\\nORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — в планах: учебный клиент Kafka\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Выполненные задачи\\nВыполненные задачи\\nORD-115 — готово: валидация параметров фильтра\\nORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — в планах: учебный клиент Kafka\"\n      }\n    },\n    {\n      \"slide_index\": 3,\n      \"text_content\": {\n        \"slide_title\": \"Результаты\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Результаты\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Фильтр по статусу ускорил поиск заказов на 30 %\\nПокрытие тестами модуля — 85 %\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Результаты\\nРезультаты\\nФильтр по статусу ускорил поиск заказов на 30 %\\nПокрытие тестами модуля — 85 %\"\n      }\n    },\n    {\n      \"slide_index\": 4,\n      \"text_content\": {\n        \"slide_title\": \"Сложности и чему научился\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Сложности и чему научился\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Долго разбирался с миграциями\\nВывод: сначала читать playbook команды\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Сложности и чему научился\\nСложности и чему научился\\nДолго разбирался с миграциями\\nВывод: сначала читать playbook команды\"\n      }\n    },\n    {\n      \"slide_index\": 5,\n      \"text_content\": {\n        \"slide_title\": \"Планы до конца стажировки\",\n        \"placeholders\": [\n          {\n            \"shape_index\": 0,\n            \"shape_name\": \"Title 1\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Планы до конца стажировки\",\n            \"placeholder_type\": \"TITLE (1)\",\n            \"placeholder_idx\": 0\n          },\n          {\n            \"shape_index\": 1,\n            \"shape_name\": \"Content Placeholder 2\",\n            \"shape_type\": \"PLACEHOLDER (14)\",\n            \"text\": \"Довести ORD-118 до релиза\\nПодготовить доклад на демо команды\",\n            \"placeholder_type\": \"OBJECT (7)\",\n            \"placeholder_idx\": 1\n          }\n        ],\n        \"text_shapes\": [],\n        \"table_text\": [],\n        \"all_text_combined\": \"Планы до конца стажировки\\nПланы до конца стажировки\\nДовести ORD-118 до релиза\\nПодготовить доклад на демо команды\"\n      }\n    }\n  ],\n  \"all_presentation_text_combined\": \"=== SLIDE 1 ===\\nЭкваторная встреча\\nЭкваторная встреча\\nДаниил, стажёр команды «Заказы»\\nНаставник: Анна\\nСтажировка: сентябрь – ноябрь 2026\\n\\n=== SLIDE 2 ===\\nЦели стажировки\\nЦели стажировки\\nРазобраться в сервисе заказов\\nЗакрыть задачи эпика фильтров ORD-100\\n\\n=== SLIDE 3 ===\\nВыполненные задачи\\nВыполненные задачи\\nORD-115 — готово: валидация параметров фильтра\\nORD-118 — в работе: фильтр по статусу заказа\\nORD-121 — в планах: учебный клиент Kafka\\n\\n=== SLIDE 4 ===\\nРезультаты\\nРезультаты\\nФильтр по статусу ускорил поиск заказов на 30 %\\nПокрытие тестами модуля — 85 %\\n\\n=== SLIDE 5 ===\\nСложности и чему научился\\nСложности и чему научился\\nДолго разбирался с миграциями\\nВывод: сначала читать playbook команды\\n\\n=== SLIDE 6 ===\\nПланы до конца стажировки\\nПланы до конца стажировки\\nДовести ORD-118 до релиза\\nПодготовить доклад на демо команды\\n\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "success": true,
+        "presentation_id": "f0509e8a027c885a13c44911373a4a59b63fe6f50c2982238ffff42797bdfd63",
+        "total_slides": 6,
+        "slides_with_text": 6,
+        "total_text_shapes": 12,
+        "slides_with_titles": 6,
+        "slides_with_tables": 0,
+        "slides_text": [
+          {
+            "slide_index": 0,
+            "text_content": {
+              "slide_title": "Экваторная встреча",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Экваторная встреча",
+                  "placeholder_type": "CENTER_TITLE (3)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Subtitle 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Даниил, стажёр команды «Заказы»\nНаставник: Анна\nСтажировка: сентябрь – ноябрь 2026",
+                  "placeholder_type": "SUBTITLE (4)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Экваторная встреча\nЭкваторная встреча\nДаниил, стажёр команды «Заказы»\nНаставник: Анна\nСтажировка: сентябрь – ноябрь 2026"
+            }
+          },
+          {
+            "slide_index": 1,
+            "text_content": {
+              "slide_title": "Цели стажировки",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Цели стажировки",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Разобраться в сервисе заказов\nЗакрыть задачи эпика фильтров ORD-100",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Цели стажировки\nЦели стажировки\nРазобраться в сервисе заказов\nЗакрыть задачи эпика фильтров ORD-100"
+            }
+          },
+          {
+            "slide_index": 2,
+            "text_content": {
+              "slide_title": "Выполненные задачи",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Выполненные задачи",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "ORD-115 — готово: валидация параметров фильтра\nORD-118 — в работе: фильтр по статусу заказа\nORD-121 — в планах: учебный клиент Kafka",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Выполненные задачи\nВыполненные задачи\nORD-115 — готово: валидация параметров фильтра\nORD-118 — в работе: фильтр по статусу заказа\nORD-121 — в планах: учебный клиент Kafka"
+            }
+          },
+          {
+            "slide_index": 3,
+            "text_content": {
+              "slide_title": "Результаты",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Результаты",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Фильтр по статусу ускорил поиск заказов на 30 %\nПокрытие тестами модуля — 85 %",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Результаты\nРезультаты\nФильтр по статусу ускорил поиск заказов на 30 %\nПокрытие тестами модуля — 85 %"
+            }
+          },
+          {
+            "slide_index": 4,
+            "text_content": {
+              "slide_title": "Сложности и чему научился",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Сложности и чему научился",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Долго разбирался с миграциями\nВывод: сначала читать playbook команды",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Сложности и чему научился\nСложности и чему научился\nДолго разбирался с миграциями\nВывод: сначала читать playbook команды"
+            }
+          },
+          {
+            "slide_index": 5,
+            "text_content": {
+              "slide_title": "Планы до конца стажировки",
+              "placeholders": [
+                {
+                  "shape_index": 0,
+                  "shape_name": "Title 1",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Планы до конца стажировки",
+                  "placeholder_type": "TITLE (1)",
+                  "placeholder_idx": 0
+                },
+                {
+                  "shape_index": 1,
+                  "shape_name": "Content Placeholder 2",
+                  "shape_type": "PLACEHOLDER (14)",
+                  "text": "Довести ORD-118 до релиза\nПодготовить доклад на демо команды",
+                  "placeholder_type": "OBJECT (7)",
+                  "placeholder_idx": 1
+                }
+              ],
+              "text_shapes": [],
+              "table_text": [],
+              "all_text_combined": "Планы до конца стажировки\nПланы до конца стажировки\nДовести ORD-118 до релиза\nПодготовить доклад на демо команды"
+            }
+          }
+        ],
+        "all_presentation_text_combined": "=== SLIDE 1 ===\nЭкваторная встреча\nЭкваторная встреча\nДаниил, стажёр команды «Заказы»\nНаставник: Анна\nСтажировка: сентябрь – ноябрь 2026\n\n=== SLIDE 2 ===\nЦели стажировки\nЦели стажировки\nРазобраться в сервисе заказов\nЗакрыть задачи эпика фильтров ORD-100\n\n=== SLIDE 3 ===\nВыполненные задачи\nВыполненные задачи\nORD-115 — готово: валидация параметров фильтра\nORD-118 — в работе: фильтр по статусу заказа\nORD-121 — в планах: учебный клиент Kafka\n\n=== SLIDE 4 ===\nРезультаты\nРезультаты\nФильтр по статусу ускорил поиск заказов на 30 %\nПокрытие тестами модуля — 85 %\n\n=== SLIDE 5 ===\nСложности и чему научился\nСложности и чему научился\nДолго разбирался с миграциями\nВывод: сначала читать playbook команды\n\n=== SLIDE 6 ===\nПланы до конца стажировки\nПланы до конца стажировки\nДовести ORD-118 до релиза\nПодготовить доклад на демо команды\n"
+      }
+    },
+    "isError": false
+  }
+}

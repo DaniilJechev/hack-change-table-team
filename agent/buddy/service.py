@@ -2,6 +2,7 @@ import os
 
 from buddy.agent import Agent
 from buddy.demo.controller import DemoController
+from buddy.equator.service import EquatorService, local_pptx_gateway
 from buddy.executors.core import Context, Registry
 from buddy.graph import build_graph
 from buddy.llm.client import CompatibleLLM
@@ -51,6 +52,14 @@ class AgentService:
         self.known: dict[str, Context] = {}
         self.awaiting: dict[int, tuple[str, str, Context]] = {}
         self.awaiting_card: dict[int, Context] = {}
+        self.equator = EquatorService(pptx_gateway=local_pptx_gateway() if demo_mode else None)
+
+    async def equator_check(self, name: str, data: bytes, context: Context):
+        """H4: rules-only deck check; returns the report and the stored check (or None)."""
+        return await self.equator.check(name, data, context, self.runtime(context))
+
+    async def equator_send(self, check_id: str, context: Context):
+        return await self.equator.send(check_id, context, self.runtime(context))
 
     def runtime(self, context: Context) -> Runtime | None:
         if context.demo and context.session is not None and self.demo.active(context.session):
@@ -123,6 +132,7 @@ class AgentService:
         self.memory.clear_demo(telegram_user)
         self.awaiting.pop(telegram_user, None)
         self.awaiting_card.pop(telegram_user, None)
+        self.equator.clear(telegram_user)
         for cache in (
             self.executors.access.previous,
             self.executors.team.pending,

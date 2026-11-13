@@ -41,7 +41,7 @@ async def inventory(read, write, expected):
 async def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compose", default="docker compose -f docker-compose.yml -f docker-compose.mcp.yml")
-    parser.add_argument("--only", choices=["github", "atlassian", "calendar"])
+    parser.add_argument("--only", choices=["github", "atlassian", "calendar", "powerpoint"])
     arguments = parser.parse_args()
     compose = shlex.split(arguments.compose)
     expected = json.loads((ROOT / "mcp/tools.json").read_text())
@@ -59,11 +59,11 @@ async def main():
                 async with stdio_client(parameters) as (read, write):
                     names = await inventory(read, write, expected[name])
             else:
-                service, port, path = (
-                    ("mcp-atlassian", "8000", "/mcp/")
-                    if name == "atlassian"
-                    else ("google-calendar-mcp", "3000", "/mcp")
-                )
+                service, port, path = {
+                    "atlassian": ("mcp-atlassian", "8000", "/mcp/"),
+                    "calendar": ("google-calendar-mcp", "3000", "/mcp"),
+                    "powerpoint": ("powerpoint-mcp", "8000", "/mcp"),
+                }[name]
                 address = subprocess.check_output(
                     [*compose, "port", service, port], text=True, timeout=10
                 ).strip()

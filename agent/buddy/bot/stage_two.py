@@ -23,6 +23,7 @@ CALLBACKS = (
     "nofaq:",
     "rate:",
     "brief:",
+    "equator:",
 )
 
 
@@ -309,6 +310,10 @@ async def choose(
     elif kind == "rate":
         target, _, mark = value.rpartition(":")
         await send(message, profile, await agent_service.rate(target, mark == "1", profile))
+    elif kind == "equator":
+        from buddy.bot.equator import to_mentor
+
+        await to_mentor(message, agent_service, profile, value)
     else:
         result = await agent_service.trigger(value, profile)
         await send(message, profile, result, value, agent_service)

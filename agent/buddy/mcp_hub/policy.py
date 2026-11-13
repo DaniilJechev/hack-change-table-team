@@ -37,12 +37,15 @@ READ_TOOLS = {
     ),
     "telegram": frozenset({"getChatMember"}),
     "miro": frozenset({"board_search_boards", "content_item_list_roles"}),
+    # H4: mcp/powerpoint/entrypoint.py removes every other upstream tool before start.
+    "powerpoint": frozenset({"open_presentation", "extract_presentation_text"}),
 }
 PROBE_TOOLS = {
     "github": "list_pull_requests",
     "jira": "jira_get_issue",
     "calendar": "list-events",
     "miro": "content_item_list_roles",
+    "powerpoint": "extract_presentation_text",
 }
 
 # Case capabilities are enforced both at the executor boundary and in Hub.
@@ -75,6 +78,10 @@ for name in ("team_q5", "team_q6"):
     }
 CASE_TOOLS["team_q8"].update(ACCESS_TOOLS)
 CASE_TOOLS["team_q8"]["buddy"] |= {"team_card_get", "team_faq_search"}
+CASE_TOOLS["equator_check"] = {
+    "jira": frozenset({"jira_get_issue"}),
+    "powerpoint": frozenset({"open_presentation", "extract_presentation_text"}),
+}
 for name in ("playbook_qa", "help", "clarify", "out_of_scope"):
     CASE_TOOLS[name] = {}
 

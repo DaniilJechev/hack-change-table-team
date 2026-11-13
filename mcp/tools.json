@@ -1,5 +1,6 @@
 {
   "github": ["get_me", "list_pull_requests", "search_pull_requests", "pull_request_read", "list_notifications", "list_repository_collaborators", "get_team_members"],
   "atlassian": ["jira_search", "jira_get_issue", "jira_search_assignable_users", "jira_get_user_profile", "jira_get_all_projects"],
-  "calendar": ["list-events", "search-events", "get-event", "list-calendars", "get-freebusy", "get-current-time"]
+  "calendar": ["list-events", "search-events", "get-event", "list-calendars", "get-freebusy", "get-current-time"],
+  "powerpoint": ["open_presentation", "extract_presentation_text"]
 }

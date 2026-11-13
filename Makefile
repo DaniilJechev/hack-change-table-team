@@ -54,7 +54,7 @@ validate-specs: validate
 
 dev: setup
 
-.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list buddy-check
+.PHONY: seed invite test-backend-integration mcp-up mcp-down mcp-list buddy-check pptx-up pptx-list
 seed:
 	$(COMPOSE) exec -T backend backend seed
 
@@ -79,12 +79,19 @@ invite:
 test-backend-integration:
 	$(PYTHON) infra/test_backend.py
 
-MCP_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.mcp.yml
+MCP_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.mcp.yml -f docker-compose.powerpoint.yml
+PPTX_COMPOSE = $(COMPOSE) -f docker-compose.yml -f docker-compose.powerpoint.yml
 mcp-up:
-	$(MCP_COMPOSE) up --build -d --wait --wait-timeout 180 mcp-atlassian google-calendar-mcp
+	$(MCP_COMPOSE) up --build -d --wait --wait-timeout 180 mcp-atlassian google-calendar-mcp powerpoint-mcp
 
 mcp-down:
-	$(MCP_COMPOSE) stop mcp-atlassian google-calendar-mcp
+	$(MCP_COMPOSE) stop mcp-atlassian google-calendar-mcp powerpoint-mcp
+
+pptx-up:
+	$(PPTX_COMPOSE) up --build -d --wait --wait-timeout 180
+
+pptx-list:
+	$(UV) run --script infra/mcp_probe.py --compose "$(PPTX_COMPOSE)" --only powerpoint
 
 mcp-list:
 	$(UV) run --script infra/mcp_probe.py --compose "$(MCP_COMPOSE)"
