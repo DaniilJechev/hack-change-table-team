@@ -218,6 +218,8 @@ class TeamService:
             # B-14: «за что отвечает Олег?» — that person's areas, not the whole list or «not found».
             who = f"{named['name']} ({named['role']})"
             text = f"{who} отвечает за: {', '.join(named.get('areas', []))}."
+            if named.get("about"):
+                text += f" {named['about']}"
             return self._answer("team_q1", text, [named.get("contact_url", "")])
         if not area:
             lines = [
