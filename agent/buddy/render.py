@@ -1,15 +1,13 @@
-"""FR-UI-01/02: Telegram markup is built by code. Text is escaped; only code adds tags.
+"""FR-UI-02: Telegram markup is built by code. Text is escaped; only code adds tags.
 
-Executors choose what is secondary (`ExecutorResponse.folded`); a long answer without such blocks
-is cut at a line boundary. FR-UI-03: links are code-made footnotes [n] at the line that uses them.
+Secondary blocks of an executor (`ExecutorResponse.folded`) follow the main text as plain text: no
+expandable quotes. FR-UI-03: links are code-made footnotes [n] at the line that uses them.
 """
 
 import html
 import re
 
 LIMIT = 4096  # Telegram message length
-FOLD_LINES, FOLD_CHARS = 12, 900  # a longer answer without folded blocks gets its tail folded
-KEEP_LINES = 6
 BOLD = re.compile(r"\*\*(.+?)\*\*|__(.+?)__")
 MARK = re.compile(r"([ \t]*)\[(\d+)\]")
 NUMBERED = re.compile(r"\d+\. ")
@@ -64,18 +62,6 @@ def _inline(text: str, links: list[str]) -> str:
     return _marks(text, links, True)
 
 
-def _quote(body: str) -> str:
-    return f"<blockquote expandable>{body}</blockquote>"
-
-
-def split_long(text: str) -> tuple[str, str]:
-    """A long text keeps its first lines; the tail is cut only between lines, never mid-sentence."""
-    lines = text.split("\n")
-    if (len(lines) <= FOLD_LINES and len(text) <= FOLD_CHARS) or len(lines) <= KEEP_LINES:
-        return text, ""
-    return "\n".join(lines[:KEEP_LINES]), "\n".join(lines[KEEP_LINES:])
-
-
 def to_plain(result: str, folded: list[str], links: list[str], prefix: str = "") -> str:
     """Telegram rejected the HTML: the same footnotes and a «[n] URL» list, at most LIMIT characters."""
     result, folded, links = cite(result, folded, links)
@@ -89,7 +75,4 @@ def to_plain(result: str, folded: list[str], links: list[str], prefix: str = "")
 
 def to_html(result: str, folded: list[str], links: list[str], prefix: str = "") -> str:
     result, folded, links = cite(result, folded, links)
-    head, tail = (result, "") if folded else split_long(result)
-    parts = [_inline(prefix + head, links)]
-    parts += [_quote(_inline(block, links)) for block in [*folded, tail] if block.strip()]
-    return "\n".join(parts)
+    return "\n".join(_inline(text, links) for text in [prefix + result, *folded] if text.strip())

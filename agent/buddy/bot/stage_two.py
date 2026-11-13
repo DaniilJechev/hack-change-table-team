@@ -127,7 +127,7 @@ def prefix(profile: Context) -> str:
 
 
 async def rich(method, response: ExecutorResponse, head: str = "", **kwargs):
-    """FR-UI-01: HTML with expandable quotes; plain text when Telegram rejects the markup."""
+    """FR-UI-02: HTML built by code; plain text when Telegram rejects the markup."""
     try:
         html = to_html(response.result, response.folded, response.links, head)
         return await method(text=html, parse_mode="HTML", **kwargs)

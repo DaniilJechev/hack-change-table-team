@@ -68,10 +68,10 @@ def test_fr_ui_03_text_and_href_are_escaped():
     assert html == 'PR &lt;script&gt;&amp;" <a href="https://x.invalid/?a=1&amp;b=&quot;2&quot;">[1]</a>'
 
 
-def test_fr_ui_03_footnotes_inside_folded_block_are_links():
+def test_fr_ui_03_footnotes_in_secondary_block_are_links():
     html = to_html("Последний бриф — ниже.", ["Пункты:\n1. PR\n2. Задача"], [U1, U2])
-    quote = f"<blockquote expandable>Пункты:\n1. PR {a(U1, 1)}\n2. Задача {a(U2, 2)}</blockquote>"
-    assert html == "Последний бриф — ниже.\n" + quote
+    block = f"Пункты:\n1. PR {a(U1, 1)}\n2. Задача {a(U2, 2)}"
+    assert html == "Последний бриф — ниже.\n" + block
 
 
 def test_fr_ui_03_plain_text_keeps_footnotes_and_a_numbered_list():

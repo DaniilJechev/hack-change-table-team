@@ -105,7 +105,7 @@ class AccessService:
     ):
         # A source of the title (the Jira task) is footnote [1]; the title carries it.
         lines, actions, links = [title], [], [source] if source else []
-        # FR-UI-01: when something needs attention, the tools that are fine go under the fold.
+        # When something needs attention, the tools that are fine go after the problems.
         fold = 0 < sum(item.status == "granted" for item in items) < len(items)
         # FR-UI-03: footnotes are numbered as read — visible lines first, then the folded ones.
         for item in sorted(items, key=lambda item: fold and item.status == "granted"):

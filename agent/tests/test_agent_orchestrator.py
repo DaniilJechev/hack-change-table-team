@@ -2,6 +2,7 @@
 
 import asyncio
 import json
+import logging
 
 import httpx
 import pytest
@@ -555,3 +556,12 @@ async def test_fr_ag_09_access_offer_without_status_passes():
     _, llm, registry, runtime, context = setup({"content": offer})
     decision, response = await Agent(llm, registry).answer("привет", context, runtime)
     assert decision.case == "chat" and response.result == offer and len(llm.chats) == 1
+
+
+async def test_fr_ag_10_turn_is_logged_without_user_text(caplog):
+    ask, *_ = setup({"tool_calls": [call("team_q3")]}, {"content": "Наставник — Анна [S1]."})
+    with caplog.at_level(logging.INFO, logger="buddy"):
+        await ask("кто мой наставник? секрет-123")
+    lines = [r.getMessage() for r in caplog.records if r.name == "buddy.graph.build"]
+    assert lines == ["turn: case=team_q3 trace=agent llm_calls=2 links=1"]
+    assert "секрет-123" not in caplog.text

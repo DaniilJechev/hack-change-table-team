@@ -4,6 +4,7 @@ Executor nodes delegate to the existing business services through `Registry.exec
 keeps every per-case tool whitelist and no-LLM fallback the services already have.
 """
 
+import logging
 import re
 from urllib.parse import urlsplit
 
@@ -25,6 +26,7 @@ FAMILIES = ("brief", "playbook", "team", "access", "template")
 # Follow-up parameters produced by code from memory; a stored turn keeps only user-facing parameters.
 INTERNAL = frozenset({"brief_id", "item", "pr", "chunks", "items"})
 ACCESS = frozenset({"access_status", "access_task_analysis", "interns_status", "access_events"})
+log = logging.getLogger(__name__)
 
 
 def family(case: str) -> str:
@@ -156,7 +158,16 @@ def build_graph(
         return run
 
     async def guard(state: AgentState) -> dict:
-        return {"response": guarded(state.get("response"), state["decision"].case)}
+        response = guarded(state.get("response"), state["decision"].case)
+        # One line per turn: what answered and how; never the user's text or the model's output.
+        log.info(
+            "turn: case=%s trace=%s llm_calls=%d links=%d",
+            state["decision"].case,
+            ",".join(state.get("trace", [])),
+            len(state.get("llm_calls", [])),
+            len(response.links),
+        )
+        return {"response": response}
 
     async def save_memory(state: AgentState) -> dict:
         if memory is None:

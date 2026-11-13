@@ -223,7 +223,7 @@ class TeamService:
             lines = [
                 f"{person['name']} ({person['role']}): {', '.join(person['areas'])}" for person in people
             ]
-            if len(lines) > FOLD_PEOPLE:  # FR-UI-01: a long team list is folded
+            if len(lines) > FOLD_PEOPLE:  # a long team list goes after the title as its own block
                 title = f"Кто за что отвечает — {people_count(len(lines))}, список ниже."
                 return self._answer("team_q1", title, [card["source_url"]], folded=["\n".join(lines)])
             return self._answer("team_q1", "Кто за что отвечает:\n" + "\n".join(lines), [card["source_url"]])
