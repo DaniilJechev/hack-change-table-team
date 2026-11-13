@@ -54,5 +54,5 @@ coverage*.xml
 coverage*.out
 .ruff_cache/
 
-# LangGraph dev server (make studio)
+# LangGraph dev server state (make studio)
 .langgraph_api/
