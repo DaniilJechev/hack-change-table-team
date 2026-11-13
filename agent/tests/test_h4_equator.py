@@ -15,6 +15,7 @@ import pytest
 from aiogram import Bot
 from aiogram.types import Chat, Document, Message, Update, User
 from pypdf import PdfWriter
+from tests.test_stage_two_bot import Harness
 
 from buddy.demo.controller import DemoController
 from buddy.equator.checks import mentions, section_of, structure, title_markers
@@ -23,7 +24,6 @@ from buddy.equator.slides import DeckError, Slide, detect, pdf_slides
 from buddy.mcp_hub.errors import SourceUnavailable, ToolDenied
 from buddy.mcp_hub.fixtures import FixtureStore
 from buddy.mcp_hub.policy import CASE_TOOLS, READ_TOOLS, permitted
-from tests.test_stage_two_bot import Harness
 
 ROOT = Path(__file__).resolve().parents[2]
 DECKS = ROOT / "fixtures" / "equator"
