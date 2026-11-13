@@ -37,12 +37,15 @@ def entity(value: str) -> bool:
 
 
 class Turn(BaseModel):
-    """One handled request: never raw LLM output, only case, parameters, entities and a short summary."""
+    """One handled request: case, parameters, entities, a short summary and — FR-MEM-04 — the user's
+    text and the answer shown to the user (checked by code), never an unchecked LLM output."""
 
     case: str
     params: dict[str, str] = Field(default_factory=dict)
     entities: dict[str, list[str]] = Field(default_factory=dict)
     summary: str = ""
+    text: str = ""
+    answer: str = ""
     role: str = ""
     at: float = 0
 
@@ -52,8 +55,22 @@ class Turn(BaseModel):
                 "params": {k: redact(v) for k, v in self.params.items()},
                 "entities": {k: [item for item in v[:20] if entity(item)] for k, v in self.entities.items()},
                 "summary": redact(self.summary, 200),
+                "text": redact(self.text, 600),
+                "answer": redact(self.answer, 600),
             }
         )
+
+
+def history(turns: list[Turn]) -> list[dict]:
+    """FR-MEM-04: dialog replies for the agent; the Router summary stays without them."""
+    messages = []
+    for turn in turns:
+        if turn.text and turn.answer:
+            messages += [
+                {"role": "user", "content": turn.text},
+                {"role": "assistant", "content": turn.answer},
+            ]
+    return messages
 
 
 def key(context: Context) -> str:

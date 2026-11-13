@@ -1,8 +1,10 @@
 import os
 
+from buddy.agent import Agent
 from buddy.demo.controller import DemoController
 from buddy.executors.core import Context, Registry
 from buddy.graph import build_graph
+from buddy.llm.client import CompatibleLLM
 from buddy.memory import Memory
 from buddy.router.service import Router
 from buddy.runtime import Runtime
@@ -30,7 +32,13 @@ class AgentService:
         self.engine = engine
         # FR-MEM-06: in process by default; app.py passes a Redis store for live mode.
         self.memory = memory or Memory(enabled=getattr(settings, "memory_enabled", True))
-        self.graph = build_graph(router, self.executors, self.memory, llm) if engine == "graph" else None
+        # FR-AG-01: FakeLLM (LLM_PROVIDER=fake, demo without LLM_IN_DEMO) keeps the Router path.
+        mode = getattr(settings, "agent_mode", "agent")
+        agent = Agent(llm, self.executors) if mode == "agent" and isinstance(llm, CompatibleLLM) else None
+        self.agent, self.llm = agent, llm
+        self.graph = (
+            build_graph(router, self.executors, self.memory, llm, agent) if engine == "graph" else None
+        )
         self.brief_messages: dict[tuple[int, int], str] = {}
         self.demo = DemoController(demo_mode)
         self.live = live

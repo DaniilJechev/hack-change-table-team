@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     redirect_base_url: str = ""
     # ST4-GRAPH-2: request pipeline — deterministic LangGraph StateGraph or the original Router → Executor.
     agent_engine: Literal["legacy", "graph"] = "graph"
+    # FR-AG-01: the LLM answers with tools; without a real LLM the Router path is used anyway.
+    agent_mode: Literal["agent", "router"] = "agent"
     # FR-MEM-06: dialog memory (graph engine only). Live mode stores it in Redis when REDIS_URL is set.
     # Demo data stays on fixtures, but Router/brief/H3 use the real LLM (needs LLM_MODEL and LLM_API_KEY).
     llm_in_demo: bool = False

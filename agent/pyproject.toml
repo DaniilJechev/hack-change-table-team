@@ -13,6 +13,8 @@ dependencies = [
   "httpx>=0.28,<1",
   "jsonschema>=4.26,<5",
   "langgraph>=1.0,<2",
+  # FR-AG-10: `traceable` marks LLM calls; it does nothing unless LANGSMITH_TRACING is on.
+  "langsmith>=0.4",
   "mcp>=1.28,<2",
   "pydantic>=2.11,<3",
   "pydantic-settings>=2.10,<3",
@@ -24,6 +26,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8.4,<9", "pytest-asyncio>=1.2,<2", "pytest-cov>=6,<8", "ruff>=0.12,<1"]
+# `make studio`: LangGraph dev server (`langgraph dev`) for LangGraph Studio; local only, not in the image.
+studio = ["langgraph-cli[inmem]>=0.4,<1"]
 # Only for RAG_SEARCH_MODE=vector|rrf: local embeddings and pgvector access. BM25 mode needs none of it.
 rag = ["sentence-transformers>=3.4,<6", "torch>=2.4", "psycopg[binary]>=3.2,<4"]
 

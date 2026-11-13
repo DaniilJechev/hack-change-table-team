@@ -2,9 +2,10 @@ COMPOSE ?= docker compose
 PYTHON ?= python
 GO ?= go
 UV ?= uv
+STUDIO_PORT ?= 2024
 OPENSPEC ?= openspec
 
-.PHONY: up demo down test cover smoke validate setup
+.PHONY: up demo down test cover smoke validate setup studio
 up:
 	$(COMPOSE) up --build -d --wait --wait-timeout 180
 	$(PYTHON) infra/setup_grafana.py --compose "$(COMPOSE)"
@@ -19,6 +20,11 @@ down:
 
 setup:
 	$(UV) sync --project agent --frozen --extra dev --python 3.12
+
+# LangGraph Studio: граф агента на демо-фикстурах, чат + состояния + трейсы. API: http://127.0.0.1:2024
+# --allow-blocking: демо читает фикстуры синхронно (os.getcwd, open); только для локального dev-сервера.
+studio:
+	$(UV) run --project agent --frozen --extra studio langgraph dev --config langgraph.json --no-browser --allow-blocking --port $(STUDIO_PORT)
 
 test:
 	$(PYTHON) infra/test_backend.py

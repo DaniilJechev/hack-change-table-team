@@ -1,4 +1,7 @@
-from typing import Any, TypedDict
+from typing import Annotated, Any, TypedDict
+
+from langchain_core.messages import AnyMessage
+from langgraph.graph.message import add_messages
 
 from buddy.executors.context import Context
 from buddy.memory.store import Turn
@@ -19,3 +22,9 @@ class AgentState(TypedDict, total=False):
     followup: bool
     # Executor families visited, in order; used by tests and audit, never shown to the user.
     trace: list[str]
+    # FR-AG-10: every LLM call of this request ({node, kind, request, response, error}) and the last
+    # request exactly as the model saw it (system prompt, trusted context, history, tool schemas).
+    llm_calls: list[dict]
+    prompt: dict | None
+    # Chat I/O of LangGraph Studio (`langgraph dev`); the Telegram path never sets it.
+    messages: Annotated[list[AnyMessage], add_messages]

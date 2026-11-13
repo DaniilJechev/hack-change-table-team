@@ -1,0 +1,32 @@
+# Tasks
+
+## 0. Спецификация
+- [ ] 0.1 Согласовать с Даниилом изменение FR-MEM-04 и `AGENT_MODE=agent` по умолчанию
+- [ ] 0.2 Архивировать `stage-4-langgraph-memory` до этого изменения; `openspec validate agent-orchestrator --strict`
+
+## 1. LLM
+- [x] 1.1 `CompatibleLLM.chat(messages, tools)`: tool calls, без рассуждений, `data_collection: deny`
+- [x] 1.2 `FakeLLM.chat` по сценарию ответов для тестов
+
+## 2. Агент
+- [x] 2.1 Инструменты из кейсов Executors, набор по роли, проверка аргументов (FR-AG-03)
+- [x] 2.2 Цикл: до 3 обращений к LLM, 4 вызовов, 20 с (FR-AG-08)
+- [x] 2.3 Проверка ответа и подстановка ссылок кодом (FR-AG-04, FR-AG-09)
+- [x] 2.4 Запасной вариант: результат инструмента или Router (FR-AG-05)
+- [x] 2.5 Узел `agent` в графе, быстрый путь и отказ по персональным данным (FR-AG-01, FR-AG-02)
+
+## 3. Память
+- [x] 3.1 Ход хранит текст пользователя и показанный ответ, до 600 символов, без секретов (FR-MEM-04)
+
+## 4. Конфигурация
+- [x] 4.1 `AGENT_MODE` в настройках и `.env.example`
+
+## 5. Тесты и оценка
+- [x] 5.1 Тесты `test_fr_ag_*` по каждому сценарию; покрытие `agent` > 80 %
+- [x] 5.2 `evals/agent/cases.jsonl` и `evals/run_agent.py` (FR-AG-07)
+- [x] 5.3 Прогнать `evals/run_agent.py` на DeepSeek и Haiku (12.11, отчёт `evals/agent/report.json`)
+
+## 6. Трассировка и LangGraph Studio
+- [x] 6.1 `llm_calls` и `prompt` в состоянии, запись обращений к LLM (FR-AG-10)
+- [x] 6.2 `langgraph.json`, `buddy/studio.py` (чат, персоны intern/mentor), `make studio`
+- [x] 6.3 Тесты `test_fr_ag_10_*`

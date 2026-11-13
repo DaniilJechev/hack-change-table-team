@@ -53,3 +53,6 @@ reports/*.xml
 coverage*.xml
 coverage*.out
 .ruff_cache/
+
+# LangGraph dev server (make studio)
+.langgraph_api/
