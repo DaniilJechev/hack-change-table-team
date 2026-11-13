@@ -20,7 +20,7 @@ class AgentState(TypedDict, total=False):
     turns: list[Turn]
     routed: str
     followup: bool
-    # Executor families visited, in order; used by tests and audit, never shown to the user.
+    # Case families that answered (`execute` adds its family), in order; for tests and audit only.
     trace: list[str]
     # FR-AG-10: every LLM call of this request ({node, kind, request, response, error}) and the last
     # request exactly as the model saw it (system prompt, trusted context, history, tool schemas).

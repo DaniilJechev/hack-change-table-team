@@ -1,11 +1,13 @@
 """The graph only orders steps; edges are chosen by code from the Router case, never by an LLM.
 
-Executor nodes delegate to the existing business services through `Registry.execute`, so the graph
-keeps every per-case tool whitelist and no-LLM fallback the services already have.
+The single `execute` node delegates to the existing business services through `Registry.execute`, so
+the graph keeps every per-case tool whitelist and no-LLM fallback the services already have. The case
+family (brief, playbook, team, access, template) only labels the trace and the LLM calls.
 """
 
 import logging
 import re
+from collections.abc import Callable
 from urllib.parse import urlsplit
 
 from langchain_core.messages import AIMessage
@@ -77,10 +79,12 @@ def message_text(message) -> str:
     return "".join(part.get("text", "") if isinstance(part, dict) else str(part) for part in content)
 
 
-def traced(name: str, node):
-    """FR-AG-10: LLM calls made while the node runs are copied into the state with the node's name."""
+def traced(name: str | Callable[[AgentState], str], node):
+    """FR-AG-10: LLM calls made while the node runs are copied into the state with the node's name.
+    `name` may be a function of the state: `execute` is one node labelled by its case family."""
 
     async def run(state: AgentState) -> dict:
+        label = name(state) if callable(name) else name
         calls: list[dict] = []
         token = CALLS.set(calls)
         try:
@@ -92,8 +96,8 @@ def traced(name: str, node):
         last = calls[-1]
         return {
             **update,
-            "llm_calls": [*state.get("llm_calls", []), *({"node": name, **call} for call in calls)],
-            "prompt": {"node": name, "kind": last["kind"], **last["request"]},
+            "llm_calls": [*state.get("llm_calls", []), *({"node": label, **call} for call in calls)],
+            "prompt": {"node": label, "kind": last["kind"], **last["request"]},
         }
 
     return run
@@ -145,17 +149,11 @@ def build_graph(
             return {"decision": await router.route(text, context=state["context"])}
         return {"decision": await router.route(text, context=state["context"], memory=summary)}
 
-    def executor(name: str):
-        async def run(state: AgentState) -> dict:
-            decision = state["decision"]
-            text = state.get("routed") or state.get("text", "")
-            response = await registry.execute(
-                decision.case, decision.params, state["context"], rt(state), text
-            )
-            return {"response": response, "trace": [*state.get("trace", []), name]}
-
-        run.__name__ = name
-        return run
+    async def execute(state: AgentState) -> dict:
+        decision = state["decision"]
+        text = state.get("routed") or state.get("text", "")
+        response = await registry.execute(decision.case, decision.params, state["context"], rt(state), text)
+        return {"response": response, "trace": [*state.get("trace", []), family(decision.case)]}
 
     async def guard(state: AgentState) -> dict:
         response = guarded(state.get("response"), state["decision"].case)
@@ -215,9 +213,8 @@ def build_graph(
     graph.add_node("resolve_followup", traced("resolve_followup", resolve_followup))
     graph.add_node("route", traced("route", route))
     graph.add_node("agent", traced("agent", run_agent))
-    for name in FAMILIES:
-        graph.add_node(name, traced(name, executor(name)))
-        graph.add_edge(name, "guard")
+    graph.add_node("execute", traced(lambda state: family(state["decision"].case), execute))
+    graph.add_edge("execute", "guard")
     graph.add_node("guard", guard)
     graph.add_node("save_memory", save_memory)
 
@@ -240,19 +237,18 @@ def build_graph(
 
     # A preset decision is a direct trigger (button, scheduler): Router is not called.
     def after_followup(state: AgentState) -> str:
-        if state.get("decision"):
-            return family(state["decision"].case)
-        return "route"  # text for the agent never gets here: after_memory sends it to the agent directly
+        # Text for the agent never gets here: after_memory sends it to the agent directly.
+        return "execute" if state.get("decision") else "route"
 
-    graph.add_conditional_edges("resolve_followup", after_followup, ["route", *FAMILIES])
+    graph.add_conditional_edges("resolve_followup", after_followup, ["route", "execute"])
 
     def after_agent(state: AgentState) -> str:
         if state.get("response"):
             return "guard"
-        return family(state["decision"].case) if state.get("decision") else "route"
+        return "execute" if state.get("decision") else "route"
 
-    graph.add_conditional_edges("agent", after_agent, ["guard", "route", *FAMILIES])
-    graph.add_conditional_edges("route", lambda state: family(state["decision"].case), list(FAMILIES))
+    graph.add_conditional_edges("agent", after_agent, ["guard", "route", "execute"])
+    graph.add_edge("route", "execute")
     graph.add_edge("guard", "save_memory")
     if chat is None:
         graph.add_edge("save_memory", END)

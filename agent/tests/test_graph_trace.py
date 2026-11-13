@@ -16,6 +16,7 @@ from buddy.graph import build_graph
 from buddy.llm.client import CompatibleLLM, FakeLLM
 from buddy.memory import Memory, Turn
 from buddy.router.service import Router
+from buddy.schemas import RouteDecision
 from buddy.service import AgentService
 from buddy.studio import Chat, build_studio_graph
 
@@ -113,7 +114,37 @@ def test_fr_ag_10_studio_persona_is_chosen_by_config(persona, role):
 
 def test_fr_ag_10_studio_graph_is_demo_only():
     graph = build_studio_graph(Settings(_env_file=None, demo_mode=True))
-    assert {"inbox", "outbox", "agent", "route"} <= set(graph.get_graph().nodes)
+    assert {"inbox", "outbox", "agent", "route", "execute"} <= set(graph.get_graph().nodes)
+
+
+def test_fr_ag_14_one_execute_node_replaces_the_family_nodes():
+    nodes = set(build_studio_graph(Settings(_env_file=None, demo_mode=True)).get_graph().nodes)
+    assert not nodes & {"brief", "playbook", "team", "access", "template"}
+
+
+@pytest.mark.parametrize(
+    "case,params,label",
+    [
+        ("brief_now", {}, "brief"),
+        ("team_q7", {}, "team"),
+        ("access_status", {}, "access"),
+        ("help", {}, "template"),
+    ],
+)
+async def test_fr_ag_14_trace_and_llm_calls_carry_the_case_family(case, params, label):
+    controller = DemoController(True)
+    controller.command(1)
+    graph = build_graph(Router(), Registry(), Memory(), FakeLLM(), None)
+    decision = RouteDecision(case=case, params=params)
+    state = await graph.ainvoke(
+        {
+            "text": "x",
+            "context": controller.context(1),
+            "runtime": controller.runtime(1),
+            "decision": decision,
+        }
+    )
+    assert state["trace"] == [label]
 
 
 async def seeded_followup(text: str, llm):
