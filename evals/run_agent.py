@@ -11,6 +11,7 @@ import argparse
 import asyncio
 import json
 import logging
+import re
 import time
 from collections import Counter
 from pathlib import Path
@@ -30,6 +31,12 @@ ROOT = Path(__file__).resolve().parents[1]
 CASES = ROOT / "evals/agent/cases.jsonl"
 # Fallback reasons meaning the model wrote something unsupported and code blocked it (FR-AG-09).
 UNSUPPORTED = {"answer", "label", "task", "pr", "unlabelled"}
+# FR-AG-13: AI-text tells from reports/AI_TEXT_TELLS_PROMPT.md that code can spot in an answer.
+TELLS = re.compile(
+    r"^(?:Отличный вопрос|Конечно|Разумеется|Давай разберёмся|Рад помочь)|не просто .{1,60}?, а "
+    r"|Таким образом|Надеюсь, (?:это )?помо|стоит отметить|важно понимать|играет ключевую роль",
+    re.IGNORECASE,
+)
 
 
 def load(path: Path = CASES) -> list[dict]:
@@ -96,18 +103,22 @@ async def run_case(settings: Settings, recorder: Recorder, reasons: Reasons, row
     else:
         tool_ok = set(row["tools"]) <= set(called) and not set(row.get("forbid", [])) & set(called)
     reason = reasons.items[0] if reasons.items else ""
+    answer = state["response"].result
     return {
         "id": row["id"],
         "kind": row["kind"],
         "tools": called,
         "tool_ok": tool_ok,
         "answered": recorder.steps > 0 and not reason,
+        # FR-AG-12: e.g. status icons that must survive the model's rewrite.
+        "expect_ok": all(part in answer for part in row.get("expect", [])),
+        "style_ok": not TELLS.search(answer),
         "fallback": reason,
         "unsupported_blocked": reason in UNSUPPORTED,
         "steps": recorder.steps,
         "seconds": seconds,
         "cost": round(recorder.cost, 6),
-        "answer": state["response"].result[:600],
+        "answer": answer[:600],
         "links": len(state["response"].links),
     }
 
@@ -132,6 +143,8 @@ def summary(results: list[dict]) -> dict:
         "cases": len(results),
         "tool_ok": sum(r["tool_ok"] for r in results),
         "answered": sum(r["answered"] for r in results),
+        "expect_ok": sum(r["expect_ok"] for r in results),
+        "style_ok": sum(r["style_ok"] for r in results),
         "unsupported_blocked": sum(r["unsupported_blocked"] for r in results),
         "fallbacks": dict(Counter(r["fallback"] for r in results if r["fallback"])),
         "avg_seconds": round(sum(seconds) / len(seconds), 2),

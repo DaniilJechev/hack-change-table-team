@@ -1,6 +1,6 @@
 {"id": "agent-001", "kind": "tool", "text": "Что у меня нового?", "tools": ["brief_now"]}
 {"id": "agent-002", "kind": "tool", "text": "Что там по моим задачам в Jira?", "tools": ["brief_now"]}
-{"id": "agent-003", "kind": "tool", "text": "Какие у меня доступы?", "tools": ["access_status"]}
+{"id": "agent-003", "kind": "tool", "text": "Какие у меня доступы?", "tools": ["access_status"], "expect": ["✅", "⬜", "⛔"]}
 {"id": "agent-004", "kind": "tool", "text": "Какие доступы нужны для ORD-118?", "tools": ["access_task_analysis"]}
 {"id": "agent-005", "kind": "tool", "text": "Кто мой наставник?", "tools": ["team_q3"]}
 {"id": "agent-006", "kind": "tool", "text": "Кто у нас отвечает за Kafka?", "tools": ["team_q1"]}

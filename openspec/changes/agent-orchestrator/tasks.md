@@ -32,3 +32,9 @@
 - [x] 6.1 `llm_calls` и `prompt` в состоянии, запись обращений к LLM (FR-AG-10)
 - [x] 6.2 `langgraph.json`, `buddy/studio.py` (чат, персоны intern/mentor), `make studio`
 - [x] 6.3 Тесты `test_fr_ag_10_*`
+
+## 7. Значки доступов и стиль (13.11)
+- [x] 7.1 FR-AG-12: правило значков в `SYSTEM`; `unknown` → ❌ в `access/service.py`
+- [x] 7.2 FR-AG-13: стилевой блок в `SYSTEM`, краткие правила в промптах брифа и playbook
+- [x] 7.3 Тесты `test_fr_ag_12_*`, `test_fr_ag_13_*`; кейс доступов со значками в `evals/agent/cases.jsonl`
+- [ ] 7.4 Прогнать `evals/run_agent.py` на реальной LLM (вручную)

@@ -184,7 +184,7 @@ async def test_fr_h1_03_telegram_fixture_must_match(tmp_path):
     _, runtime, context = demo()
     runtime.telegram = FixtureTelegram(tmp_path, "step_1")
     response = await AccessService().status(context, runtime)
-    assert "❔ Telegram" in response.result
+    assert "❌ Telegram" in response.result
 
 
 def test_fr_h1_03_payload_and_contains_helpers():
@@ -219,7 +219,7 @@ async def test_fr_h1_02_unknown_status_offers_no_request_and_keeps_saved_status(
     runtime.gateway = AsyncMock()
     runtime.gateway.call.side_effect = SourceUnavailable("down")
     response = await service.status(context, runtime)
-    assert "❔ Miro" in response.result
+    assert "❌ Miro" in response.result
     assert not any(action.data == "request:demo-orders-miro" for action in response.actions)
     assert service.previous[AccessService.key(context)]["demo-orders-miro"] == "missing"
 

@@ -353,6 +353,7 @@ async def test_fr_ag_07_compare_reports_metrics_per_model_and_case():
         summary, results = report["models"][model]["summary"], report["models"][model]["results"]
         assert [r["id"] for r in results] == ["agent-005", "agent-033"]
         assert summary["tool_ok"] == 2 and summary["answered"] == 1 and summary["cost"] == 0.002
+        assert summary["expect_ok"] == 2 and summary["style_ok"] == 2
         assert results[0]["answer"] == "Твой наставник — Анна [1]." and results[1]["steps"] == 0
 
 
@@ -565,3 +566,47 @@ async def test_fr_ag_10_turn_is_logged_without_user_text(caplog):
     lines = [r.getMessage() for r in caplog.records if r.name == "buddy.graph.build"]
     assert lines == ["turn: case=team_q3 trace=agent llm_calls=2 links=1"]
     assert "секрет-123" not in caplog.text
+
+
+def test_fr_ag_12_system_prompt_requires_status_icons():
+    from buddy.access.service import ICONS
+    from buddy.agent.loop import SYSTEM
+
+    assert all(icon in SYSTEM for icon in ("✅", "⬜", "⏳", "⏰", "⛔", "❌"))
+    assert set(ICONS.values()) == {"✅", "⬜", "⏳", "⏰", "⛔", "❌"}  # template and prompt agree
+    assert "Не убирай значки" in SYSTEM and "«Есть», «Нет», «Закрыто»" in SYSTEM
+
+
+def test_fr_ag_12_unverified_status_line_starts_with_cross():
+    from datetime import UTC, datetime
+
+    from buddy.access.checker import AccessItem
+    from buddy.access.service import AccessService
+
+    item = AccessItem("o1", "miro", "доска", "https://example.invalid/miro", "", "u1", "unknown")
+    response = AccessService()._render([item], {}, datetime.now(UTC), "Доступы:")
+    assert "❌ Miro — доска: не удалось проверить, попробуйте позже" in response.result
+
+
+def test_fr_ag_13_system_prompt_has_style_block_with_icon_exception():
+    from buddy.agent.loop import SYSTEM
+
+    assert "Стиль ответа." in SYSTEM and "«не просто X, а Y»" in SYSTEM and "Таким образом" in SYSTEM
+    assert "Эмодзи не используй. Исключение: значки статуса" in SYSTEM
+
+
+def test_fr_ag_13_brief_and_playbook_prompts_have_short_style_rules():
+    from buddy.brief.service import PROMPT as BRIEF
+    from buddy.rag.qa import DETAILS_PROMPT, PROMPT
+
+    for prompt in (BRIEF, PROMPT, DETAILS_PROMPT):
+        assert "концовки-резюме" in prompt and "«не просто X, а Y»" in prompt and "вступления" in prompt
+
+
+def test_fr_ag_13_eval_flags_ai_text_tells():
+    run_agent = eval_module()
+    assert run_agent.TELLS.search("Отличный вопрос! Доступ есть")
+    assert run_agent.TELLS.search("Это не просто доска, а план спринта")
+    assert not run_agent.TELLS.search("✅ GitHub — orders-onboarding: доступ есть [S1]")
+    row = next(row for row in run_agent.load() if row["id"] == "agent-003")
+    assert row["expect"] == ["✅", "⬜", "⛔"]

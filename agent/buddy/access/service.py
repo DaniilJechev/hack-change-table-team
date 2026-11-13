@@ -25,7 +25,7 @@ ICONS = {
     "requested": "⏳",
     "stale": "⏰",
     "forbidden": "⛔",
-    "unknown": "❔",
+    "unknown": "❌",
 }
 SNAPSHOT_STATUSES = {"granted", "missing", "requested", "stale", "forbidden"}
 UNAVAILABLE = "Данные доступов сейчас недоступны. Попробуйте позже."
