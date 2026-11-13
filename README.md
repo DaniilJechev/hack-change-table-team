@@ -244,3 +244,29 @@ Grafana `/d/ai-buddy` читает агрегаты через отдельну�
 Пошаговая инструкция: [mcp/GITHUB_PROJECT.md](mcp/GITHUB_PROJECT.md).
 Диагностика без запуска polling: `make github-check USER_ID=Emil_Mardanov`.
 Демо-фикстуры остаются независимыми от этой настройки.
+
+### LangGraph Studio: граф агента, состояния и промпты (инструмент разработчика)
+
+```sh
+make setup
+uv sync --project agent --frozen --extra dev --extra studio
+make studio          # langgraph dev на http://127.0.0.1:2024 (порт: STUDIO_PORT)
+```
+
+Команда поднимает локальный сервер LangGraph и показывает боевой граф агента (`agent/buddy/studio.py`,
+конфиг — `langgraph.json` в корне) как чат: последнее сообщение пользователя идёт на вход, ответ — на выход.
+Интерфейс Studio размещён на smith.langchain.com и требует входа в бесплатный аккаунт LangSmith; данные
+остаются на локальном сервере.
+
+В Studio после каждого узла видны состояние (`context`, `turns` — память, `decision` — кейс и параметры,
+`response`, `trace`), все вызовы LLM (`llm_calls`: имя узла, промпт и ответ модели) и последний промпт
+(`prompt`). Один поток Studio хранит свою память диалога.
+
+- Всегда демо: синтетические фикстуры, без реальных аккаунтов, ничего не пишется в GitHub, Jira,
+  Google Calendar, Miro и Telegram (`demo_mode` принудительно включён, что бы ни стояло в `.env`).
+- Роль выбирается в настройках ассистента: `{"configurable": {"persona": "intern" | "mentor"}}`
+  (по умолчанию `intern`).
+- Модель берётся из `.env` при `LLM_IN_DEMO=true` и ключе; иначе работает запасной вариант без LLM
+  (правила и шаблоны), а промпты Router всё равно записываются.
+- Кнопки Telegram в Studio нажать нельзя — проверяются только текстовые сообщения.
+- `--allow-blocking` в `make studio` нужен, потому что демо читает фикстуры с диска синхронно.
