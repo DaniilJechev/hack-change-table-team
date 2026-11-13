@@ -185,9 +185,12 @@ class PlaybookService:
             )
             if raw.strip() == NO_ANSWER:
                 return self._refuse(question, context)
-            raw = unmeta(raw)
+            # FR-UI-03: footnote numbers are made by code only; the model's own ones are dropped.
+            raw = unmeta(re.sub(r"[ \t]*\[\d+\]", "", raw))
             # FR-H3-07: an answer that does not rest on the fragments is replaced by the fragments.
             text = raw if valid(raw, limit) and grounded(raw, chunks) else ""
+            if text:  # FR-UI-03: the answer rests on all fragments; its footnotes go after it, not after NOTE
+                text += "".join(f" [{n}]" for n in range(1, len(dict.fromkeys(c.url for c in chunks)) + 1))
         # FR-H3-05: without a usable LLM answer show the fragments themselves.
         response = ExecutorResponse(
             result=(text or self._fragments(chunks, fragment_limit)) + "\n" + NOTE,

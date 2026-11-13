@@ -1,7 +1,8 @@
 # Tasks
 
 ## 0. Спецификация
-- [ ] 0.1 Согласовать с Даниилом изменение FR-MEM-04 и `AGENT_MODE=agent` по умолчанию
+- [ ] 0.1 Согласовать с Даниилом пункты 1–5 раздела «Что согласовать» в `proposal.md`, с Ильёй — пункт 6
+- [ ] 0.1.1 Добавить MODIFIED FR-MEM-05 (правила уточнений — запасной вариант агента), если пункт 2 принят
 - [ ] 0.2 Архивировать `stage-4-langgraph-memory` до этого изменения; `openspec validate agent-orchestrator --strict`
 
 ## 1. LLM
@@ -25,6 +26,7 @@
 - [x] 5.1 Тесты `test_fr_ag_*` по каждому сценарию; покрытие `agent` > 80 %
 - [x] 5.2 `evals/agent/cases.jsonl` и `evals/run_agent.py` (FR-AG-07)
 - [x] 5.3 Прогнать `evals/run_agent.py` на DeepSeek и Haiku (12.11, отчёт `evals/agent/report.json`)
+- [x] 5.4 Имя из карточки или статус доступа без инструмента → повтор с `tool_choice: "required"` (FR-AG-05, FR-AG-09)
 
 ## 6. Трассировка и LangGraph Studio
 - [x] 6.1 `llm_calls` и `prompt` в состоянии, запись обращений к LLM (FR-AG-10)

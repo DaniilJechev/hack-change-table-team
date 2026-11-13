@@ -17,6 +17,7 @@ from buddy.graph.state import AgentState
 from buddy.llm.trace import CALLS
 from buddy.memory import followup
 from buddy.memory.store import Memory, Turn, history, summary_for_llm
+from buddy.render import cite
 from buddy.router.service import Router
 from buddy.schemas import ExecutorResponse, RouteDecision
 
@@ -58,7 +59,8 @@ def guarded(response: ExecutorResponse | None, case: str) -> ExecutorResponse:
         return template(case)
     if any(action.url and not safe_link(action.url) for action in response.actions):
         return template(case)
-    return response
+    result, folded, links = cite(response.result, response.folded, response.links)  # FR-UI-03
+    return response.model_copy(update={"result": result, "folded": folded, "links": links})
 
 
 def agent_text(text: str) -> bool:

@@ -7,10 +7,13 @@ import httpx
 import pytest
 
 from buddy.agent import Agent, Rejected, tools_for, verify
+from buddy.agent.loop import access_claim, mentions
 from buddy.config import Settings
+from buddy.data.base import DataError
 from buddy.demo.controller import DemoController
 from buddy.executors.core import OUT_OF_SCOPE_HR, Registry
 from buddy.graph import build_graph
+from buddy.graph.build import guarded
 from buddy.llm.client import CompatibleLLM, FakeLLM
 from buddy.memory import Memory, Turn
 from buddy.router.service import Router
@@ -38,7 +41,8 @@ def setup(*script):
 
 
 async def tool_result(registry, runtime, context, case: str, params: dict | None = None):
-    return await registry.execute(case, params or {}, context, runtime, "")
+    # As shown after guard: with code-made footnotes (FR-UI-03).
+    return guarded(await registry.execute(case, params or {}, context, runtime, ""), case)
 
 
 # FR-AG-01
@@ -132,7 +136,7 @@ async def test_fr_ag_02_personal_data_refused_without_llm():
 async def test_fr_ag_03_compound_question_uses_two_tools():
     ask, llm, *_ = setup(
         {"tool_calls": [call("team_q3", id="c1"), call("access_status", id="c2")]},
-        {"content": "Твой наставник — Анна [S1]. Доступа к Miro пока нет, запроси у Олега [S5]."},
+        {"content": "Твой наставник — Анна [S1]. Доступа к Miro пока нет, запроси у Олега [S3]."},
     )
     state = await ask("Кто мой наставник и какие у меня доступы?")
     response = state["response"]
@@ -180,10 +184,13 @@ async def test_fr_ag_08_fifth_tool_call_is_not_executed():
 
 
 async def test_fr_ag_08_steps_are_limited():
-    ask, llm, *_ = setup(*[{"tool_calls": [call("team_q7", id=f"c{n}")]} for n in range(3)])
+    ask, llm, registry, runtime, context = setup(
+        *[{"tool_calls": [call("team_q7", id=f"c{n}")]} for n in range(3)]
+    )
     state = await ask("Какой стек?")
     assert len(llm.chats) == 3 and state["decision"].case == "team_q7"
-    assert "[" not in state["response"].result  # the tool's own answer, not the model's
+    # the tool's own answer, not the model's
+    assert state["response"].result == (await tool_result(registry, runtime, context, "team_q7")).result
 
 
 async def test_fr_ag_08_timeout_falls_back_to_router():
@@ -284,7 +291,8 @@ async def test_fr_mem_04_replies_in_agent_history():
     )
     await ask("Кто мой наставник?")
     await ask("а можно ему писать в личку?")
-    history = [(m["role"], m["content"]) for m in llm.chats[-1] if m["role"] in {"user", "assistant"}]
+    # The first step of the second turn (a name without a tool then gets a retry, FR-AG-05).
+    history = [(m["role"], m["content"]) for m in llm.chats[2] if m["role"] in {"user", "assistant"}]
     assert history == [
         ("user", "Кто мой наставник?"),
         ("assistant", "Твой наставник — Анна [1]."),
@@ -367,3 +375,183 @@ async def test_fr_ag_04_grouped_label_is_split():
     state = await ask("Кто мой наставник и тимлид?")
     assert state["response"].result == "Наставник — Анна, тимлид — Олег [1][2]."
     assert len(state["response"].links) == 2
+
+
+# FR-AG-09: history is not a source (reports/BUG_AGENT_ANSWERS_FROM_HISTORY.md, eval agent-030)
+
+
+async def test_fr_ag_09_followup_from_history_without_tools_is_not_shown():
+    copied = "PR #47 ждёт твоего ревью, ревьюера в брифе не видно."
+    ask, llm, *_ = setup(
+        {"tool_calls": [call("brief_now")]},
+        {"content": "Посмотри ревью PR #47 [S3]."},
+        {"content": copied},
+    )
+    await ask("Что у меня нового?")
+    state = await ask("а кто ревьюит PR #47?")
+    assert len(llm.chats) == 3 and llm.chats[-1][-1]["content"] == "а кто ревьюит PR #47?"
+    assert "agent" not in state.get("trace", []) and state["response"].result != copied
+
+
+@pytest.mark.parametrize(
+    ("question", "answer"),
+    [
+        ("а кто ревьюит PR #47?", "PR #47 ждёт твоего ревью."),
+        ("Какие доступы нужны для ORD-118?", "Для ORD-118 нужен доступ к Jira."),
+    ],
+)
+async def test_fr_ag_09_fact_from_question_without_tools_is_rejected(question, answer):
+    _, llm, registry, runtime, context = setup({"content": answer})
+    assert await Agent(llm, registry).answer(question, context, runtime) is None
+
+
+async def test_fr_ag_09_general_advice_without_tools_passes():
+    advice = "В первый день познакомься с наставником и договорись о времени для вопросов."
+    _, llm, registry, runtime, context = setup({"content": advice})
+    decision, response = await Agent(llm, registry).answer("Как лучше начать первый день?", context, runtime)
+    assert decision.case == "chat" and response.result == advice and not response.links
+
+
+# FR-AG-05, FR-AG-09: a person's name without a tool this turn → one retry with a required team tool
+# (reports/PLAN_NAME_TOOL_REFRESH.md; Telegram 13.11: «кто мой наставник?» answered from history).
+
+COPIED = "Наставник — Анна. Она же твой первый контакт."
+
+
+async def test_fr_ag_05_name_without_tool_retries_with_required_team_tool():
+    _, llm, registry, runtime, context = setup(
+        {"content": COPIED},
+        {"tool_calls": [call("team_q3")]},
+        {"content": "Наставник — Анна [S1], первый контакт — Олег [S2]."},
+    )
+    decision, response = await Agent(llm, registry).answer("кто мой наставник?", context, runtime)
+    assert decision.case == "team_q3" and response.links[0] == ANNA and "[1]" in response.result
+    assert COPIED not in response.result
+    assert [choice for choice, _ in llm.choices] == [None, "required", None]
+    assert all(name.startswith("team_q") for name in llm.choices[1][1])
+    assert llm.chats[1][-2] == {"role": "assistant", "content": COPIED}
+
+
+async def test_fr_ag_05_name_retry_happens_once():
+    _, llm, registry, runtime, context = setup({"content": COPIED}, {"content": COPIED})
+    assert await Agent(llm, registry).answer("кто мой наставник?", context, runtime) is None
+    assert len(llm.chats) == 2
+
+
+async def test_fr_ag_05_failed_name_retry_falls_back():
+    _, llm, registry, runtime, context = setup({"content": COPIED}, RuntimeError("provider 400"))
+    assert await Agent(llm, registry).answer("кто мой наставник?", context, runtime) is None
+
+
+@pytest.mark.parametrize(
+    ("text", "found"),
+    [
+        ("Спроси у Анны.", True),
+        ("Напиши Анне", True),
+        ("Поговори с Олегом", True),
+        ("Олег поможет", True),
+        ("Аннотация к задаче", False),
+        ("Начни с README", False),
+    ],
+)
+def test_fr_ag_09_name_declension_is_detected(text, found):
+    assert mentions(text, ["Анна", "Олег"]) is found
+
+
+async def test_fr_ag_09_own_name_does_not_retry():
+    _, llm, registry, runtime, context = setup()
+    card = (await runtime.data.team_card(context.user_id))["document"]
+    own = next(person["name"] for person in card["people"] if person["user_id"] == context.user_id)
+    llm.script = [{"content": f"Привет, {own}! Начни с README репозитория."}]
+    decision, response = await Agent(llm, registry).answer("привет", context, runtime)
+    assert decision.case == "chat" and own in response.result and len(llm.chats) == 1
+
+
+async def test_fr_ag_09_card_error_skips_name_check():
+    _, llm, registry, _, context = setup({"content": COPIED})
+
+    class Data:
+        async def team_card(self, user_id):
+            raise DataError("unavailable")
+
+    class Runtime:
+        data = Data()
+
+    decision, response = await Agent(llm, registry).answer("кто мой наставник?", context, Runtime())
+    assert decision.case == "chat" and response.result == COPIED
+
+
+async def test_fr_ag_05_client_sends_tool_choice_with_require_parameters():
+    settings = live_settings("agent")
+    llm, bodies = recording_llm(settings, "ok")
+    await llm.chat(
+        [{"role": "user", "content": "кто наставник?"}], tools_for("intern"), tool_choice="required"
+    )
+    await llm.chat([{"role": "user", "content": "кто наставник?"}], tools_for("intern"))
+    assert bodies[0]["tool_choice"] == "required"
+    assert bodies[0]["provider"] == {"data_collection": "deny", "require_parameters": True}
+    assert "tool_choice" not in bodies[1] and bodies[1]["provider"] == {"data_collection": "deny"}
+
+
+async def test_fr_ag_05_mentor_question_twice_gets_fresh_links():
+    ask, *_ = setup(
+        {"tool_calls": [call("team_q3")]},
+        {"content": "Наставник — Анна [S1], тимлид и первый контакт — Олег [S2]."},
+        {"content": COPIED},
+        {"tool_calls": [call("team_q3", id="c2")]},
+        {"content": "Наставник — Анна [S1], первый контакт — Олег [S2]."},
+    )
+    await ask("привет")
+    state = await ask("кто мой наставник?")
+    assert "agent" in state["trace"] and ANNA in state["response"].links
+    assert "Олег" in state["response"].result and COPIED not in state["response"].result
+
+
+# FR-AG-05, FR-AG-09: an access status without a tool this turn → one retry with a required access tool.
+
+STALE_ACCESS = "Доступа к Miro у тебя пока нет, остальное есть."
+
+
+async def test_fr_ag_05_access_status_without_tool_retries_with_access_tools():
+    _, llm, registry, runtime, context = setup(
+        {"content": STALE_ACCESS},
+        {"tool_calls": [call("access_status")]},
+        {"content": "Доступа к Miro пока нет [S1]."},
+    )
+    decision, response = await Agent(llm, registry).answer("какие у меня доступы?", context, runtime)
+    assert decision.case == "access_status" and "[1]" in response.result and response.links
+    assert STALE_ACCESS not in response.result
+    assert [choice for choice, _ in llm.choices] == [None, "required", None]
+    assert set(llm.choices[1][1]) == {"access_status", "access_task_analysis"}
+
+
+async def test_fr_ag_05_name_and_access_offer_both_tool_sets():
+    _, llm, registry, runtime, context = setup(
+        {"content": "Анна выдаст доступ, а к Jira доступ уже есть."}, {"content": ""}
+    )
+    await Agent(llm, registry).answer("как с доступами?", context, runtime)
+    offered = set(llm.choices[1][1])
+    assert {"team_q3", "access_status"} <= offered and "brief_now" not in offered
+
+
+@pytest.mark.parametrize(
+    ("text", "found"),
+    [
+        ("У тебя есть доступ к Jira.", True),
+        ("Доступа к Miro пока нет", True),
+        ("✅ GitHub — доступ есть", True),
+        ("Заявка на доступ к Google Calendar на рассмотрении.", True),
+        ("Могу проверить доступы к GitHub, Jira, Miro, календарю.", False),
+        ("Попроси доступ к Jira у наставника.", False),
+        ("Есть вопросы по Jira?", False),
+    ],
+)
+def test_fr_ag_09_access_status_is_detected(text, found):
+    assert access_claim(text) is found
+
+
+async def test_fr_ag_09_access_offer_without_status_passes():
+    offer = "Могу проверить доступы к GitHub, Jira, Miro и календарю — просто спроси."
+    _, llm, registry, runtime, context = setup({"content": offer})
+    decision, response = await Agent(llm, registry).answer("привет", context, runtime)
+    assert decision.case == "chat" and response.result == offer and len(llm.chats) == 1

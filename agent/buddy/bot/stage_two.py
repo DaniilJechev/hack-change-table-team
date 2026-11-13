@@ -6,8 +6,8 @@ from aiogram.filters import Command
 from aiogram.types import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Message, User
 
 from buddy.bot.identity import IdentityClient, IdentityError
-from buddy.executors.core import TEAM_MENU, Context, format_response
-from buddy.render import to_html
+from buddy.executors.core import TEAM_MENU, Context
+from buddy.render import to_html, to_plain
 from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
@@ -132,7 +132,8 @@ async def rich(method, response: ExecutorResponse, head: str = "", **kwargs):
         html = to_html(response.result, response.folded, response.links, head)
         return await method(text=html, parse_mode="HTML", **kwargs)
     except TelegramBadRequest:
-        return await method(text=head + format_response(response), parse_mode=None, **kwargs)
+        text = to_plain(response.result, response.folded, response.links, head)
+        return await method(text=text, parse_mode=None, **kwargs)
 
 
 async def send(

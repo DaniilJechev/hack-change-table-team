@@ -66,7 +66,7 @@ async def test_fr_h2_11_areas_of_a_named_person():
     for text in ("за что отвечает олег?", "за что отвечает Олег?"):
         decision, answer = await service.handle(text, context)
         assert decision.case == "team_q1"
-        assert answer.result == "Олег (Тимлид) отвечает за: orders-api, надёжность."
+        assert answer.result == "Олег (Тимлид) отвечает за: orders-api, надёжность. [1]"  # FR-UI-03
         assert answer.links == ["https://example.invalid/team/demo-orders/people/demo-oleg"]
     _, kafka = await service.handle("кто отвечает за Kafka?", context)
     assert "Пётр" in kafka.result  # an area question still finds the owner by area

@@ -166,7 +166,9 @@ async def test_fr_h0_12_follow_up_through_agent_service():
     second_line = first.result.splitlines()[3]
     decision, answer = await service.handle("подробнее про 2-й пункт", context)
     assert decision.case == "brief_now" and decision.params["item"] == "2"
-    assert answer.result == "Пункт 2 из брифа:\n" + second_line and answer.links == [first.links[1]]
+    # FR-UI-03: footnotes are numbered per message — item 2 is the answer's only source, [1].
+    expected = "Пункт 2 из брифа:\n" + second_line.replace(" [2]", " [1]")
+    assert answer.result == expected and answer.links == [first.links[1]]
     _, pr = await service.handle("что с PR #45?", context)
     assert pr.links == [PR45]
     _, missing = await service.handle("подробнее про 9-й пункт", context)

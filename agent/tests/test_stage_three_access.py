@@ -77,7 +77,7 @@ async def test_fr_h1_06_forbidden_or_unknown_objects_cannot_be_marked(object_id)
 async def test_fr_h1_05_task_analysis_shows_only_mentioned_objects():
     _, runtime, context = demo()
     response = await AccessService().task(context, runtime, "ord-118")
-    assert response.result.startswith("Для задачи ORD-118 нужны доступы:")
+    assert response.result.startswith("Для задачи ORD-118 [1] нужны доступы:")  # FR-UI-03: the task link
     shown = "\n".join([response.result, *response.folded])  # FR-UI-01: granted tools are folded
     assert "GitHub — Репозиторий" in response.folded[0] and "Miro" in response.result
     assert "Google Calendar" in shown and "production" in response.result

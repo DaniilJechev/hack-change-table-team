@@ -19,6 +19,7 @@ class FakeLLM:
     # FR-AG: scripted agent steps ({"content": ..., "tool_calls": [...]} or an exception), in order.
     script: list = field(default_factory=list)
     chats: list[list[dict]] = field(default_factory=list)
+    choices: list[tuple[str | None, list[str]]] = field(default_factory=list)  # (tool_choice, tool names)
 
     @recorded("complete", "prompt")
     async def complete(self, prompt: str, *, fallback: str) -> str:
@@ -26,8 +27,9 @@ class FakeLLM:
         return self.response if self.response is not None else fallback
 
     @recorded("chat", "messages", "tools")
-    async def chat(self, messages: list[dict], tools: list[dict]) -> dict:
+    async def chat(self, messages: list[dict], tools: list[dict], tool_choice: str | None = None) -> dict:
         self.chats.append([dict(message) for message in messages])
+        self.choices.append((tool_choice, [tool["function"]["name"] for tool in tools]))
         step = self.script.pop(0) if self.script else {}
         if isinstance(step, BaseException):
             raise step
@@ -63,9 +65,16 @@ class CompatibleLLM:
             return fallback
 
     @recorded("chat", "messages", "tools")
-    async def chat(self, messages: list[dict], tools: list[dict]) -> dict:
+    async def chat(self, messages: list[dict], tools: list[dict], tool_choice: str | None = None) -> dict:
         """FR-AG: one agent step. Errors propagate: the agent falls back without the LLM (hard rule 3)."""
         base = self.settings.llm_base_url or "https://openrouter.ai/api/v1"
+        extra = {}
+        if tool_choice:
+            # FR-AG-05: a provider that silently ignores tool_choice is not chosen by OpenRouter.
+            extra = {
+                "tool_choice": tool_choice,
+                "provider": {"data_collection": "deny", "require_parameters": True},
+            }
         async with httpx.AsyncClient(
             timeout=self.settings.llm_timeout_seconds, transport=self.transport
         ) as client:
@@ -80,6 +89,7 @@ class CompatibleLLM:
                     # The 60 s tail in evals/router/llm-compare.json is attributed to reasoning tokens.
                     "reasoning": {"enabled": False},
                     "provider": {"data_collection": "deny"},
+                    **extra,
                 },
             )
             response.raise_for_status()

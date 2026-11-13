@@ -10,6 +10,7 @@ import json
 import logging
 import re
 
+from buddy.data.base import DataError
 from buddy.executors.context import Context
 from buddy.router.rules import TASK
 from buddy.router.service import PARAMS, normalize
@@ -46,7 +47,8 @@ ARGUMENTS = {
 }
 SYSTEM = """Ты AI-buddy — помощник стажёра Авито по онбордингу в Telegram. Отвечай по-русски, живо и по делу,
 как внимательный старший коллега: коротко, без канцелярита и без Markdown.
-Факты о брифе, команде, людях, доступах и playbook бери ТОЛЬКО из результатов инструментов.
+Факты о брифе, команде, людях, доступах и playbook бери ТОЛЬКО из результатов инструментов,
+вызванных в этом ходу. Прошлые ответы в истории — не источник: не повторяй их как актуальные факты.
 После каждого такого факта ставь метку его источника, например [S1]. Не пиши ссылки и адреса.
 Если вопрос составной — вызови несколько инструментов. Если данных нет — скажи прямо
 и предложи спросить наставника; не придумывай имена, задачи и PR.
@@ -60,6 +62,22 @@ GROUP = re.compile(r"\[(S\d+(?:\s*,\s*S\d+)+)\]")
 # Link numbers like [1] are made by code only (render); the model writing them would fake citations.
 NUMBER = re.compile(r"[ \t]*\[\d+\]")
 URL = re.compile(r"https?://|www\.", re.IGNORECASE)
+# FR-AG-05: a name from the team card or an access status without a tool this turn — one retry with a
+# required tool of that kind.
+TEAM_TOOLS = frozenset(name for name in TOOLS if name.startswith("team_q"))
+ACCESS_TOOLS = frozenset({"access_status", "access_task_analysis", "interns_status"})
+RETRY = (
+    "В этом ходу ты не вызвал инструменты, а ответ называет людей команды или статус доступов. Вызови "
+    "инструмент и ответь по его результату с метками источников; прошлые ответы из истории не подходят."
+)
+ENDING = re.compile(r"[аяйь]$")
+# An access status is a sentence with an instrument, «доступ» and a status: «доступа к Miro нет».
+INSTRUMENT = re.compile(r"github|гитхаб|jira|джир|miro|миро|calendar|календар|telegram|телеграм", re.I)
+STATUS = re.compile(
+    r"\b(?:есть|нет|выдан\w*|выдал\w*|получен\w*|открыт\w*|закрыт\w*|подтвержд\w*|запрещ\w*"
+    r"|заявк\w*|рассмотр\w*|ожида\w*)\b|[✅⬜⛔⏳❌]",
+    re.I,
+)
 PR = re.compile(r"(?:\bPR|\bпр|пулл?\s*реквест\w*)\s*№?\s*#?\s*(\d{1,7})\b|#(\d{1,7})\b", re.IGNORECASE)
 
 
@@ -131,6 +149,38 @@ def verify(answer: str, sources: list[str], observed: str) -> str:
     return answer
 
 
+def mentions(text: str, names: list[str]) -> bool:
+    """FR-AG-09: a card name in any case form: «Анна», «Анне», «Олегом»; «Аннотация» is not a name."""
+    text = text.replace("ё", "е")
+    for name in names:
+        name = name.replace("ё", "е")
+        stem = ENDING.sub("", name)
+        stem = stem if len(stem) >= 3 else name
+        if re.search(rf"\b{re.escape(stem)}\w{{0,3}}\b", text):
+            return True
+    return False
+
+
+def access_claim(text: str) -> bool:
+    """FR-AG-09: «у тебя есть доступ к Jira» is a fact; «могу проверить доступы к Jira» is not."""
+    return any(
+        "доступ" in part.casefold() and INSTRUMENT.search(part) and STATUS.search(part)
+        for part in re.split(r"[.!?\n]", text)
+    )
+
+
+async def people_names(context: Context, runtime) -> list[str]:
+    """Names of the team card except the user's own; the card unreadable — no name check."""
+    if runtime is None:
+        return []
+    try:
+        card = (await runtime.data.team_card(context.user_id))["document"]
+        people = card.get("people", [])
+    except (DataError, KeyError, TypeError, AttributeError):
+        return []
+    return [p["name"] for p in people if p.get("name") and p.get("user_id") != context.user_id]
+
+
 def render(answer: str, sources: list[str]) -> tuple[str, list[str]]:
     """FR-AG-04: labels become link numbers in the order of first citation; links come from code."""
     order: list[int] = []
@@ -163,13 +213,36 @@ class Agent:
         sources: list[str] = []
         done: list[tuple[RouteDecision, ExecutorResponse]] = []
         observed = [text]
+        active, choice, retried = tools, {}, False
         try:
             async with asyncio.timeout(self.timeout):
                 for _ in range(MAX_STEPS):
-                    reply = await self.llm.chat(messages, tools)
+                    reply = await self.llm.chat(messages, active, **choice)
+                    active, choice = tools, {}
                     calls = reply["tool_calls"]
                     if not calls:
-                        answer = verify(reply["content"], sources, "\n".join(observed))
+                        # FR-AG-09: with no tool this turn, a task key or PR (even from the question
+                        # or history) is a fact without a source.
+                        answer = verify(reply["content"], sources, "\n".join(observed) if done else "")
+                        wanted = frozenset()
+                        if not done and mentions(answer, await people_names(context, runtime)):
+                            wanted |= TEAM_TOOLS
+                        if not done and access_claim(answer):
+                            wanted |= ACCESS_TOOLS
+                        if wanted:
+                            # FR-AG-05: a person or an access status from history — refresh by a tool, once.
+                            if retried:
+                                raise Rejected("stale")
+                            retried = True
+                            kinds = (("team", TEAM_TOOLS), ("access", ACCESS_TOOLS))
+                            log.info("agent retry: %s", ",".join(k for k, group in kinds if group <= wanted))
+                            messages += [
+                                {"role": "assistant", "content": reply["content"]},
+                                {"role": "user", "content": RETRY},
+                            ]
+                            active = [tool for tool in tools if tool["function"]["name"] in wanted]
+                            choice = {"tool_choice": "required"}
+                            continue
                         return self._compose(answer, sources, done)
                     if len(done) + len(calls) > MAX_CALLS:
                         raise Rejected("budget")
@@ -215,7 +288,7 @@ class Agent:
             labels.append({"id": f"S{sources.index(link) + 1}", "url": link})
         return json.dumps(
             {
-                "result": "\n".join([response.result, *response.folded]),
+                "result": NUMBER.sub("", "\n".join([response.result, *response.folded])),  # FR-UI-03
                 "sources": labels,
                 "buttons": [action.label for action in response.actions],
             },

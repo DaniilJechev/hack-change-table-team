@@ -21,14 +21,10 @@ LINKS = [f"https://example.invalid/{n}" for n in range(1, 6)]
 
 def test_fr_ui_01_folded_blocks_are_expandable_quotes():
     html = to_html("Кто за что отвечает — 4 человек.", ["Олег (Тимлид)\nПётр"], LINKS[:2], "Демо.\n")
-    head = "Демо.\nКто за что отвечает — 4 человек.\n"
-    assert html.startswith(head + "<blockquote expandable>Олег (Тимлид)\nПётр")
-    assert html.endswith("Источники:\n" + "\n".join(LINKS[:2]))  # 1–3 links stay visible
-
-
-def test_fr_ui_01_long_source_list_is_folded():
-    html = to_html("Ответ.", [], LINKS)
-    assert html == "Ответ.\nИсточники:\n<blockquote expandable>" + "\n".join(LINKS) + "</blockquote>"
+    head = (
+        f'Демо.\nКто за что отвечает — 4 человек. <a href="{LINKS[0]}">[1]</a> <a href="{LINKS[1]}">[2]</a>\n'
+    )
+    assert html == head + "<blockquote expandable>Олег (Тимлид)\nПётр</blockquote>"  # FR-UI-03
 
 
 def test_fr_ui_01_long_text_without_folded_blocks_folds_its_tail_between_lines():
@@ -48,7 +44,7 @@ def test_fr_ui_02_text_is_escaped_and_only_code_adds_tags():
 def test_b_07_markdown_emphasis_is_not_shown_as_asterisks():
     assert plain("**Миссия:** помогать. __Ценности:__ пять.") == "Миссия: помогать. Ценности: пять."
     response = ExecutorResponse(result="**Миссия**", folded=["список"], links=LINKS[:1])
-    assert format_response(response) == "Миссия\nсписок\nИсточники:\n" + LINKS[0]
+    assert format_response(response) == "Миссия [1]\nсписок\n[1] " + LINKS[0]
     assert "Markdown" in PROMPT
 
 
@@ -59,7 +55,7 @@ async def test_fr_ui_02_plain_text_when_telegram_rejects_markup():
     first, second = method.await_args_list
     assert first.kwargs["parse_mode"] == "HTML" and "<blockquote expandable>детали" in first.kwargs["text"]
     assert second.kwargs == {
-        "text": "Демо.\nОтвет\nдетали\nИсточники:\n" + LINKS[0],
+        "text": "Демо.\nОтвет [1]\nдетали\n[1] " + LINKS[0],
         "parse_mode": None,
         "disable_web_page_preview": True,
     }

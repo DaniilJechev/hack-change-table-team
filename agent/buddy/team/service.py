@@ -62,6 +62,15 @@ def rating(case: str) -> list[Action]:
     ]
 
 
+def footnoted(lines: list[str], links: list[str]) -> str:
+    """FR-UI-03: each line carries the footnote of its own link, numbered as `_answer` keeps links."""
+    unique = list(dict.fromkeys(link for link in links if link))
+    return "\n".join(
+        f"{line} [{unique.index(link) + 1}]" if link else line
+        for line, link in zip(lines, links, strict=True)
+    )
+
+
 class TeamService:
     def __init__(self, access: AccessService):
         self.access = access
@@ -224,8 +233,9 @@ class TeamService:
             if any(item.casefold() in area or area in item.casefold() for item in person.get("areas", []))
         ]
         if found:
-            text = "\n".join(f"За «{params['area']}» отвечает {p['name']} ({p['role']})." for p in found)
-            return self._answer("team_q1", text, [p["contact_url"] for p in found])
+            links = [p["contact_url"] for p in found]
+            lines = [f"За «{params['area']}» отвечает {p['name']} ({p['role']})." for p in found]
+            return self._answer("team_q1", footnoted(lines, links), links)
         return await self._faq(context, runtime, question) or await self._not_found(
             context, runtime, card, question
         )
@@ -262,7 +272,8 @@ class TeamService:
                     via = people.get(rule.get("via_id"), {}).get("name", rule.get("via_id"))
                     line += f" Напрямую писать ограничено — через {via}."
                 lines.append(line)
-            return self._answer("team_q2", "\n".join(lines), [person["contact_url"] for person in owners])
+            links = [person["contact_url"] for person in owners]
+            return self._answer("team_q2", footnoted(lines, ["", *links]), links)
         first = next((person for person in card.get("people", []) if person.get("first_contact")), None)
         if first:
             text = (
@@ -293,7 +304,7 @@ class TeamService:
             links.append(first["contact_url"])
         if not lines:
             return await self._not_found(context, runtime, card, question)
-        return self._answer("team_q3", "\n".join(lines), links)
+        return self._answer("team_q3", footnoted(lines, links), links)
 
     async def _team_q4(self, params, question, card, context, runtime):
         name = (params.get("person") or question).casefold().replace("ё", "е")
@@ -389,7 +400,8 @@ class TeamService:
                 return ExecutorResponse(result=UNAVAILABLE)
         if not wanted:
             lines = [TITLES.get(INSTRUMENTS.get(service, service), service) for service in links]
-            return self._answer("team_q8", "Ссылки команды:\n" + "\n".join(lines), list(links.values()))
+            urls = list(links.values())
+            return self._answer("team_q8", "Ссылки команды:\n" + footnoted(lines, urls), urls)
         service = wanted[0]
         if service not in links:
             return await self._not_found(context, runtime, card, question)

@@ -100,8 +100,17 @@ class AccessService:
             for item in items
         ]
 
-    def _render(self, items: list[AccessItem], people: dict[str, str], now: datetime, title: str):
-        lines, actions, links = [title], [], []
+    def _render(
+        self, items: list[AccessItem], people: dict[str, str], now: datetime, title: str, source: str = ""
+    ):
+        # A source of the title (the Jira task) is footnote [1]; the title carries it.
+        lines, actions, links = [title], [], [source] if source else []
+        # FR-UI-01: when something needs attention, the tools that are fine go under the fold.
+        fold = 0 < sum(item.status == "granted" for item in items) < len(items)
+        # FR-UI-03: footnotes are numbered as read — visible lines first, then the folded ones.
+        for item in sorted(items, key=lambda item: fold and item.status == "granted"):
+            if item.url not in links:
+                links.append(item.url)
         for item in items:
             owner = people.get(item.owner_id, item.owner_id)
             head = f"{ICONS[item.status]} {TITLES[item.instrument]} — {item.name}"
@@ -130,21 +139,18 @@ class AccessService:
                 line = head + ": стажёрам не выдаётся. " + (item.reason or "Обсудите с наставником.")
             else:
                 line = head + ": не удалось проверить, попробуйте позже"
+            line += f" [{links.index(item.url) + 1}]"  # the footnote of this item's own link
             note = request_note(item.request_status, item.request_reason, item.request_error)
             if note and item.status != "forbidden":
                 line += "\n" + note
             lines.append(line)
-            links.append(item.url)
         lines.append("Бот ничего не меняет в реальных сервисах; заявки выполняются только в имитации.")
-        # FR-UI-01: when something needs attention, the tools that are fine go under the fold.
         granted = [line for line, item in zip(lines[1:], items, strict=False) if item.status == "granted"]
         folded = []
-        if granted and len(granted) < len(items):
+        if fold:
             lines = [line for line in lines if line not in granted]
             folded = [f"Доступ есть ({len(granted)}):\n" + "\n".join(granted)]
-        return ExecutorResponse(
-            result="\n".join(lines), actions=actions, links=list(dict.fromkeys(links)), folded=folded
-        )
+        return ExecutorResponse(result="\n".join(lines), actions=actions, links=links, folded=folded)
 
     async def _restore(self, context: Context, runtime: Runtime) -> None:
         key = self.key(context)
@@ -246,15 +252,13 @@ class AccessService:
         except DataError:
             return ExecutorResponse(result=UNAVAILABLE)
         people = await self._people(context, runtime)
-        response = self._render(
-            items, people, runtime.clock(), note + f"Для задачи {task.upper()} нужны доступы:"
-        )
+        source = issue.get("url") or ""
+        title = f"Для задачи {task.upper()}{' [1]' if source else ''} нужны доступы:"
+        response = self._render(items, people, runtime.clock(), note + title, source)
         if all(item.status in {"granted", "forbidden"} for item in items):
             response.result = response.result.replace(
                 "нужны доступы:", "доступов хватает ✅ (запрещённые объекты не требуются):", 1
             )
-        if issue.get("url"):
-            response.links.insert(0, issue["url"])
         return response
 
     async def mark(self, context: Context, runtime: Runtime, object_id: str) -> ExecutorResponse:
@@ -362,10 +366,16 @@ class AccessService:
         notes = await self._remember(context, runtime, items)
         if first or not notes:
             return None
-        links = [item.url for item, _ in notes if item.status == "granted"]
+        lines, links = [], []
+        for item, text in notes:
+            if item.status == "granted":  # FR-UI-03: a granted access links to its object on its own line
+                if item.url not in links:
+                    links.append(item.url)
+                text += f" [{links.index(item.url) + 1}]"
+            lines.append(text)
         actions = [
             Action(label=_short("Черновик напоминания: " + item.name), data="remind:" + item.object_id)
             for item, _ in notes
             if item.status == "stale"
         ]
-        return ExecutorResponse(result="\n".join(text for _, text in notes), actions=actions, links=links)
+        return ExecutorResponse(result="\n".join(lines), actions=actions, links=links)
