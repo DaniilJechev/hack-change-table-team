@@ -7,16 +7,20 @@
 
 Что проверено: тесты `agent` проходят (690 passed). Что не проверено: `go test ./...` (в моём окружении нет `go`) и все задачи CI.
 
-## 1. CI, задача MCP: скорее всего упадёт
+## 1. CI, задача MCP: исправлено 13.11 (коммит `aaa10b8`)
 
-- В `.github/workflows/ci.yml` (строка 97) сервисы поднимаются только из `docker-compose.yml` и `docker-compose.mcp.yml`, без `powerpoint-mcp`.
+Что было:
+- В `.github/workflows/ci.yml` (строка 97) сервисы поднимались только из `docker-compose.yml` и `docker-compose.mcp.yml`, без `powerpoint-mcp`.
 - Следующий шаг, `make mcp-list`, теперь использует `MCP_COMPOSE` с overlay `docker-compose.powerpoint.yml`.
 - `infra/mcp_probe.py` опрашивает все серверы из `mcp/tools.json`, а там добавлен `powerpoint`.
-- Сервис не запущен, поэтому `docker compose port powerpoint-mcp 8000` вернёт ошибку и шаг упадёт.
+- В CI шаг упал на `docker compose port powerpoint-mcp 8000`: `service "powerpoint-mcp" is not running`.
 
-Варианты исправления:
-- добавить `-f docker-compose.powerpoint.yml` в шаги `up`, `logs` и `down` этой задачи;
-- или опрашивать PowerPoint только по `--only powerpoint` (`make pptx-list`) и не включать его в общий `mcp-list`.
+Что сделано:
+- В шаги `up`, `logs` и `down` этой задачи добавлен `-f docker-compose.powerpoint.yml`, так что CI теперь поднимает и опрашивает сервер PowerPoint.
+- `seed/check_stage_one.py` проверяет только GitHub, Jira и Calendar, его это не задевает.
+- Заодно исправлен порядок импортов в `agent/tests/test_h4_equator.py`, на котором падал ruff в задаче `tests`.
+
+Проверить: что задачи `mcp` и `tests` в PR прошли. Если сервер PowerPoint не нужен в общей проверке, можно вместо этого опрашивать его только через `make pptx-list`.
 
 ## 2. Новый MCP-сервер PowerPoint (H4)
 
@@ -96,7 +100,7 @@ make pptx-up && make pptx-list
 make mcp-up && make mcp-list
 ```
 
-И прогнать CI на ветке, особенно задачу MCP (см. п. 1).
+И убедиться, что CI на ветке зелёный, в том числе задача MCP после исправления (см. п. 1).
 
 ## Связанные документы
 - `openspec/changes/agent-orchestrator/proposal.md`, раздел 6 «Зоны ответственности».
