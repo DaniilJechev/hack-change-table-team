@@ -140,4 +140,5 @@ def test_fr_ui_03_agent_observation_has_no_code_footnotes():
     sources: list[str] = []
     response = ExecutorResponse(result="Наставник — Анна. [1]", folded=["Олег [2]"], links=[U1, U2])
     observation = json.loads(Agent._observe(response, sources))
-    assert observation["result"] == "Наставник — Анна.\nОлег" and sources == [U1, U2]
+    assert observation["result"] == "Наставник — Анна. [S1]\nОлег [S2]" and sources == [U1, U2]
+    assert "[1]" not in observation["result"] and "[2]" not in observation["result"]
