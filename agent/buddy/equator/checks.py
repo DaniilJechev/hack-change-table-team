@@ -3,6 +3,7 @@
 import re
 from dataclasses import dataclass, field
 
+from buddy.brief.models import valid_url
 from buddy.equator.slides import Slide
 
 SECTIONS = (
@@ -85,6 +86,7 @@ class Section:
     synonyms: tuple[str, ...]
     slides: list[int] = field(default_factory=list)
     missing: list[str] = field(default_factory=list)
+    unchecked: bool = False
 
 
 def section_of(title: str) -> str | None:
@@ -98,32 +100,55 @@ def section_of(title: str) -> str | None:
     return best[0] if best else None
 
 
-def title_markers(slide: Slide) -> list[str]:
-    """Missing title markers of slide 1; three of four are enough."""
-    text = normalize(slide.text.replace("\n", " "))
-    missing = []
-    for name, pattern in TITLE_MARKERS.items():
-        found = (
-            len(MONTH.findall(text)) >= 2 or len(DATE.findall(text)) >= 2
-            if pattern is None
-            else bool(pattern.search(text))
+def title_markers(slide: Slide, profile: dict | None = None, card: dict | None = None) -> list[str]:
+    text = normalize(slide.text)
+    profile, card = profile or {}, card or {}
+    people = {p["user_id"]: p for p in card.get("people", [])}
+    name = profile.get("display_name", "")
+    mentor = people.get(profile.get("mentor_id"), {}).get("name", "")
+    team = card.get("name", "")
+
+    def contains(value, *, team=False):
+        words = re.findall(r"[а-яa-z]{3,}", normalize(value))
+        words = [w for w in words if w not in {"учебная", "команда", "демо"}]
+        patterns = []
+        for word in words:
+            if team and re.fullmatch(r"[а-я]+", word):
+                base = re.sub(r"(?:ов|ами|ах|ам|ы)$", "", word)
+                patterns.append(re.escape(base) + r"(?:ов|ами|ах|ам|ы)?")
+            else:
+                patterns.append(re.escape(word))
+        return bool(patterns) and all(re.search(r"(?<!\w)" + p + r"(?!\w)", text) for p in patterns)
+
+    period = len(DATE.findall(text)) >= 2 or (
+        len(MONTH.findall(text)) >= 2 and bool(re.search(r"\b20\d{2}\b", text))
+    )
+    return [
+        label
+        for label, found in (
+            ("имя стажёра", contains(name)),
+            ("команда", contains(team, team=True)),
+            ("наставник", contains(mentor)),
+            ("период", period),
         )
-        if not found:
-            missing.append(name)
-    return missing
+        if not found
+    ]
 
 
-def structure(slides: list[Slide]) -> list[Section]:
+def structure(slides: list[Slide], profile: dict | None = None, card: dict | None = None) -> list[Section]:
     sections = {sid: Section(sid, title, synonyms) for sid, title, synonyms in SECTIONS}
     if slides:
-        missing = title_markers(slides[0])
-        if len(missing) <= 1:
+        missing = title_markers(slides[0], profile, card)
+        if not missing:
             sections["title"].slides.append(1)
         else:
             sections["title"].missing = missing
+            sections["title"].unchecked = not profile or not card
     for slide in slides:
         found = section_of(slide.title)
-        if found:
+        # Repeated title placeholders are not section contents.
+        body = [line for line in slide.lines if normalize(line) != normalize(slide.title)]
+        if found and body:
             sections[found].slides.append(slide.number)
     return list(sections.values())
 
@@ -155,14 +180,28 @@ class Mention:
     key: str
     slide: int
     said: str | None
+    completed_section: bool = False
 
 
 def mentions(slides: list[Slide]) -> list[Mention]:
     found = []
     for slide in slides:
+        completed = section_of(slide.title) == "done"
         for line in slide.lines:
-            for key in dict.fromkeys(KEY.findall(line)):
-                found.append(Mention(key, slide.number, said_status(line)))
+            for segment in line.split(";"):
+                hits = list(KEY.finditer(segment))
+                for index, hit in enumerate(hits):
+                    end = hits[index + 1].start() if index + 1 < len(hits) else len(segment)
+                    fragment = segment[hit.end() : end]
+                    prefix = segment[: hit.start()] if index == 0 else ""
+                    assertion = prefix + " " + fragment
+                    status = said_status(assertion)
+                    groups = {group for pattern, group in WORDS if pattern.search(normalize(assertion))}
+                    if len(groups) > 1 or (status is None and re.search(r"статус\s*[:—-]", assertion, re.I)):
+                        status = "ambiguous"
+                    if status is None and completed:
+                        status = "done"
+                    found.append(Mention(hit.group(), slide.number, status, completed))
     return found
 
 
@@ -174,6 +213,7 @@ class Fact:
     said: str | None = None
     status: str = ""
     url: str = ""
+    completed_section: bool = False
 
 
 def judge(key: str, items: list[Mention], issue: dict | None, error: str = "") -> Fact:
@@ -185,10 +225,17 @@ def judge(key: str, items: list[Mention], issue: dict | None, error: str = "") -
     status = status.get("name", "") if isinstance(status, dict) else str(status or "")
     url = issue.get("url") if isinstance(issue.get("url"), str) else ""
     actual = jira_group(status)
+    completed = any(item.completed_section for item in items)
+    if issue.get("key") != key or not status or not valid_url(url):
+        return Fact(key, slides, "unchecked", completed_section=completed)
+    if any(i.said == "ambiguous" for i in items) or len({i.said for i in items if i.said}) > 1:
+        return Fact(key, slides, "unchecked", status=status, url=url, completed_section=completed)
     for item in items:
+        if item.said and actual is None:
+            return Fact(key, slides, "unchecked", status=status, url=url, completed_section=completed)
         if item.said and item.said != actual:
-            return Fact(key, slides, "mismatch", item.said, status, url)
-    return Fact(key, slides, "ok", next((i.said for i in items if i.said), None), status, url)
+            return Fact(key, slides, "mismatch", item.said, status, url, completed)
+    return Fact(key, slides, "ok", next((i.said for i in items if i.said), None), status, url, completed)
 
 
 def group_label(group: str | None) -> str:

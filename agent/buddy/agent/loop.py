@@ -338,6 +338,9 @@ class Agent:
 
     @staticmethod
     def _compose(answer: str, sources: list[str], done) -> tuple[RouteDecision, ExecutorResponse]:
+        # A single brief already owns its code-made numbering and source labels.
+        if len(done) == 1 and done[0][0].case == "brief_now":
+            return done[0]
         text, links = render(answer, sources)
         actions, entities, brief_id = {}, {}, None
         for _, response in done:

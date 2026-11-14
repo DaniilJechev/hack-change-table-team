@@ -1,7 +1,7 @@
 """FR-AG-10: every LLM call of a request is kept as data, so the graph state holds the full prompt.
 
 The graph wraps each node: calls made while the node runs land in `CALLS` and are copied into the
-state (`llm_calls`, `prompt`). The same calls are LangSmith `llm` runs when LANGSMITH_TRACING is on;
+state (`llm_calls`, readable as `turn`). The same calls are LangSmith `llm` runs when LANGSMITH_TRACING is on;
 without it `traceable` does nothing. Only messages, tools and the reply are kept — never the API key.
 """
 

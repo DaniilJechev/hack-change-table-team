@@ -7,6 +7,7 @@ family (brief, playbook, team, access, template) only labels the trace and the L
 
 import logging
 import re
+import time
 from collections.abc import Callable
 from urllib.parse import urlsplit
 
@@ -17,6 +18,7 @@ from langgraph.graph import END, START, StateGraph
 from buddy.agent import CHAT
 from buddy.executors.core import PERSONAL, Registry, template
 from buddy.graph.state import AgentState
+from buddy.graph.turn import describe
 from buddy.llm.trace import CALLS
 from buddy.memory import followup
 from buddy.memory.store import Memory, Turn, history, summary_for_llm
@@ -93,12 +95,9 @@ def traced(name: str | Callable[[AgentState], str], node):
             CALLS.reset(token)
         if not calls:
             return update
-        last = calls[-1]
-        return {
-            **update,
-            "llm_calls": [*state.get("llm_calls", []), *({"node": label, **call} for call in calls)],
-            "prompt": {"node": label, "kind": last["kind"], **last["request"]},
-        }
+        journal = [*state.get("llm_calls", []), *({"node": label, **call} for call in calls)]
+        # FR-AG-15: the readable turn so far; `guard` completes it with the checked answer.
+        return {**update, "llm_calls": journal, "turn": describe({**state, **update, "llm_calls": journal})}
 
     return run
 
@@ -113,9 +112,10 @@ def build_graph(
         return state.get("runtime") or (chat.runtime(state["context"]) if chat else None)
 
     async def load_memory(state: AgentState) -> dict:
+        started = time.monotonic()
         if memory is None or state.get("decision") is not None:
-            return {"turns": []}
-        return {"turns": await memory.load(state["context"])}
+            return {"turns": [], "started": started}
+        return {"turns": await memory.load(state["context"]), "started": started}
 
     async def resolve_followup(state: AgentState) -> dict:
         turns = state.get("turns", [])
@@ -165,7 +165,7 @@ def build_graph(
             len(state.get("llm_calls", [])),
             len(response.links),
         )
-        return {"response": response}
+        return {"response": response, "turn": describe({**state, "response": response})}
 
     async def save_memory(state: AgentState) -> dict:
         if memory is None:
@@ -200,7 +200,7 @@ def build_graph(
             "followup": False,
             "trace": [],
             "llm_calls": [],
-            "prompt": None,
+            "turn": None,
         }
 
     async def outbox(state: AgentState) -> dict:

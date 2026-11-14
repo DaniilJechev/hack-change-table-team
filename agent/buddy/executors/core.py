@@ -92,7 +92,12 @@ class ToolScope:
 
 def template(case: str, params: dict | None = None, text: str = "") -> ExecutorResponse:
     if case == "help":
-        text = "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов."
+        text = (
+            "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов. "
+            "Для проверки презентации к экватору пришлите PDF/PPTX: проверю текст и задачи Jira, "
+            "сравню версии. Файл не редактирую, картинки и оформление не оцениваю. "
+            "После обязательных проверок можно отправить файл наставнику с отчётом."
+        )
         if (params or {}).get("menu") == "team":
             text = "Выберите один из восьми типов вопросов о команде:"
     elif case == "clarify" and (params or {}).get("options") == MENU_CHOICES:

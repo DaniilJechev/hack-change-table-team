@@ -60,7 +60,7 @@ async def test_fr_h0_12_details_about_hidden_item_and_change():
     moved = await service.item(context, runtime, response.brief_id, item="5")
     assert "(15:00 → 12:00)" in moved.result
     hidden = await service.item(context, runtime, response.brief_id, item="8")  # under «Ещё 3»
-    assert hidden.result.splitlines()[1].startswith("8. ⚪ Календарь: «Учебное ретро» отменена")
+    assert hidden.result.splitlines()[1].startswith("8. Календарь: «Учебное ретро» отменена")
     assert hidden.result.endswith("Было: 17:00.")
     due = await service.item(context, runtime, response.brief_id, item="6")
     assert due.result.endswith("Стало: 12.11.") and due.links == [
@@ -74,7 +74,7 @@ async def test_fr_h0_12_pr_from_brief():
     response = await brief(service, runtime, context)
     answer = await service.item(context, runtime, response.brief_id, pr="45")
     assert answer.result.splitlines()[0] == "PR #45 в брифе:"
-    assert answer.result.splitlines()[1].startswith("1. 🔴 Git: PR #45")
+    assert answer.result.splitlines()[1].startswith("1. Git: PR #45")
     assert answer.links == [PR45] and answer.entities["pr"] == ["45"]
     other = await service.item(context, runtime, response.brief_id, pr="#47")
     assert other.links == ["https://example.invalid/github/demo-buddy/orders-onboarding/pull/47"]

@@ -12,7 +12,7 @@
     "content": [
       {
         "type": "text",
-        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"key\": \"ORD-100\", \"issue_type\": \"Epic\", \"summary\": \"Фильтры в новом API\", \"team_id\": \"demo-orders\", \"progress\": {\"done\": 6, \"total\": 11}, \"url\": \"https://example.invalid/jira/browse/ORD-100\"}"
+        "text": "{\"synthetic\": true, \"notice\": \"Синтетические данные учебного проекта; не регламент и не реальные данные Авито.\", \"key\": \"ORD-100\", \"issue_type\": \"Epic\", \"status\": {\"name\": \"In Progress\"}, \"summary\": \"Фильтры в новом API\", \"team_id\": \"demo-orders\", \"progress\": {\"done\": 6, \"total\": 11}, \"url\": \"https://example.invalid/jira/browse/ORD-100\"}"
       }
     ]
   }

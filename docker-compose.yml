@@ -70,6 +70,8 @@ services:
       GITHUB_CATALOG_OBJECT_ID: ${GITHUB_CATALOG_OBJECT_ID:-demo-orders-github}
       GITHUB_USER_LOGINS: ${GITHUB_USER_LOGINS:-}
       GRAFANA_DB_PASSWORD: ${GRAFANA_DB_PASSWORD:-buddy_metrics_local_demo}
+      AGENT_TRACE_RETENTION_DAYS: ${AGENT_TRACE_RETENTION_DAYS:-30}
+      H4_HISTORY_TTL_DAYS: ${H4_HISTORY_TTL_DAYS:-7}
     volumes:
       - ./seed:/seed:ro
     ports:
@@ -123,8 +125,13 @@ services:
       MEMORY_MAX_TURNS: ${MEMORY_MAX_TURNS:-6}
       MEMORY_TTL_SECONDS: ${MEMORY_TTL_SECONDS:-1800}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      H4_RECOMMENDED_MAX_SLIDES: ${H4_RECOMMENDED_MAX_SLIDES:-10}
+      H4_RECOMMENDED_MAX_WORDS_PER_SLIDE: ${H4_RECOMMENDED_MAX_WORDS_PER_SLIDE:-100}
+      H4_HISTORY_TTL_DAYS: ${H4_HISTORY_TTL_DAYS:-7}
+      H4_HISTORY_PATH: /h4/history.sqlite
     volumes:
       - hf_models:/models
+      - h4_history:/h4
     ports:
       - '127.0.0.1:${AGENT_PORT:-8081}:8081'
     depends_on:
@@ -143,3 +150,4 @@ volumes:
   redis_data:
   grafana_data:
   hf_models:
+  h4_history:

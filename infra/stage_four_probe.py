@@ -153,7 +153,7 @@ def grafana_probe(compose):
             },
         )["results"]["A"]
 
-    for view in ["metrics_briefs", "metrics_helpful", "metrics_access", "metrics_mcp"]:
+    for view in ["metrics_briefs", "metrics_helpful", "metrics_access", "metrics_mcp", "metrics_agent"]:
         assert "error" not in query("SELECT * FROM " + view)
     try:
         result = query("SELECT text FROM questions")

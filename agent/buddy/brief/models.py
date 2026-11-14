@@ -11,7 +11,6 @@ from buddy.schemas import Contract
 Source = Literal["github", "jira", "calendar"]
 PriorityClass = Literal["blocker", "people", "deadline", "info"]
 CLASS_ORDER = {"blocker": 0, "people": 1, "deadline": 2, "info": 3}
-CLASS_ICON = {"blocker": "🔴", "people": "🟠", "deadline": "🟡", "info": "⚪"}
 SOURCE_TITLE = {"github": "Git", "jira": "Jira", "calendar": "Календарь"}
 # Types that need the intern's own action; the main action of the day is the first of them.
 ACTION_TEXT = {
@@ -39,9 +38,12 @@ class BriefItem(Contract):
     after: str = ""
     created_at: datetime
 
-    def line(self) -> str:
+    def body(self) -> str:
         change = f" ({self.before} → {self.after})" if self.before and self.after else ""
-        return f"{CLASS_ICON[self.priority_class]} {SOURCE_TITLE[self.source]}: {self.title}{change}"
+        return f"{self.title}{change}"
+
+    def line(self, text: str = "") -> str:
+        return f"{SOURCE_TITLE[self.source]}: {text or self.body()}"
 
 
 def valid_url(url: str) -> bool:

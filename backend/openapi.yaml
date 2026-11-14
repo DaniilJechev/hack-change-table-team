@@ -7,6 +7,137 @@ servers:
 security:
 - buddyKey: []
 paths:
+  /api/v1/equator/checks:
+    get:
+      summary: Собственная неистёкшая live-история H4, новые попытки первыми
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      responses:
+        '200':
+          description: items — результаты, canonical current, created_at, expires_at и delivery_file/report
+    delete:
+      summary: Очистить собственную историю H4 и увеличить поколение
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      responses:
+        '200':
+          description: Новое generation
+  /api/v1/equator/invalidate:
+    post:
+      summary: Атомарно увеличить generation и отменить старые кнопки до чтения новой загрузки
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      responses:
+        '200':
+          description: generation — целое число, включаемое в новый результат
+  /api/v1/equator/checks/{id}:
+    put:
+      summary: Сохранить результат H4 без байтов файла; повтор может только дополнить file_id
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id, generation, passed]
+              properties:
+                id:
+                  type: string
+                generation:
+                  type: integer
+                  minimum: 0
+                passed:
+                  type: boolean
+                current:
+                  type: boolean
+                file_id:
+                  type: string
+              additionalProperties: true
+      responses:
+        '200':
+          description: Сохранённый результат; срок и идентичность задаёт backend
+        '400':
+          description: Неверный результат или demo=true
+        '403':
+          description: Попытка указать чужого пользователя или команду
+  /api/v1/equator/checks/{id}/claim:
+    post:
+      summary: Атомарно захватить стадию актуальной успешной проверки для доставки
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [part]
+              additionalProperties: false
+              properties:
+                part:
+                  type: string
+                  enum: [file, report]
+                retry_unknown:
+                  type: boolean
+                  default: false
+                  description: Только после явного подтверждения повтора с риском копии
+      responses:
+        '200':
+          description: Результат со стадией sending
+        '404':
+          description: Чужая, неизвестная или истёкшая проверка
+        '409':
+          description: Неактуальная, неуспешная или уже захваченная стадия
+  /api/v1/equator/checks/{id}/delivery:
+    patch:
+      summary: Завершить захваченную стадию отправки
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [part, state]
+              properties:
+                part:
+                  type: string
+                  enum: [file, report]
+                state:
+                  type: string
+                  enum: [sent, failed, unknown]
+      responses:
+        '200':
+          description: Результат с сохранённой стадией доставки
+        '409':
+          description: Стадия не захвачена или уже завершена другим исходом
+  /api/v1/equator/mentor-chat:
+    get:
+      summary: Служебное разрешение чата собственного наставника в своей команде
+      parameters:
+      - $ref: '#/components/parameters/BuddyUser'
+      responses:
+        '200':
+          description: chat_id — целое число либо null, без профилей чужих участников
   /health:
     get:
       security: []
@@ -1088,6 +1219,100 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/MCPCall'
+  /api/v1/agent-traces:
+    post:
+      summary: Идемпотентная запись трейса хода агента (FR-TR-01..03); только ключ сервиса, тело до 256 КиБ
+      security:
+      - buddyKey: []
+      responses:
+        '201':
+          description: Трейс записан или уже был записан с этим id
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  id:
+                    type: string
+                required:
+                - id
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentTraceInput'
+    get:
+      summary: Последние трейсы без turn, новые первыми (FR-TR-04); только ключ сервиса
+      security:
+      - buddyKey: []
+      parameters:
+      - name: user_id
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 128
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
+      responses:
+        '200':
+          description: Список трейсов
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                properties:
+                  traces:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AgentTraceSummary'
+                required:
+                - traces
+        '400':
+          $ref: '#/components/responses/Error'
+        '401':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
+  /api/v1/agent-traces/{id}:
+    get:
+      summary: Полный трейс с turn (FR-TR-04); только ключ сервиса
+      security:
+      - buddyKey: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Трейс
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentTrace'
+        '401':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '503':
+          $ref: '#/components/responses/Error'
   /r/{token}:
     get:
       summary: Перейти к сохранённому URL с идемпотентным учётом чтения
@@ -1310,6 +1535,13 @@ paths:
             schema:
               $ref: '#/components/schemas/MockProgressInput'
 components:
+  parameters:
+    BuddyUser:
+      name: X-Buddy-User
+      in: header
+      required: true
+      schema:
+        type: string
   securitySchemes:
     buddyKey:
       type: apiKey
@@ -1576,6 +1808,9 @@ components:
           - information
         related_task:
           type: string
+        render_text:
+          type: string
+          maxLength: 2000
         before:
           type: string
         after:
@@ -1932,6 +2167,93 @@ components:
                 minimum: 0
       required:
       - items
+    AgentTraceInput:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$
+        user_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        team_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        role:
+          type: string
+          maxLength: 64
+        demo:
+          type: boolean
+        path:
+          type: string
+          enum: [agent, router, followup, trigger]
+        fallback:
+          type: boolean
+        case:
+          type: string
+          maxLength: 128
+        duration_ms:
+          type: integer
+          minimum: 0
+        llm_calls:
+          type: integer
+          minimum: 0
+        tool_calls:
+          type: integer
+          minimum: 0
+        turn:
+          type: object
+      required: [id, user_id, team_id, path, turn]
+    AgentTraceSummary:
+      type: object
+      additionalProperties: false
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,127}$
+        user_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        team_id:
+          type: string
+          minLength: 1
+          maxLength: 128
+        role:
+          type: string
+          maxLength: 64
+        demo:
+          type: boolean
+        path:
+          type: string
+          enum: [agent, router, followup, trigger]
+        fallback:
+          type: boolean
+        case:
+          type: string
+          maxLength: 128
+        duration_ms:
+          type: integer
+          minimum: 0
+        llm_calls:
+          type: integer
+          minimum: 0
+        tool_calls:
+          type: integer
+          minimum: 0
+        created_at:
+          type: string
+          format: date-time
+    AgentTrace:
+      allOf:
+      - $ref: '#/components/schemas/AgentTraceSummary'
+      - type: object
+        properties:
+          turn:
+            type: object
     MCPCall:
       type: object
       additionalProperties: false
