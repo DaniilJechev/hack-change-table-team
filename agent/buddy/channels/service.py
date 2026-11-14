@@ -183,9 +183,15 @@ class ChatService:
                     profile, response, channel=request["channel"], ident=ident + ":answer"
                 )
                 request.update(status="completed", message_id=message_id)
-                # A desktop response is not sent to Telegram; background messages are.
                 if request["channel"] == "telegram" and self.bot:
                     await self.deliver_telegram(profile, response, message_id, full="attachment" in payload)
+                elif request["channel"] == "desktop" and not profile.get("demo") and self.bot:
+                    # A failed mirror must not invalidate an already saved desktop answer
+                    # or cause its agent operation to run again on a client retry.
+                    with suppress(Exception):
+                        await self.deliver_telegram(
+                            profile, response, message_id, full="attachment" in payload
+                        )
                 if response.brief_id:
                     await self.agent.brief_delivered(response, context, True)
             except asyncio.CancelledError:

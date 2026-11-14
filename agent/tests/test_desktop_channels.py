@@ -1,4 +1,4 @@
-"""DESKTOP-02..05 shared channel acceptance, no Telegram polling or real LLM."""
+"""DESKTOP-02..06 shared channel acceptance, no Telegram polling or real LLM."""
 
 import asyncio
 from pathlib import Path
@@ -13,6 +13,7 @@ from buddy.channels.repository import ChannelError, MemoryRepository
 from buddy.channels.service import ChatService, owner
 from buddy.config import Settings
 from buddy.router.service import Router
+from buddy.schemas import Action, ExecutorResponse
 from buddy.service import AgentService
 
 
@@ -85,6 +86,103 @@ async def test_desktop_03_shared_history_idempotency_and_errors():
         await finish(chat)
         failed = await chat.repository.call("get", user_id=owner(p), kind="request", id="failed")
         assert failed["status"] == "failed" and "secret" not in failed["error"]
+    finally:
+        await client.close()
+
+
+@pytest.mark.parametrize("channel", ["desktop", "telegram"])
+@pytest.mark.parametrize("kind", ["text", "action", "file"])
+async def test_desktop_06_live_reply_mirrored_once_with_sources_and_actions(channel, kind):
+    from tests.test_stage_two_bot import Harness
+
+    harness = Harness()
+    repo = MemoryRepository()
+    profile = {"user_id": "synthetic-intern", "team_id": "synthetic-team", "role": "intern"}
+    original = repo.call
+
+    async def call(operation, **data):
+        if operation == "profile":
+            return profile.copy()
+        if operation == "telegram":
+            assert data["user_id"] == profile["user_id"]
+            return {"chat_id": 42}
+        return await original(operation, **data)
+
+    repo.call = call
+    chat = ChatService(harness.service, repo, bot=harness.bot)
+    response = ExecutorResponse(
+        result="Синтетический ответ",
+        links=["https://example.invalid/source"],
+        actions=[Action(label="Уточнить", data="case:help")],
+    )
+    chat.text = AsyncMock(return_value=response)
+    chat.action = AsyncMock(return_value=response)
+    chat.file = AsyncMock(return_value=response)
+    payload = {"text": "Вопрос"}
+    if kind == "action":
+        await chat.record(profile, response, ident="previous")
+        payload = {"type": "action", "message_id": "previous", "data": "case:help"}
+    elif kind == "file":
+        payload = {"attachment": {"id": "synthetic-file", "name": "slides.pdf"}}
+    try:
+        await chat.submit(profile, "mirror", payload, channel)
+        await finish(chat)
+        await chat.submit(profile, "mirror", payload, channel)
+        await finish(chat)
+        assert len(harness.session.sent) == 1
+        sent = harness.session.sent[0]
+        assert sent.chat_id == 42 and response.result in sent.text and response.links[0] in sent.text
+        assert sent.reply_markup.inline_keyboard[0][0].callback_data == "case:help"
+        saved = await repo.call("get", user_id=owner(profile), kind="request", id="mirror")
+        assert saved["status"] == "completed"
+        mapping = await repo.call("get", user_id=owner(profile), kind="state", id="tgmessage:1")
+        assert mapping["message_id"] == saved["message_id"]
+        getattr(chat, {"text": "text", "action": "action", "file": "file"}[kind]).assert_awaited_once()
+    finally:
+        await chat.close()
+        await harness.bot.session.close()
+
+
+async def test_desktop_06_telegram_failure_preserves_desktop_reply():
+    client, chat, _ = await setup()
+    # Exercise live routing with synthetic dependencies only.
+    live = {"user_id": "synthetic-intern", "team_id": "synthetic-team", "role": "intern"}
+    original = chat.repository.call
+
+    async def call(operation, **data):
+        return live.copy() if operation == "profile" else await original(operation, **data)
+
+    chat.repository.call = call
+    chat.bot = AsyncMock()
+    chat.text = AsyncMock(return_value=ExecutorResponse(result="Ответ сохранён"))
+    chat.deliver_telegram = AsyncMock(side_effect=RuntimeError("Telegram unavailable"))
+    try:
+        await chat.submit(live, "mirror-failed", {"text": "Вопрос"})
+        await finish(chat)
+        await chat.submit(live, "mirror-failed", {"text": "Вопрос"})
+        await finish(chat)
+        saved = await chat.repository.call("get", user_id=owner(live), kind="request", id="mirror-failed")
+        assert saved["status"] == "completed"
+        answer = await chat.repository.call(
+            "get", user_id=owner(live), kind="message", id=saved["message_id"]
+        )
+        assert answer["response"]["result"] == "Ответ сохранён"
+        chat.text.assert_awaited_once()
+        chat.deliver_telegram.assert_awaited_once()
+    finally:
+        await client.close()
+
+
+async def test_desktop_06_synthetic_demo_does_not_mirror_to_telegram():
+    client, chat, profile = await setup()
+    chat.bot = AsyncMock()
+    chat.deliver_telegram = AsyncMock()
+    try:
+        await chat.submit(profile, "isolated-demo", {"text": "/ask"})
+        await finish(chat)
+        saved = await chat.repository.call("get", user_id=owner(profile), kind="request", id="isolated-demo")
+        assert saved["status"] == "completed"
+        chat.deliver_telegram.assert_not_awaited()
     finally:
         await client.close()
 

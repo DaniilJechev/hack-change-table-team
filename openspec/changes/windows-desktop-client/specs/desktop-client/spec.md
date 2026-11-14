@@ -66,3 +66,21 @@ MUST NOT be exposed to the renderer. The renderer MUST run isolated without Node
 #### Scenario: Server change
 - **WHEN** the user changes the API address
 - **THEN** the old connection stops and the new server requires fresh authentication
+
+### Requirement: DESKTOP-06 Telegram copies of desktop replies
+Live desktop replies, including action and file results, SHALL also be sent to the
+user's bound Telegram chat with sources and actions. A client request retry MUST
+NOT repeat delivery. Telegram delivery failure MUST NOT fail a saved desktop reply.
+Synthetic desktop demo sessions MUST NOT send replies to live Telegram chats.
+
+#### Scenario: Desktop reply mirrored to Telegram
+- **WHEN** a live desktop request completes and its client request identifier is retried
+- **THEN** its saved answer is delivered to the bound Telegram chat once, including sources and actions
+
+#### Scenario: Telegram unavailable
+- **WHEN** Telegram delivery fails after a desktop answer is saved
+- **THEN** the desktop request remains completed and its answer is available without repeating the agent operation
+
+#### Scenario: Isolated desktop demo
+- **WHEN** a synthetic desktop session receives an answer while a Telegram bot is configured
+- **THEN** the answer stays in the synthetic desktop session without Telegram delivery
