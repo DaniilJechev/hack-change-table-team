@@ -92,7 +92,8 @@ async def test_desktop_03_shared_history_idempotency_and_errors():
 
 @pytest.mark.parametrize("channel", ["desktop", "telegram"])
 @pytest.mark.parametrize("kind", ["text", "action", "file"])
-async def test_desktop_06_live_reply_mirrored_once_with_sources_and_actions(channel, kind):
+@pytest.mark.parametrize("mirror", [True, False])
+async def test_desktop_06_live_reply_mirrored_once_with_sources_and_actions(channel, kind, mirror):
     from tests.test_stage_two_bot import Harness
 
     harness = Harness()
@@ -110,6 +111,16 @@ async def test_desktop_06_live_reply_mirrored_once_with_sources_and_actions(chan
 
     repo.call = call
     chat = ChatService(harness.service, repo, bot=harness.bot)
+    await repo.call(
+        "put",
+        user_id=owner(profile),
+        kind="state",
+        id="channel_preferences",
+        payload={
+            "show_telegram_history": True,
+            "mirror_desktop_to_telegram": mirror,
+        },
+    )
     response = ExecutorResponse(
         result="Синтетический ответ",
         links=["https://example.invalid/source"],
@@ -129,15 +140,18 @@ async def test_desktop_06_live_reply_mirrored_once_with_sources_and_actions(chan
         await finish(chat)
         await chat.submit(profile, "mirror", payload, channel)
         await finish(chat)
+        saved = await repo.call("get", user_id=owner(profile), kind="request", id="mirror")
+        assert saved["status"] == "completed"
+        getattr(chat, kind).assert_awaited_once()
+        if channel == "desktop" and not mirror:
+            assert not harness.session.sent
+            return
         assert len(harness.session.sent) == 1
         sent = harness.session.sent[0]
         assert sent.chat_id == 42 and response.result in sent.text and response.links[0] in sent.text
         assert sent.reply_markup.inline_keyboard[0][0].callback_data == "case:help"
-        saved = await repo.call("get", user_id=owner(profile), kind="request", id="mirror")
-        assert saved["status"] == "completed"
         mapping = await repo.call("get", user_id=owner(profile), kind="state", id="tgmessage:1")
         assert mapping["message_id"] == saved["message_id"]
-        getattr(chat, {"text": "text", "action": "action", "file": "file"}[kind]).assert_awaited_once()
     finally:
         await chat.close()
         await harness.bot.session.close()
@@ -183,6 +197,58 @@ async def test_desktop_06_synthetic_demo_does_not_mirror_to_telegram():
         saved = await chat.repository.call("get", user_id=owner(profile), kind="request", id="isolated-demo")
         assert saved["status"] == "completed"
         chat.deliver_telegram.assert_not_awaited()
+    finally:
+        await client.close()
+
+
+async def test_desktop_07_preferences_persist_independently_and_are_private():
+    client, chat, profile = await setup()
+    defaults = {"show_telegram_history": True, "mirror_desktop_to_telegram": True}
+    try:
+        assert await (await client.get("/client/v1/preferences")).json() == defaults
+        for values in [
+            {"show_telegram_history": False, "mirror_desktop_to_telegram": True},
+            {"show_telegram_history": True, "mirror_desktop_to_telegram": False},
+        ]:
+            result = await client.put("/client/v1/preferences", json=values)
+            assert result.status == 200 and await result.json() == values
+            # Preferences belong to the stored profile, not the desktop installation.
+            restored = ChatService(chat.agent, chat.repository)
+            assert await restored.preferences(profile) == values
+        other = await client.post("/client/v1/auth/demo", json={})
+        token = (await other.json())["token"]
+        result = await client.get("/client/v1/preferences", headers={"Authorization": "Bearer " + token})
+        assert await result.json() == defaults
+        result = await client.get("/client/v1/preferences", headers={"Authorization": ""})
+        assert result.status == 401
+        for invalid in [
+            {},
+            {"show_telegram_history": False},
+            {**defaults, "user_id": "other"},
+            {**defaults, "show_telegram_history": "false"},
+            {**defaults, "mirror_desktop_to_telegram": 0},
+        ]:
+            assert (await client.put("/client/v1/preferences", json=invalid)).status == 400
+    finally:
+        await client.close()
+
+
+async def test_desktop_07_preferences_updates_reach_connected_clients_without_replaying_messages():
+    client, chat, profile = await setup()
+    try:
+        async with client.get("/client/v1/events?after=123") as result:
+            initial = await result.content.readuntil(b"\n\n")
+            assert b"event: preferences" in initial and b'"seq": 123' in initial
+            values = {"show_telegram_history": False, "mirror_desktop_to_telegram": False}
+            assert (await client.put("/client/v1/preferences", json=values)).status == 200
+            async with asyncio.timeout(5):
+                while True:
+                    event = await result.content.readuntil(b"\n\n")
+                    if b"event: preferences" in event:
+                        assert b'"show_telegram_history": false' in event
+                        assert b'"mirror_desktop_to_telegram": false' in event
+                        assert b'"seq": 123' in event
+                        break
     finally:
         await client.close()
 
@@ -259,6 +325,8 @@ async def test_desktop_04_event_resume_read_and_session():
         await finish(chat)
         async with client.get("/client/v1/events") as result:
             assert result.status == 200
+            data = await result.content.readuntil(b"\n\n")
+            assert b"event: preferences" in data
             data = await result.content.readuntil(b"\n\n")
             assert b"event: update" in data
         result = await client.put("/client/v1/chat/read", json={"message_id": "msg:answer"})

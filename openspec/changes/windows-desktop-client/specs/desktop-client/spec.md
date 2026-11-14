@@ -68,7 +68,7 @@ MUST NOT be exposed to the renderer. The renderer MUST run isolated without Node
 - **THEN** the old connection stops and the new server requires fresh authentication
 
 ### Requirement: DESKTOP-06 Telegram copies of desktop replies
-Live desktop replies, including action and file results, SHALL also be sent to the
+When enabled in the user's preferences, live desktop replies, including action and file results, SHALL also be sent to the
 user's bound Telegram chat with sources and actions. A client request retry MUST
 NOT repeat delivery. Telegram delivery failure MUST NOT fail a saved desktop reply.
 Synthetic desktop demo sessions MUST NOT send replies to live Telegram chats.
@@ -84,3 +84,21 @@ Synthetic desktop demo sessions MUST NOT send replies to live Telegram chats.
 #### Scenario: Isolated desktop demo
 - **WHEN** a synthetic desktop session receives an answer while a Telegram bot is configured
 - **THEN** the answer stays in the synthetic desktop session without Telegram delivery
+
+### Requirement: DESKTOP-07 Personal channel preferences
+Authenticated users SHALL independently control Telegram history visibility in
+desktop and copying desktop replies to Telegram. Both SHALL default to enabled
+and persist in backend per user. Hiding history MUST NOT delete it or alter shared
+agent memory or background messages. Hidden Telegram messages MUST NOT notify.
+
+#### Scenario: Saved independent preferences
+- **WHEN** a user disables either option and signs in again on a fresh installation
+- **THEN** both options retain their individual saved values without affecting another user
+
+#### Scenario: Hide and restore Telegram history
+- **WHEN** Telegram history is hidden and later enabled again
+- **THEN** its stored messages reappear, while desktop and background messages remain visible throughout
+
+#### Scenario: Disable outgoing copies
+- **WHEN** copying desktop replies is disabled and a desktop request completes
+- **THEN** the answer is saved in desktop without sending it to Telegram

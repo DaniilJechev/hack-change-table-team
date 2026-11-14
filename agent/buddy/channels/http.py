@@ -154,6 +154,19 @@ class ClientAPI:
         await self.profile(request)
         return web.json_response(await self.repo.call("logout", secret=request.headers["Authorization"][7:]))
 
+    async def preferences(self, request):
+        profile = await self.profile(request)
+        if request.method == "PUT":
+            data = await self.body(request, ["show_telegram_history", "mirror_desktop_to_telegram"])
+            if set(data) != {"show_telegram_history", "mirror_desktop_to_telegram"} or any(
+                type(value) is not bool for value in data.values()
+            ):
+                raise ChannelError("invalid")
+            await self.repo.call(
+                "put", user_id=owner(profile), kind="state", id="channel_preferences", payload=data
+            )
+        return web.json_response(await self.chat.preferences(profile), headers={"Cache-Control": "no-store"})
+
     async def messages(self, request):
         profile = await self.profile(request)
         value = await self.repo.call(
@@ -258,9 +271,21 @@ class ClientAPI:
             }
         )
         await stream.prepare(request)
+        preferences = None
         try:
             while True:
                 await self.profile(request)  # revocation and expiration also stop an open stream
+                current = await self.chat.preferences(profile)
+                if current != preferences:
+                    preferences = current
+                    # Existing clients skip this event at their current cursor.
+                    await stream.write(
+                        (
+                            "event: preferences\ndata: "
+                            + json.dumps({"kind": "preferences", "seq": after, "payload": current})
+                            + "\n\n"
+                        ).encode()
+                    )
                 result = await self.repo.call("events", user_id=owner(profile), after=after)
                 for event in result["items"]:
                     after = event["seq"]
@@ -288,6 +313,8 @@ class ClientAPI:
             ("POST", "/auth/demo", self.demo_session),
             ("GET", "/me", self.me),
             ("DELETE", "/session", self.logout),
+            ("GET", "/preferences", self.preferences),
+            ("PUT", "/preferences", self.preferences),
             ("GET", "/chat/messages", self.messages),
             ("POST", "/chat/requests", self.submit),
             ("GET", "/chat/requests", self.requests),

@@ -17,7 +17,13 @@ import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 if (process.argv.includes("--smoke"))
   app.setPath("userData", mkdtempSync(join(tmpdir(), "avitocode-smoke-")));
-import { panelBounds, serverURL, shouldNotify, safeExternal } from "./policy";
+import {
+  panelBounds,
+  serverURL,
+  shouldNotify,
+  safeExternal,
+  visibleInDesktop,
+} from "./policy";
 
 const APP_ID = "team.aibuddy.avitocode";
 type Settings = {
@@ -36,6 +42,10 @@ let window: BrowserWindow,
   connection = "Не подключено",
   unread = 0;
 let chatVisible = false;
+let preferences = {
+  show_telegram_history: true,
+  mirror_desktop_to_telegram: true,
+};
 let controller: AbortController | undefined,
   quitting = false,
   generation = 0,
@@ -65,11 +75,21 @@ function state() {
       notifications: settings.notifications,
     },
     profile,
+    preferences,
     connection,
     unread,
     target,
-    messages: [...messages.values()].sort((a, b) => a.seq - b.seq),
-    requests: [...requests.values()],
+    historyBefore: messages.size
+      ? Math.min(...[...messages.values()].map((m) => m.seq))
+      : 0,
+    messages: [...messages.values()]
+      .filter((m) =>
+        visibleInDesktop(m.payload, preferences.show_telegram_history),
+      )
+      .sort((a, b) => a.seq - b.seq),
+    requests: [...requests.values()].filter((r) =>
+      visibleInDesktop(r, preferences.show_telegram_history),
+    ),
   };
 }
 function publish() {
@@ -173,6 +193,7 @@ async function connect() {
     return;
   }
   profile = await json("/me");
+  preferences = await json("/preferences");
   const history = await json("/chat/messages");
   if (own !== generation) return;
   history.items.forEach((m: any) => messages.set(m.id, m));
@@ -230,6 +251,24 @@ async function events(own: number) {
             .find((line) => line.startsWith("data: "));
           if (!data) continue;
           const event = JSON.parse(data.slice(6));
+          if (own !== generation) return;
+          if (event.kind === "preferences") {
+            preferences = event.payload;
+            for (const [id, notice] of notices) {
+              if (
+                !visibleInDesktop(
+                  messages.get(id)?.payload || {},
+                  preferences.show_telegram_history,
+                )
+              ) {
+                notice.close();
+                notices.delete(id);
+              }
+            }
+            unread = 0;
+            publish();
+            continue;
+          }
           if (event.seq <= cursor) continue;
           cursor = event.seq;
           if (own !== generation) return;
@@ -245,6 +284,7 @@ async function events(own: number) {
             });
             if (
               !prior &&
+              visibleInDesktop(record, preferences.show_telegram_history) &&
               record.role !== "user" &&
               !(window.isVisible() && window.isFocused() && chatVisible)
             ) {
@@ -303,6 +343,9 @@ function setupIPC() {
         return;
       case "settings": {
         const server = serverURL(String(data.server), !app.isPackaged);
+        if (profile && server === settings.server && data.preferences) {
+          preferences = await json("/preferences", "PUT", data.preferences);
+        }
         if (server !== settings.server) {
           generation++;
           controller?.abort();

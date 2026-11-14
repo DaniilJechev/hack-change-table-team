@@ -1,4 +1,10 @@
 export type Area = { x: number; y: number; width: number; height: number };
+export function visibleInDesktop(
+  record: { channel?: string },
+  showTelegramHistory: boolean,
+): boolean {
+  return showTelegramHistory || record.channel !== "telegram";
+}
 export function panelBounds(
   area: Area,
   saved?: { width?: number; height?: number },

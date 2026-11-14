@@ -4,6 +4,7 @@ import {
   serverURL,
   shouldNotify,
   safeExternal,
+  visibleInDesktop,
 } from "../src/main/policy";
 describe("DESKTOP-01 window", () => {
   it("opens in right third in logical pixels including negative monitors", () => {
@@ -60,4 +61,13 @@ it("DESKTOP-04 suppresses focused, replay and own notifications", () => {
   expect(shouldNotify(true, false, "assistant")).toBe(false);
   expect(shouldNotify(false, true, "assistant")).toBe(false);
   expect(shouldNotify(false, false, "user")).toBe(false);
+});
+it("DESKTOP-07 hides only Telegram history and restores it without deleting messages", () => {
+  const records = ["telegram", "desktop", "background"].map((channel) => ({
+    channel,
+  }));
+  expect(records.filter((r) => visibleInDesktop(r, false))).toEqual(
+    records.slice(1),
+  );
+  expect(records.filter((r) => visibleInDesktop(r, true))).toEqual(records);
 });

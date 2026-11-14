@@ -91,6 +91,18 @@ class ChatService:
                 raise
             return {}
 
+    async def preferences(self, profile):
+        defaults = {"show_telegram_history": True, "mirror_desktop_to_telegram": True}
+        try:
+            saved = await self.repository.call(
+                "get", user_id=owner(profile), kind="state", id="channel_preferences"
+            )
+        except ChannelError as error:
+            if error.kind != "not_found":
+                raise
+            return defaults
+        return {key: saved.get(key, value) for key, value in defaults.items()}
+
     async def set_state(self, profile, value):
         await self.repository.call(
             "put", user_id=owner(profile), kind="state", id="interaction", payload=value
@@ -189,9 +201,10 @@ class ChatService:
                     # A failed mirror must not invalidate an already saved desktop answer
                     # or cause its agent operation to run again on a client retry.
                     with suppress(Exception):
-                        await self.deliver_telegram(
-                            profile, response, message_id, full="attachment" in payload
-                        )
+                        if (await self.preferences(profile))["mirror_desktop_to_telegram"]:
+                            await self.deliver_telegram(
+                                profile, response, message_id, full="attachment" in payload
+                            )
                 if response.brief_id:
                     await self.agent.brief_delivered(response, context, True)
             except asyncio.CancelledError:

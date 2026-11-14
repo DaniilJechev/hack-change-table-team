@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: AvitoCode Client API
-  version: 0.1.0
+  version: 0.1.1
   description: Общий ChatService Telegram и desktop; публичный транспорт на порту агента.
 servers:
   - url: https://your-endpoint.ngrok.app/client/v1
@@ -62,6 +62,29 @@ paths:
     delete:
       responses:
         '200': {description: Сессия отозвана}
+  /preferences:
+    get:
+      responses:
+        '200':
+          description: Личные настройки каналов; оба значения включены по умолчанию
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChannelPreferences'}
+        '401': {description: Сессия недействительна}
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {$ref: '#/components/schemas/ChannelPreferences'}
+      responses:
+        '200':
+          description: Сохранено для текущего пользователя в backend; история и память не удаляются
+          content:
+            application/json:
+              schema: {$ref: '#/components/schemas/ChannelPreferences'}
+        '400': {description: Нужны оба булевых значения без дополнительных полей}
+        '401': {description: Сессия недействительна}
   /chat/messages:
     get:
       parameters:
@@ -154,7 +177,7 @@ paths:
         - {in: header, name: Last-Event-ID, schema: {type: integer, minimum: 0}}
       responses:
         '200':
-          description: 'SSE event:update; id=seq; JSON {seq,kind,payload:{id,record,seq}}. kind=message|request; heartbeat каждые 2 секунды. Query after имеет приоритет.'
+          description: 'SSE event:update; id=seq; JSON {seq,kind,payload:{id,record,seq}}. kind=message|request; heartbeat каждые 2 секунды. event:preferences передаёт {kind:preferences,seq:текущий курсор,payload:ChannelPreferences} при подключении и изменении, не двигая курсор. Query after имеет приоритет. История возвращается целиком; клиент фильтрует Telegram по настройке и не показывает уведомления скрытых сообщений.'
           content:
             text/event-stream:
               schema: {type: string}
@@ -168,6 +191,13 @@ components:
         application/json:
           schema: {type: object, additionalProperties: false}
   schemas:
+    ChannelPreferences:
+      type: object
+      additionalProperties: false
+      required: [show_telegram_history, mirror_desktop_to_telegram]
+      properties:
+        show_telegram_history: {type: boolean, default: true}
+        mirror_desktop_to_telegram: {type: boolean, default: true}
     Record:
       type: object
       required: [id, seq, payload, created_at]

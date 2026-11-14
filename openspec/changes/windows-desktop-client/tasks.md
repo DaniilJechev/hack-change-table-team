@@ -3,6 +3,7 @@
 - [x] 1.2 Shared service, HTTP API, events and Telegram adapter
 - [x] 1.3 H0–H4 actions, files and offline demo
 - [x] 1.4 Mirror live desktop replies to Telegram with idempotency and demo isolation
+- [x] 1.5 Persist personal channel preferences and expose independent desktop checkboxes
 ## 2. Desktop
 - [x] 2.1 Tray, window, settings and authentication
 - [x] 2.2 Chat, notifications and safe IPC

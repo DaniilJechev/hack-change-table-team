@@ -40,6 +40,8 @@ function App() {
     [server, setServer] = useState(""),
     [autostart, setAutostart] = useState(false),
     [notifications, setNotifications] = useState(true);
+  const [showTelegramHistory, setShowTelegramHistory] = useState(true),
+    [mirrorDesktopToTelegram, setMirrorDesktopToTelegram] = useState(true);
   const [draft, setDraft] = useState(
       () => sessionStorage.getItem("draft") || "",
     ),
@@ -99,6 +101,16 @@ function App() {
   useEffect(() => {
     sessionStorage.setItem("draft", draft);
   }, [draft]);
+  useEffect(() => {
+    setShowTelegramHistory(view.preferences?.show_telegram_history ?? true);
+    setMirrorDesktopToTelegram(
+      view.preferences?.mirror_desktop_to_telegram ?? true,
+    );
+  }, [
+    view.profile?.user_id,
+    view.preferences?.show_telegram_history,
+    view.preferences?.mirror_desktop_to_telegram,
+  ]);
   useEffect(() => {
     if (!device) return;
     const timer = setInterval(() => {
@@ -252,6 +264,30 @@ function App() {
             />
             Запускать с Windows в трей
           </label>
+          {view.profile && (
+            <>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={showTelegramHistory}
+                  onChange={(e) => setShowTelegramHistory(e.target.checked)}
+                />
+                Показывать переписку из Telegram
+              </label>
+              <label className="toggle">
+                <input
+                  type="checkbox"
+                  checked={mirrorDesktopToTelegram}
+                  onChange={(e) => setMirrorDesktopToTelegram(e.target.checked)}
+                />
+                Отправлять ответы desktop в Telegram
+              </label>
+              <p className="hint">
+                Сохраняются в вашем профиле на сервере. Брифы и фоновые
+                уведомления приходят независимо от этих настроек.
+              </p>
+            </>
+          )}
           <button
             className="primary"
             onClick={() =>
@@ -260,6 +296,12 @@ function App() {
                   server,
                   notifications,
                   autostart,
+                  preferences: view.profile
+                    ? {
+                        show_telegram_history: showTelegramHistory,
+                        mirror_desktop_to_telegram: mirrorDesktopToTelegram,
+                      }
+                    : undefined,
                 });
                 setSettings(false);
                 setDevice(null);
@@ -394,7 +436,14 @@ function App() {
             <button
               className="history"
               onClick={() =>
-                run(() => client.call("history", view.messages[0]?.seq || 0))
+                run(() =>
+                  client.call(
+                    "history",
+                    Number.isFinite(view.historyBefore)
+                      ? view.historyBefore
+                      : 0,
+                  ),
+                )
               }
             >
               <ChevronDown size={13} />
