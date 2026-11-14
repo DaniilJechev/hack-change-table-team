@@ -1,0 +1,82 @@
+"""AI-01..03: preserve executable facts through the agent's final rewrite."""
+
+import json
+
+import pytest
+from test_agent_orchestrator import call, setup
+
+from buddy.agent import Agent, Rejected, verify
+from buddy.rag.qa import NOTE
+from buddy.schemas import ExecutorResponse, RouteDecision
+
+
+def test_ai_01_local_citations_keep_global_fact_mapping():
+    sources = ["https://example.invalid/anna"]
+    response = ExecutorResponse(
+        result="Miro нет [1]. Production запрещён [2].",
+        links=["https://example.invalid/miro", "https://example.invalid/production"],
+        folded=["Другой факт [1]."],
+    )
+    observation = json.loads(Agent._observe(response, sources))
+    assert observation["result"] == "Miro нет [S2]. Production запрещён [S3].\nДругой факт [S2]."
+    assert observation["sources"][1]["url"].endswith("production")
+
+
+def test_ai_01_duplicate_urls_preserve_local_number_positions():
+    response = ExecutorResponse(result="Факт [3].", links=["a", "a", "b"])
+    assert json.loads(Agent._observe(response, []))["result"] == "Факт [S2]."
+
+
+@pytest.mark.parametrize("label", ["[S1–S3]", "[S1-S3]", "[S1—3]", "[S1, S2, S3]"])
+def test_ai_01_source_groups_normalize(label):
+    assert verify("Ценности " + label, ["a", "b", "c"], "") == "Ценности [S1][S2][S3]"
+
+
+@pytest.mark.parametrize("label", ["[S1–S99]", "[S3–S1]", "[S0–S2]", "[S1/S2]", "[S1"])
+def test_ai_01_invalid_labels_are_rejected(label):
+    with pytest.raises(Rejected, match="label"):
+        verify("Ценности " + label, ["a", "b", "c"], "")
+
+
+async def test_ai_02_access_states_override_false_model_rewrite():
+    ask, *_ = setup(
+        {"tool_calls": [call("team_q3", id="one"), call("access_status", id="two")]},
+        {"content": "Наставник — Олег. Все доступы выданы [S1]."},
+    )
+    response = (await ask("Кто наставник и какие доступы?"))["response"]
+    assert "Ваш наставник — Анна" in response.result
+    assert "Все доступы выданы" not in response.result
+    for line in response.result.splitlines():
+        if "⬜ Miro" in line:
+            number = int(line.rsplit("[", 1)[1].split("]")[0])
+            assert "/miro/" in response.links[number - 1]
+        if "⛔ GitHub" in line:
+            number = int(line.rsplit("[", 1)[1].split("]")[0])
+            assert "production" in response.links[number - 1]
+
+
+def test_ai_02_playbook_note_cannot_be_dropped_by_rewrite():
+    decision = RouteDecision(case="playbook_qa")
+    original = ExecutorResponse(result="Оригинал\n" + NOTE, links=["https://example.invalid/book"])
+    _, response = Agent._compose("Проверенный факт [S1].", original.links, [(decision, original)])
+    assert response.result.endswith(NOTE)
+    assert response.links == original.links
+
+
+async def test_ai_03_pr_without_source_gets_one_required_refresh():
+    ask, llm, *_ = setup(
+        {"content": "PR #47 ждёт твоего ревью."},
+        {"tool_calls": [call("brief_now", {"source": "github"})]},
+        {"content": "PR #47 ждёт твоего ревью [S2]."},
+    )
+    state = await ask("Кто ревьюит PR #47?")
+    assert state["trace"] == ["agent"]
+    assert llm.choices[1] == ("required", ["brief_now"])
+    assert any(url.endswith("/47") for url in state["response"].links)
+
+
+async def test_ai_03_general_review_advice_keeps_tools_unused():
+    advice = "Проверь изменения и тесты, подготовь описание и вопросы для ревью."
+    ask, llm, *_ = setup({"content": advice})
+    state = await ask("Как подготовиться к первому код-ревью?")
+    assert state["response"].result == advice and len(llm.chats) == 1
