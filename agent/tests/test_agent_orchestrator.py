@@ -355,7 +355,8 @@ async def test_fr_ag_07_compare_reports_metrics_per_model_and_case():
         summary, results = report["models"][model]["summary"], report["models"][model]["results"]
         assert [r["id"] for r in results] == ["agent-005", "agent-033"]
         assert summary["tool_ok"] == 2 and summary["answered"] == 1 and summary["cost"] == 0.002
-        assert summary["expect_ok"] == 2 and summary["style_ok"] == 2
+        assert summary["expect_ok"] == 0 and summary["expect_evaluated"] == 0
+        assert summary["style_ok"] == 2
         assert results[0]["answer"] == "Твой наставник — Анна [1]." and results[1]["steps"] == 0
 
 
