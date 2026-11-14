@@ -141,3 +141,18 @@ async def test_ai_03_contact_followup_requires_current_contact_tool():
     response = (await ask("А можно ей писать в личку?"))["response"]
     assert llm.choices[2] == ("required", ["team_q4"])
     assert response.links[0].endswith("demo-anna")
+
+
+def test_ai_03_contact_names_and_person_sources_survive_compression():
+    done = [
+        (RouteDecision(case="team_q4", params={"person": name}), ExecutorResponse(
+            result=f"{name}: прямое обращение разрешено, ограничений нет.",
+            links=[url, "https://example.invalid/card"],
+        ))
+        for name, url in [("Анна", "https://example.invalid/anna"),
+                          ("Олег", "https://example.invalid/oleg")]
+    ]
+    _, response = Agent._compose("Обоим можно.", [], done)
+    assert "Анна: прямое обращение разрешено, ограничений нет. [1]" in response.result
+    assert "Олег: прямое обращение разрешено, ограничений нет. [2]" in response.result
+    assert response.links == ["https://example.invalid/anna", "https://example.invalid/oleg"]

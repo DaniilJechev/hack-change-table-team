@@ -123,6 +123,7 @@ URL = re.compile(r"https?://|www\.", re.IGNORECASE)
 # required tool of that kind.
 TEAM_TOOLS = frozenset(name for name in TOOLS if name.startswith("team_q"))
 ACCESS_TOOLS = frozenset({"access_status", "access_task_analysis", "interns_status"})
+VERBATIM_TOOLS = ACCESS_TOOLS | {"team_q4"}
 RETRY = (
     "В этом ходу ты не вызвал инструменты, а ответ называет людей команды или статус доступов. Вызови "
     "инструмент и ответь по его результату с метками источников; прошлые ответы из истории не подходят."
@@ -314,7 +315,7 @@ class Agent:
                     active, choice = tools, {}
                     calls = reply["tool_calls"]
                     if not calls:
-                        if any(decision.case in ACCESS_TOOLS for decision, _ in done):
+                        if any(decision.case in VERBATIM_TOOLS for decision, _ in done):
                             return self._compose("", sources, done)
                         # FR-AG-09: with no tool this turn, a task key or PR (even from the question
                         # or history) is a fact without a source.
@@ -419,10 +420,16 @@ class Agent:
         # A single brief already owns its code-made numbering and source labels.
         if len(done) == 1 and done[0][0].case == "brief_now":
             return done[0]
-        if any(decision.case in ACCESS_TOOLS for decision, _ in done):
-            # Access states and citations are checked by executors; never let a rewrite change them.
+        if any(decision.case in VERBATIM_TOOLS for decision, _ in done):
+            # Preserve checked states and named contact permissions instead of rewriting them.
             sources = []
-            blocks = [json.loads(Agent._observe(response, sources))["result"] for _, response in done]
+            blocks = []
+            for decision, response in done:
+                block = json.loads(Agent._observe(response, sources))["result"]
+                if decision.case == "team_q4" and response.links and not MARK.search(block):
+                    # team_q4's first source is the requested person's card.
+                    block += f" [S{sources.index(response.links[0]) + 1}]"
+                blocks.append(block)
             answer = "\n\n".join(blocks)
         text, links = render(answer, sources)
         if any(decision.case == "playbook_qa" for decision, _ in done):
