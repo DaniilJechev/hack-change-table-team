@@ -7,6 +7,36 @@ servers:
 security:
 - buddyKey: []
 paths:
+  /internal/client/{operation}:
+    post:
+      summary: Служебное хранилище общего канала; только агент с buddyKey, не публичный клиент
+      parameters:
+      - in: path
+        name: operation
+        required: true
+        schema:
+          type: string
+          enum: [device, approve, token, session, logout, audience, interrupt, profile, telegram, list, get, create, put, events]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                user_id: {type: string, description: Доверенный actor от агента; команда определяется БД}
+                id: {type: string}
+                secret: {type: string, writeOnly: true}
+                code: {type: string}
+                kind: {type: string, enum: [message, request, file, read, state]}
+                payload: {type: object}
+                after: {type: integer, minimum: 0}
+                before: {type: integer, minimum: 0}
+      responses:
+        '200': {description: Результат операции; данные ограничены текущей командой пользователя}
+        '401': {description: Требуется служебный ключ}
+        '404': {description: Запись недоступна или не найдена}
   /api/v1/equator/checks:
     get:
       summary: Собственная неистёкшая live-история H4, новые попытки первыми

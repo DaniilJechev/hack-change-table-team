@@ -105,3 +105,29 @@ jobs:
         if: failure()
       - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml -f docker-compose.powerpoint.yml down
         if: always()
+
+  desktop:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run smoke
+      - run: npm run pack:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AvitoCode-windows-x64
+          path: desktop/release/*.exe

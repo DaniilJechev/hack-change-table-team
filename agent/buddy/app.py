@@ -27,7 +27,7 @@ def health_app(mode: str, polling: asyncio.Task | None = None) -> web.Applicatio
             status=200 if ok else 503,
         )
 
-    app = web.Application()
+    app = web.Application(client_max_size=11 << 20)
     app.router.add_get("/health", health)
     return app
 
@@ -50,8 +50,15 @@ async def monitor_loop(service: AgentService, bot, seconds: int) -> None:
     while True:
         await asyncio.sleep(seconds)
         for chat, response in await service.monitor_all():
+            if service.__dict__.get("channels") is not None:
+                context = next((c for u, c in service.known.items() if service.chats.get(u) == chat), None)
+                if context is not None:
+                    with suppress(Exception):
+                        await service.channels.background({"user_id": context.user_id}, response)
+                continue
             with suppress(Exception):
-                await rich(partial(bot.send_message, chat), response)
+                if bot is not None:
+                    await rich(partial(bot.send_message, chat), response)
 
 
 async def brief_loop(service: AgentService, bot, seconds: int = 60) -> None:
@@ -60,8 +67,21 @@ async def brief_loop(service: AgentService, bot, seconds: int = 60) -> None:
     while True:
         await asyncio.sleep(seconds)
         for chat, response, context in await service.briefs_due():
+            if service.__dict__.get("channels") is not None:
+                ok = False
+                try:
+                    await service.channels.background({"user_id": context.user_id}, response)
+                    ok = True
+                except Exception:
+                    ok = False
+                finally:
+                    with suppress(Exception):
+                        await service.brief_delivered(response, context, ok)
+                continue
             ok = True
             try:
+                if bot is None:
+                    raise RuntimeError("Telegram delivery unavailable")
                 sent = await rich(
                     partial(bot.send_message, chat),
                     response,
@@ -97,6 +117,16 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
     service = AgentService(
         Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm, memory=memory, traces=traces
     )
+    service.channels = None
+    channel_repo = None
+    if settings.client_api_enabled:
+        from buddy.channels.repository import BackendRepository, MemoryRepository
+        from buddy.channels.service import ChatService
+
+        channel_repo = (
+            MemoryRepository() if settings.demo_mode else BackendRepository(settings.backend_url, key)
+        )
+        service.channels = ChatService(service, channel_repo, identity=identity)
     bot = None
     polling = None
     monitor = None
@@ -105,18 +135,23 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
     token = settings.telegram_bot_token.get_secret_value()
     if token:
         bot = Bot(token=token)
-        if not settings.demo_mode and identity is not None:  # pragma: no cover - live accounts only
-            data = BackendData(settings.backend_url, settings.buddy_service_key.get_secret_value())
-            service.live = Runtime(
-                data=data, gateway=live_hub(data.record_mcp_call), telegram=BotTelegram(bot)
-            )
-            monitor = asyncio.create_task(monitor_loop(service, bot, settings.access_monitor_seconds))
-            briefs = asyncio.create_task(brief_loop(service, bot))
-        # Poll only registered command updates; do not delete webhooks or pending updates.
+        if service.channels is not None:
+            service.channels.bot = bot
+    if not settings.demo_mode and identity is not None:  # pragma: no cover - live accounts only
+        data = BackendData(settings.backend_url, settings.buddy_service_key.get_secret_value())
+        service.live = Runtime(data=data, gateway=live_hub(data.record_mcp_call), telegram=BotTelegram(bot))
+        monitor = asyncio.create_task(monitor_loop(service, bot, settings.access_monitor_seconds))
+        briefs = asyncio.create_task(brief_loop(service, bot))
+    if bot is not None:
         polling = asyncio.create_task(
             create_dispatcher(identity, service).start_polling(bot, handle_signals=False)
         )
-    runner = web.AppRunner(health_app("telegram" if bot else "offline", polling))
+    application = health_app("telegram" if bot else "offline", polling)
+    if service.channels is not None:
+        from buddy.channels.http import ClientAPI
+
+        ClientAPI(service.channels, demo=settings.demo_mode).mount(application)
+    runner = web.AppRunner(application)
     try:
         await runner.setup()
         await web.TCPSite(runner, settings.health_host, settings.health_port).start()
@@ -135,6 +170,10 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
             if task is not None:
                 task.cancel()
                 await asyncio.gather(task, return_exceptions=True)
+        if service.channels is not None:
+            await service.channels.close()
+        if channel_repo is not None and hasattr(channel_repo, "close"):
+            await channel_repo.close()
         if data is not None:  # pragma: no cover - live accounts only
             await data.close()
         if bot is not None:

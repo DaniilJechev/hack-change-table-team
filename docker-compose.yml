@@ -96,6 +96,7 @@ services:
         AGENT_EXTRAS: ${AGENT_EXTRAS:-}
     environment:
       DEMO_MODE: ${DEMO_MODE:-true}
+      CLIENT_API_ENABLED: ${CLIENT_API_ENABLED:-false}
       BACKEND_URL: http://backend:8080
       BUDDY_SERVICE_KEY: ${BUDDY_SERVICE_KEY:-buddy_local_demo}
       GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN:-}
