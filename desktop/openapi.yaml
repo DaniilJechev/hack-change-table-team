@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: AvitoCode Client API
+  version: 0.1.0
+  description: Общий ChatService Telegram и desktop; публичный транспорт на порту агента.
+servers:
+  - url: https://your-endpoint.ngrok.app/client/v1
+security:
+  - session: []
+paths:
+  /r/{token}:
+    servers:
+      - url: https://your-endpoint.ngrok.app
+    get:
+      security: []
+      parameters:
+        - {in: path, name: token, required: true, schema: {type: string}}
+      responses:
+        '302': {description: Переход на сохранённый URL брифа с учётом клика; назначение не принимается от клиента}
+        '404': {description: Токен отсутствует или демо не использует этот редирект}
+  /info:
+    get:
+      security: []
+      responses:
+        '200': {description: 'service=avitocode, api_version=1, demo, capabilities'}
+  /auth/device:
+    post:
+      security: []
+      requestBody: {$ref: '#/components/requestBodies/Empty'}
+      responses:
+        '200': {description: 'device_secret, user_code, expires_in=300, interval=5; секрет не передаётся Telegram'}
+        '429': {description: Ограничение частоты}
+  /auth/token:
+    post:
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [device_secret]
+              properties:
+                device_secret: {type: string, minLength: 43, maxLength: 43}
+      responses:
+        '200': {description: 'pending=true либо token и expires_in=2592000; код одноразовый'}
+        '404': {description: Истёкший или использованный запрос}
+  /auth/demo:
+    post:
+      security: []
+      requestBody: {$ref: '#/components/requestBodies/Empty'}
+      responses:
+        '200': {description: Изолированная синтетическая сессия на 8 часов}
+        '404': {description: Демо отключено}
+  /me:
+    get:
+      responses:
+        '200': {description: 'user_id, team_id, role, display_name; профиль определяется сервером'}
+        '401': {description: Сессия недействительна}
+  /session:
+    delete:
+      responses:
+        '200': {description: Сессия отозвана}
+  /chat/messages:
+    get:
+      parameters:
+        - {in: query, name: before, schema: {type: integer, minimum: 0}}
+      responses:
+        '200':
+          description: Последние 100 сообщений до before, в обратном порядке
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: {type: array, items: {$ref: '#/components/schemas/Record'}}
+  /chat/requests:
+    get:
+      responses:
+        '200': {description: Последние 100 операций и их состояния}
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, text]
+              properties:
+                id: {type: string, minLength: 1, maxLength: 100}
+                text: {type: string, minLength: 1, maxLength: 16000}
+      responses:
+        '202': {description: 'id, status; ответ через events/history. Повтор id с иным содержимым — 409'}
+        '409': {description: Конфликт идентификатора}
+  /chat/actions:
+    post:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, message_id, data]
+              properties:
+                id: {type: string, maxLength: 100}
+                message_id: {type: string, maxLength: 160}
+                data: {type: string, maxLength: 160}
+      responses:
+        '202': {description: 'Операция; действие должно присутствовать в собственном сообщении, права проверяются повторно'}
+  /chat/files:
+    post:
+      parameters:
+        - {in: header, name: Idempotency-Key, required: true, schema: {type: string, maxLength: 100}}
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: {type: string, format: binary}
+      responses:
+        '202': {description: Операция проверки PDF/PPTX или загрузки JSON/YAML карточки; файл не более 10 МиБ}
+        '413': {description: Файл слишком большой}
+  /files/{id}:
+    get:
+      parameters:
+        - {in: path, name: id, required: true, schema: {type: string}}
+      responses:
+        '200': {description: Приватный оригинал собственного вложения; Content-Disposition attachment}
+        '404': {description: Вложение не найдено или чужое}
+  /chat/read:
+    put:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [message_id]
+              properties:
+                message_id: {type: string}
+      responses:
+        '200': {description: Отметка показа собственного сообщения в активном чате}
+  /events:
+    get:
+      parameters:
+        - {in: query, name: after, schema: {type: integer, minimum: 0}}
+        - {in: header, name: Last-Event-ID, schema: {type: integer, minimum: 0}}
+      responses:
+        '200':
+          description: 'SSE event:update; id=seq; JSON {seq,kind,payload:{id,record,seq}}. kind=message|request; heartbeat каждые 2 секунды. Query after имеет приоритет.'
+          content:
+            text/event-stream:
+              schema: {type: string}
+components:
+  securitySchemes:
+    session: {type: http, scheme: bearer, description: Непрозрачный случайный токен устройства; не JWT и не служебный ключ}
+  requestBodies:
+    Empty:
+      required: true
+      content:
+        application/json:
+          schema: {type: object, additionalProperties: false}
+  schemas:
+    Record:
+      type: object
+      required: [id, seq, payload, created_at]
+      properties:
+        id: {type: string}
+        seq: {type: integer}
+        created_at: {description: Время создания записи}
+        payload:
+          type: object
+          properties:
+            role: {type: string, enum: [user, assistant]}
+            channel: {type: string, enum: [telegram, desktop, background]}
+            response:
+              type: object
+              properties:
+                result: {type: string}
+                links: {type: array, items: {type: string}}
+                actions: {type: array, items: {type: object}}
+                folded: {type: array, items: {type: string}}
+                brief_id: {type: string, nullable: true}
+            attachments: {type: array, items: {type: object, properties: {id: {type: string}, name: {type: string}}}}

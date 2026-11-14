@@ -1,0 +1,73 @@
+{
+  "name": "avitocode",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-buddy Windows desktop client",
+  "author": "AI-buddy team",
+  "main": "out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "tsc --noEmit && electron-vite build",
+    "test": "vitest run",
+    "pack:win": "npm run build && electron-builder --win nsis --x64",
+    "smoke": "electron . --smoke",
+    "format:check": "prettier --check src tests electron.vite.config.ts"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.0.0",
+    "electron": "45.3.2",
+    "electron-builder": "26.18.0",
+    "electron-vite": "6.0.0",
+    "prettier": "3.8.3",
+    "typescript": "^5.9.0",
+    "vite": "8.3.8",
+    "vitest": "^4.0.0"
+  },
+  "build": {
+    "appId": "team.aibuddy.avitocode",
+    "productName": "AvitoCode",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AvitoCode",
+      "runAfterFinish": false
+    },
+    "extraResources": [
+      {
+        "from": "resources/icon.ico",
+        "to": "icon.ico"
+      }
+    ]
+  }
+}

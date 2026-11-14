@@ -99,6 +99,10 @@ def create_dispatcher(
     dispatcher["identity_client"] = identity_client
     dispatcher["agent_service"] = agent_service
     if agent_service is not None:
+        if getattr(agent_service, "channels", None) is not None:
+            from buddy.channels.telegram import register as register_channels
+
+            register_channels(router)
         register(router)
     dispatcher.include_router(router)
     return dispatcher
