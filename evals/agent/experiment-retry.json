@@ -1,0 +1,145 @@
+{
+ "cases": [
+  {
+   "id": "agent-019",
+   "kind": "open",
+   "text": "Привет! Что ты умеешь?",
+   "tools": [],
+   "quality": {
+    "any": [
+     "привет",
+     "здравствуй"
+    ],
+    "all": [
+     "бриф",
+     "доступ",
+     "команд",
+     "playbook"
+    ],
+    "allow_fallback": false
+   },
+   "requirements": [
+    "EV-01",
+    "EV-02",
+    "FR-AG-07"
+   ]
+  }
+ ],
+ "models": {
+  "deepseek/deepseek-v4.1-flash-1017": {
+   "summary": {
+    "cases": 1,
+    "tool_ok": 1,
+    "answered": 0,
+    "expect_ok": 0,
+    "expect_evaluated": 0,
+    "passed": 0,
+    "not_evaluated": 0,
+    "failures": {
+     "content": 1,
+     "fallback": 1,
+     "request_budget": 1
+    },
+    "infrastructure_errors": {
+     "ConnectError": 1
+    },
+    "style_ok": 1,
+    "unsupported_blocked": 0,
+    "fallbacks": {
+     "ConnectError": 1
+    },
+    "avg_seconds": 0.0,
+    "p95_seconds": 0,
+    "cost": 0.0
+   },
+   "results": [
+    {
+     "id": "agent-019",
+     "kind": "open",
+     "tools": [],
+     "tool_ok": true,
+     "answered": false,
+     "expect_ok": null,
+     "style_ok": true,
+     "fallback": "ConnectError",
+     "infrastructure_error": "ConnectError",
+     "unsupported_blocked": false,
+     "steps": 0,
+     "seconds": 0.05,
+     "cost": 0.0,
+     "requests_including_history": 1,
+     "history_requests": 0,
+     "answer": "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов. Для проверки презентации к экватору пришлите PDF/PPTX: проверю текст и задачи Jira, сравню версии. Файл не редактирую, картинки и оформление не оцениваю. После обязательных проверок можно отправить файл наставнику с отчётом.",
+     "links": 0,
+     "source_urls": [],
+     "calls": [],
+     "executions": [
+      {
+       "name": "help",
+       "arguments": {},
+       "links": [],
+       "answer": "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов. Для проверки презентации к экватору пришлите PDF/PPTX: проверю текст и задачи Jira, сравню версии. Файл не редактирую, картинки и оформление не оцениваю. После обязательных проверок можно отправить файл наставнику с отчётом."
+      }
+     ],
+     "checks": {
+      "content": false,
+      "nonempty": true,
+      "no_internal_text": true,
+      "language": true,
+      "style": true,
+      "fallback": false,
+      "tools": true,
+      "forbidden_tools": true,
+      "arguments": true,
+      "execution": true
+     },
+     "content_checks": {
+      "all": true,
+      "any": false
+     },
+     "status": "fail",
+     "failures": [
+      "content",
+      "fallback",
+      "request_budget"
+     ],
+     "repeat": 1
+    }
+   ]
+  }
+ },
+ "metadata": {
+  "started_at": "2026-11-14T14:41:50.488160+00:00",
+  "commit": "d784f4c9607d5c9aba9a2e1c8e31e3b6aba8609e",
+  "dirty": false,
+  "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "prompt_sha256": "eddaa3361b9aa56dccf2ba400f0135d84ac3a4235dc030d8bfb57bca258c711f",
+  "dataset_sha256": "e793eb4affe4746c9967c268a0a7c85ec37c88799b64c4304280b04cd32fda4a",
+  "evaluator_sha256": "fb90dc7f3dce97d95308a08e664c517b188cd77ec214dd0f78630e488fe472a4",
+  "settings": {
+   "provider": "openrouter",
+   "timeout": 20.0,
+   "mode": "agent",
+   "max_tokens": 800,
+   "reasoning": false
+  }
+ },
+ "expected_results_per_model": 1,
+ "budget": {
+  "limit": 1,
+  "used": 1,
+  "responses": 0,
+  "cost_including_history": 0.0,
+  "exhausted": true
+ },
+ "session_budget": {
+  "limit": 200,
+  "previous_attempts": 69,
+  "current_attempts": 1,
+  "total_attempts": 70
+ },
+ "acceptance": {
+  "min_pass_rate": 0.9,
+  "passed": false
+ }
+}

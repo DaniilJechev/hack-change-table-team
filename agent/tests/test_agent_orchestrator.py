@@ -142,8 +142,9 @@ async def test_fr_ag_03_compound_question_uses_two_tools():
     state = await ask("Кто мой наставник и какие у меня доступы?")
     response = state["response"]
     assert state["decision"].case == "team_q3" and state["trace"] == ["agent"]
-    assert response.result == "Твой наставник — Анна [1]. Доступа к Miro пока нет, запроси у Олега [2]."
-    assert response.links[0] == ANNA and "miro" in response.links[1]
+    assert "Ваш наставник — Анна. [1]" in response.result
+    assert "⬜ Miro" in response.result and "⛔ GitHub" in response.result
+    assert response.links[0] == ANNA and "miro" in response.links[2]
     assert {"Помогло", "Запросить доступ: Доска планирования"} <= {a.label for a in response.actions}
     tools = [message for message in llm.chats[1] if message["role"] == "tool"]
     assert [json.loads(message["content"])["sources"][0]["id"] for message in tools] == ["S1", "S3"]
@@ -355,7 +356,8 @@ async def test_fr_ag_07_compare_reports_metrics_per_model_and_case():
         summary, results = report["models"][model]["summary"], report["models"][model]["results"]
         assert [r["id"] for r in results] == ["agent-005", "agent-033"]
         assert summary["tool_ok"] == 2 and summary["answered"] == 1 and summary["cost"] == 0.002
-        assert summary["expect_ok"] == 2 and summary["style_ok"] == 2
+        assert summary["expect_ok"] == 0 and summary["expect_evaluated"] == 0
+        assert summary["style_ok"] == 2
         assert results[0]["answer"] == "Твой наставник — Анна [1]." and results[1]["steps"] == 0
 
 
@@ -393,7 +395,8 @@ async def test_fr_ag_09_followup_from_history_without_tools_is_not_shown():
     )
     await ask("Что у меня нового?")
     state = await ask("а кто ревьюит PR #47?")
-    assert len(llm.chats) == 3 and llm.chats[-1][-1]["content"] == "а кто ревьюит PR #47?"
+    assert len(llm.chats) == 4 and llm.chats[-2][-1]["content"] == "а кто ревьюит PR #47?"
+    assert llm.choices[-1] == ("required", ["brief_now"])
     assert "agent" not in state.get("trace", []) and state["response"].result != copied
 
 

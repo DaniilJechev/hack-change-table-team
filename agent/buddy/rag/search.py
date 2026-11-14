@@ -13,7 +13,7 @@ import logging
 from dataclasses import dataclass, field
 from typing import Literal
 
-from buddy.rag.index import Hit, PlaybookIndex, default_index
+from buddy.rag.index import Hit, PlaybookIndex, default_index, search_query
 from buddy.rag.vectors import Embedder, Store, VectorUnavailable
 
 Mode = Literal["bm25", "vector", "rrf"]
@@ -83,6 +83,7 @@ class PlaybookSearch:
         return Found(hits, bool(hits) and similar, "rrf")
 
     async def search(self, query: str, limit: int = 3) -> Found:
+        query = search_query(query)
         if self.mode == "bm25":
             return self._search(query, limit)
         # Model inference and the database call are blocking: keep the bot's event loop free.

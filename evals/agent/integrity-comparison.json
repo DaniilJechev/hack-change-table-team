@@ -1,0 +1,281 @@
+{
+  "note": "Reports from distinct versions and datasets; do not combine successful cases into a synthetic full-run score. Final named-contact rendering change is tested offline only.",
+  "budget": {
+    "total_limit": 300,
+    "used_before_this_task": 177,
+    "used_this_task": 121,
+    "used_total": 298,
+    "remaining": 2
+  },
+  "runs": {
+    "before": {
+      "report": "experiment-live-calibrated.json",
+      "metadata": {
+        "started_at": "2026-11-14T14:52:15.398700+00:00",
+        "commit": "920be141498d7896ab5a9c836bff04e21d876fae",
+        "dirty": false,
+        "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "prompt_sha256": "eddaa3361b9aa56dccf2ba400f0135d84ac3a4235dc030d8bfb57bca258c711f",
+        "dataset_sha256": "c64bd98de2a9bd9c9aaa1530c498fe58440326adad6190d53a6b2053e87ce197",
+        "evaluator_sha256": "fb90dc7f3dce97d95308a08e664c517b188cd77ec214dd0f78630e488fe472a4",
+        "settings": {
+          "provider": "openrouter",
+          "timeout": 20.0,
+          "mode": "agent",
+          "max_tokens": 800,
+          "reasoning": false
+        }
+      },
+      "budget": {
+        "limit": 100,
+        "used": 65,
+        "responses": 65,
+        "cost_including_history": 0.009862,
+        "exhausted": false
+      },
+      "acceptance": {
+        "min_pass_rate": 0.9,
+        "passed": false
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "cases": 34,
+          "tool_ok": 30,
+          "answered": 31,
+          "expect_ok": 1,
+          "expect_evaluated": 1,
+          "passed": 26,
+          "not_evaluated": 0,
+          "failures": {
+            "content": 4,
+            "citation_labels": 1,
+            "tools": 4,
+            "fallback": 1
+          },
+          "infrastructure_errors": {},
+          "style_ok": 34,
+          "unsupported_blocked": 1,
+          "fallbacks": {
+            "pr": 1
+          },
+          "avg_seconds": 2.84,
+          "p95_seconds": 6.61,
+          "cost": 0.0094
+        }
+      }
+    },
+    "after_full": {
+      "report": "experiment-integrity-full.json",
+      "metadata": {
+        "started_at": "2026-11-14T15:09:01.529164+00:00",
+        "commit": "47367a8310de76afedc75f7110e20ed9815a3c32",
+        "dirty": false,
+        "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "prompt_sha256": "01e3ad4ebbb6490b642b039caeba041142f9c0b4c5484ec2eb4ef5502e299cc2",
+        "dataset_sha256": "eaa01137c62306db5090a175f87df96a60449739c50de450bf68b197e798c606",
+        "evaluator_sha256": "728b4cbc1a09947fc6e6b552ab5960d4fef107e837ff8a51c3e5ecd15c0f0f9d",
+        "settings": {
+          "provider": "openrouter",
+          "timeout": 20.0,
+          "mode": "agent",
+          "max_tokens": 800,
+          "reasoning": false
+        }
+      },
+      "budget": {
+        "limit": 85,
+        "used": 69,
+        "responses": 69,
+        "cost_including_history": 0.011541,
+        "exhausted": false
+      },
+      "acceptance": {
+        "min_pass_rate": 0.9,
+        "passed": true
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "cases": 34,
+          "tool_ok": 33,
+          "answered": 32,
+          "expect_ok": 1,
+          "expect_evaluated": 1,
+          "passed": 32,
+          "not_evaluated": 0,
+          "failures": {
+            "tools": 1,
+            "content": 1
+          },
+          "infrastructure_errors": {},
+          "style_ok": 34,
+          "unsupported_blocked": 0,
+          "fallbacks": {},
+          "avg_seconds": 4.07,
+          "p95_seconds": 12.61,
+          "cost": 0.0106
+        }
+      }
+    },
+    "before_diagnostic": {
+      "report": "experiment-calibration-repeat.json",
+      "metadata": {
+        "started_at": "2026-11-14T14:57:38.953722+00:00",
+        "commit": "04b3d6a153a17a96b4f819b93834a4c2820c3bc9",
+        "dirty": false,
+        "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "prompt_sha256": "eddaa3361b9aa56dccf2ba400f0135d84ac3a4235dc030d8bfb57bca258c711f",
+        "dataset_sha256": "cf390ab644e71171637489a4e0f72b9f04a7df64abbbdb4baae09fa775137c84",
+        "evaluator_sha256": "728b4cbc1a09947fc6e6b552ab5960d4fef107e837ff8a51c3e5ecd15c0f0f9d",
+        "settings": {
+          "provider": "openrouter",
+          "timeout": 20.0,
+          "mode": "agent",
+          "max_tokens": 800,
+          "reasoning": false
+        }
+      },
+      "budget": {
+        "limit": 45,
+        "used": 42,
+        "responses": 42,
+        "cost_including_history": 0.005752,
+        "exhausted": false
+      },
+      "acceptance": {
+        "min_pass_rate": 0.9,
+        "passed": false
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "cases": 18,
+          "tool_ok": 13,
+          "answered": 17,
+          "expect_ok": 0,
+          "expect_evaluated": 0,
+          "passed": 11,
+          "not_evaluated": 0,
+          "failures": {
+            "tools": 5,
+            "content": 4,
+            "fallback": 1
+          },
+          "infrastructure_errors": {},
+          "style_ok": 18,
+          "unsupported_blocked": 1,
+          "fallbacks": {
+            "task": 1
+          },
+          "avg_seconds": 3.18,
+          "p95_seconds": 5.99,
+          "cost": 0.0054
+        }
+      }
+    },
+    "after_diagnostic": {
+      "report": "experiment-integrity-final-repeat.json",
+      "metadata": {
+        "started_at": "2026-11-14T15:13:34.106962+00:00",
+        "commit": "91daf041a2efe1b5d5d5d17c527ba9eb775d4257",
+        "dirty": false,
+        "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "prompt_sha256": "8ab82d01f6fa1451e4e69cec27c99a40dc1add961597096d4513ead95d18bcb2",
+        "dataset_sha256": "e3b863eacfb9678dfbbd7e0d933127508e5d688b941109f4da6bda51a2f23d6b",
+        "evaluator_sha256": "728b4cbc1a09947fc6e6b552ab5960d4fef107e837ff8a51c3e5ecd15c0f0f9d",
+        "settings": {
+          "provider": "openrouter",
+          "timeout": 20.0,
+          "mode": "agent",
+          "max_tokens": 800,
+          "reasoning": false
+        }
+      },
+      "budget": {
+        "limit": 50,
+        "used": 38,
+        "responses": 38,
+        "cost_including_history": 0.007964,
+        "exhausted": false
+      },
+      "acceptance": {
+        "min_pass_rate": 0.9,
+        "passed": false
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "cases": 18,
+          "tool_ok": 16,
+          "answered": 16,
+          "expect_ok": 0,
+          "expect_evaluated": 0,
+          "passed": 15,
+          "not_evaluated": 0,
+          "failures": {
+            "content": 2,
+            "tools": 2,
+            "fallback": 1
+          },
+          "infrastructure_errors": {},
+          "style_ok": 18,
+          "unsupported_blocked": 1,
+          "fallbacks": {
+            "label": 1
+          },
+          "avg_seconds": 4.24,
+          "p95_seconds": 19.9,
+          "cost": 0.0058
+        }
+      }
+    },
+    "final_focus": {
+      "report": "experiment-integrity-focus.json",
+      "metadata": {
+        "started_at": "2026-11-14T15:18:00.018587+00:00",
+        "commit": "c4d35bcf7c7bc011eed124d5b572ecdcfd0d2804",
+        "dirty": false,
+        "working_diff_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "prompt_sha256": "8ab82d01f6fa1451e4e69cec27c99a40dc1add961597096d4513ead95d18bcb2",
+        "dataset_sha256": "7ec5760df2214053df0ed1edbce13f067752a7ad925cc2e7bc1b50422031d9c5",
+        "evaluator_sha256": "728b4cbc1a09947fc6e6b552ab5960d4fef107e837ff8a51c3e5ecd15c0f0f9d",
+        "settings": {
+          "provider": "openrouter",
+          "timeout": 20.0,
+          "mode": "agent",
+          "max_tokens": 800,
+          "reasoning": false
+        }
+      },
+      "budget": {
+        "limit": 16,
+        "used": 14,
+        "responses": 14,
+        "cost_including_history": 0.001281,
+        "exhausted": false
+      },
+      "acceptance": {
+        "min_pass_rate": 0.9,
+        "passed": false
+      },
+      "models": {
+        "deepseek/deepseek-v4.1-flash-1017": {
+          "cases": 8,
+          "tool_ok": 8,
+          "answered": 6,
+          "expect_ok": 0,
+          "expect_evaluated": 0,
+          "passed": 7,
+          "not_evaluated": 0,
+          "failures": {
+            "content": 1
+          },
+          "infrastructure_errors": {},
+          "style_ok": 8,
+          "unsupported_blocked": 0,
+          "fallbacks": {},
+          "avg_seconds": 2.56,
+          "p95_seconds": 4.06,
+          "cost": 0.0009
+        }
+      }
+    }
+  }
+}
