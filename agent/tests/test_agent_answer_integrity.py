@@ -1,6 +1,7 @@
 """AI-01..03: preserve executable facts through the agent's final rewrite."""
 
 import json
+from dataclasses import replace
 
 import pytest
 from test_agent_orchestrator import call, setup
@@ -32,7 +33,7 @@ def test_ai_01_source_groups_normalize(label):
     assert verify("Ценности " + label, ["a", "b", "c"], "") == "Ценности [S1][S2][S3]"
 
 
-@pytest.mark.parametrize("label", ["[S1–S99]", "[S3–S1]", "[S0–S2]", "[S1/S2]", "[S1"])
+@pytest.mark.parametrize("label", ["[S1–S99]", "[S3–S1]", "[S0–S2]", "[S1/S2]", "[S1", "[S?]"])
 def test_ai_01_invalid_labels_are_rejected(label):
     with pytest.raises(Rejected, match="label"):
         verify("Ценности " + label, ["a", "b", "c"], "")
@@ -101,7 +102,42 @@ async def test_ai_04_direct_grant_is_refused_without_llm(question):
 
 
 async def test_ai_04_information_and_request_submission_are_not_grants():
-    for question in ["Кто может выдать доступ к Miro?", "Подай заявку на доступ к Miro"]:
+    for question in ["Кто может выдать доступ к Miro?", "Подай заявку на доступ к Miro",
+                     "Предоставь информацию о доступах"]:
         ask, llm, *_ = setup({"content": "Проверь владельца доступа."})
         await ask(question)
         assert len(llm.chats) == 1
+
+
+async def test_ai_02_invalid_rewrite_cannot_break_checked_mentor_summary():
+    ask, llm, registry, runtime, context = setup(
+        {"tool_calls": [call("interns_status")]}, {"content": "Данные [S99]."},
+    )
+    context = replace(context, role="mentor", user_id="demo-anna")
+    _, response = await Agent(llm, registry).answer("Как дела у стажёров?", context, runtime)
+    assert "Даниил" in response.result and "Эмиль" in response.result and "S99" not in response.result
+
+
+async def test_ai_03_advice_blocks_unrequested_personal_tool():
+    ask, llm, *_ = setup({"tool_calls": [call("brief_now")]})
+    response = (await ask("Застрял с задачей, как попросить помощи?"))["response"]
+    assert llm.choices[0][0] == "none"
+    assert "блокер" in response.result and not response.links
+
+
+async def test_ai_03_explicit_task_does_not_use_general_advice_gate():
+    ask, llm, *_ = setup({"content": "Уточни вопрос."})
+    await ask("Застрял с задачей ORD-118, проверь её")
+    assert llm.choices[0][0] is None
+
+
+async def test_ai_03_contact_followup_requires_current_contact_tool():
+    ask, llm, *_ = setup(
+        {"tool_calls": [call("team_q3")]}, {"content": "Наставник — Анна [S1]."},
+        {"tool_calls": [call("team_q4", {"person": "Анна"})]},
+        {"content": "Анне разрешено писать в личку [S1]."},
+    )
+    await ask("Кто мой наставник?")
+    response = (await ask("А можно ей писать в личку?"))["response"]
+    assert llm.choices[2] == ("required", ["team_q4"])
+    assert response.links[0].endswith("demo-anna")

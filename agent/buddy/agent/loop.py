@@ -137,7 +137,13 @@ STATUS = re.compile(
 )
 PR = re.compile(r"(?:\bPR|\bпр|пулл?\s*реквест\w*)\s*№?\s*#?\s*(\d{1,7})\b|#(\d{1,7})\b", re.IGNORECASE)
 GRANT = re.compile(
-    r"(?:^|[.!?\n]\s*)(?:пожалуйста[, ]+)?(?:выдай(?:те)?|предоставь(?:те)?|назначь(?:те)?)\b",
+    r"(?:^|[.!?\n]\s*)(?:пожалуйста[, ]+)?"
+    r"(?:(?:выдай(?:те)?|предоставь(?:те)?)\s+(?:(?:мне|нам|ему|ей)\s+)?(?:доступ\w*|прав[ао])\b"
+    r"|назначь(?:те)?\s+(?:(?:меня|его|её|ее|их)\s+)?админ\w*\b)",
+    re.IGNORECASE,
+)
+ADVICE = re.compile(
+    r"подготов\w*.{0,40}ревью|застр\w*.{0,60}задач|не могу (?:сдвинуться|продвинуться)|нет прогресса",
     re.IGNORECASE,
 )
 
@@ -201,7 +207,7 @@ def verify(answer: str, sources: list[str], observed: str) -> str:
 
     answer = RANGE.sub(expand, answer)
     answer = GROUP.sub(lambda m: "".join(f"[{label.strip()}]" for label in m.group(1).split(",")), answer)
-    if re.search(r"\[S\d", MARK.sub("", answer)):
+    if re.search(r"\[S(?:\d|\?|\])", MARK.sub("", answer)):
         raise Rejected("label")
     answer = answer.strip()
     if not answer or len(answer) > MAX_ANSWER or URL.search(answer):
@@ -269,13 +275,19 @@ class Agent:
         self, text: str, context: Context, runtime=None, history: list[dict] | None = None
     ) -> tuple[RouteDecision, ExecutorResponse] | None:
         """None means no tool ran and the model failed: the caller routes the text with the Router."""
-        if GRANT.search(text.strip()) and re.search(r"\b(?:доступ\w*|админ\w*|прав[ао])\b", text, re.I):
+        if GRANT.search(text.strip()):
             return RouteDecision.model_construct(case=CHAT, params={}), ExecutorResponse(
                 result="Я не выдаю доступы и не назначаю роли администратора. "
                 "Могу проверить текущие доступы и подсказать, как подать заявку."
             )
         tools = tools_for(context.role)
         allowed = {tool["function"]["name"] for tool in tools}
+        advice = bool(ADVICE.search(text)
+                      and not (TASK.search(text) or mentioned_prs(text) or INSTRUMENT.search(text)))
+        contact = bool(history and re.search(r"писать|написать", text, re.I)
+                       and re.search(r"личк|напрямую", text, re.I))
+        if advice:
+            allowed = set()
         messages = [
             {"role": "system", "content": SYSTEM},
             {
@@ -289,6 +301,12 @@ class Agent:
         done: list[tuple[RouteDecision, ExecutorResponse]] = []
         observed = [text]
         active, choice, retried = tools, {}, False
+        if advice:
+            choice = {"tool_choice": "none"}
+        elif contact:
+            active = [tool for tool in tools if tool["function"]["name"] == "team_q4"]
+            allowed = {"team_q4"}
+            choice = {"tool_choice": "required"}
         try:
             async with asyncio.timeout(self.timeout):
                 for _ in range(MAX_STEPS):
@@ -296,6 +314,8 @@ class Agent:
                     active, choice = tools, {}
                     calls = reply["tool_calls"]
                     if not calls:
+                        if any(decision.case in ACCESS_TOOLS for decision, _ in done):
+                            return self._compose("", sources, done)
                         # FR-AG-09: with no tool this turn, a task key or PR (even from the question
                         # or history) is a fact without a source.
                         if (not done and not retried and mentioned_prs(text)
@@ -364,6 +384,12 @@ class Agent:
             # Only the rule name or exception type is logged: no user text, no model output.
             reason = error.args[0] if isinstance(error, Rejected) else type(error).__name__
             log.info("agent fallback: %s", reason)
+            if advice:
+                return RouteDecision.model_construct(case=CHAT, params={}), ExecutorResponse(
+                    result="Разбери, что мешает сдвинуться с задачей: запиши блокер и что уже пробовал. "
+                    "Попроси наставника помочь с конкретным вопросом. Для ревью проверь изменения "
+                    "и тесты, подготовь описание и вопросы."
+                )
             return done[0] if done else None
 
     @staticmethod
