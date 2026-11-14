@@ -497,7 +497,10 @@
     "sources": [
      "https://example.invalid/miro/board/demo-board-orders"
     ],
-    "allow_fallback": false
+    "allow_fallback": false,
+    "none": [
+     "остальное уже есть"
+    ]
    },
    "arguments": {
     "access_task_analysis": {
@@ -809,7 +812,7 @@
      "ORD-121"
     ],
     "patterns": [
-     "(?:инструмент|сервис)[^\\n.]{0,80}(?:не указан|не упом)|не наш[^\\n.]{0,60}упоминан"
+     "(?:инструмент|сервис)[^\\n.]{0,80}(?:не указан|не упом)|не наш[^\\n.]{0,60}упоминан|явных упоминаний (?:инструмент|сервис)[^\\n.]{0,50}нет"
     ],
     "allow_fallback": false,
     "sources": [
@@ -2190,6 +2193,7 @@
      },
      "content_checks": {
       "all": true,
+      "none": true,
       "patterns": true,
       "sources": false
      },
@@ -3187,7 +3191,7 @@
   "input": "evals/agent/experiment-live.json",
   "input_sha256": "d85d29215788d81465512dbf1d83b6b925798a98418fd23e6fd19808faf1a52c",
   "evaluator_sha256": "728b4cbc1a09947fc6e6b552ab5960d4fef107e837ff8a51c3e5ecd15c0f0f9d",
-  "dataset_sha256": "ffca047c30090add6f058b26f0bb85f928dd619f62167e3a9dc5a93695657437",
+  "dataset_sha256": "c256536f9bbd080c671237f556a6589e3a4d89c3d8ee2d0352ade899e0e65ac2",
   "method": "Offline reassessment of unchanged answers. Calls truncated to the original tools snapshot to remove next-case warmup contamination. No new LLM requests."
  }
 }

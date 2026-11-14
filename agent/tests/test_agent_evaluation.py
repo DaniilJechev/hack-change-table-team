@@ -262,3 +262,15 @@ def test_ev_01_playbook_requires_freshness_warning(ev, case_id):
     missing = " ".join(row["quality"].get("all", []))
     verdict = ev.assess(row, missing, row["quality"].get("sources", []), [], [])
     assert not verdict["content_checks"]["patterns"]
+
+
+def test_ev_02_no_mentions_paraphrase_and_false_granted_claim(ev):
+    row = next(r for r in ev.load() if r["id"] == "agent-031")
+    answer = "По ORD-121 явных упоминаний инструментов в задаче нет."
+    assert ev.assess(row, answer, row["quality"]["sources"], [], [])["checks"]["content"]
+    row = next(r for r in ev.load() if r["id"] == "agent-018")
+    links = row["quality"]["sources"]
+    good = "Miro нет, запросить у Олега. Production запрещён."
+    assert ev.assess(row, good, links, [], [])["checks"]["content"]
+    bad = "Miro нет, запросить у Олега, остальное уже есть."
+    assert not ev.assess(row, bad, links, [], [])["checks"]["content"]
