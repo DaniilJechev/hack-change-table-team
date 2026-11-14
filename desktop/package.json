@@ -11,7 +11,7 @@
     "test": "vitest run",
     "pack:win": "npm run build && electron-builder --win nsis --x64",
     "smoke": "electron . --smoke",
-    "format:check": "prettier --check src tests electron.vite.config.ts"
+    "format:check": "prettier --check src tests scripts electron.vite.config.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
