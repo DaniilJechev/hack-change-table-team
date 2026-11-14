@@ -2,6 +2,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
 permissions:
   contents: read
@@ -34,6 +35,8 @@ jobs:
         with:
           version: '0.9.5'
       - run: uv sync --project agent --frozen --extra dev
+      - name: Desktop release publication contract (offline)
+        run: uv run --project agent --frozen python infra/test_desktop_release.py
       - name: Go format and vet
         run: |
           test -z "$(gofmt -l backend)"
@@ -105,3 +108,83 @@ jobs:
         if: failure()
       - run: docker compose -f docker-compose.yml -f docker-compose.mcp.yml -f docker-compose.powerpoint.yml down
         if: always()
+
+  desktop:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+      - name: Validate release version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: node scripts/release-version.ts
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+      - run: npm ci --no-audit --no-fund
+      - run: npm run format:check
+      - run: npm test
+      - run: npm run build
+      - run: npm run smoke
+      - run: npm run pack:win -- --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AvitoCode-windows-x64
+          path: desktop/release/*.exe
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [tests, compose, mcp, desktop]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: desktop-release-${{ github.ref }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require a commit from main
+        run: |
+          git fetch --no-tags origin main
+          git merge-base --is-ancestor HEAD origin/main
+      - uses: actions/download-artifact@v4
+        with:
+          name: AvitoCode-windows-x64
+          path: desktop-release
+      - name: Prepare checksum
+        working-directory: desktop-release
+        run: |
+          shopt -s nullglob
+          installers=(*.exe)
+          test "${#installers[@]}" -eq 1
+          sha256sum -- "${installers[0]}" > SHA256SUMS
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          assets=(desktop-release/*.exe desktop-release/SHA256SUMS)
+          if draft=$(gh release view "$RELEASE_TAG" --json isDraft --jq '.isDraft' 2>/dev/null); then
+            if [ "$draft" != true ]; then
+              echo "Release already published; use a new version tag."
+              exit 1
+            fi
+            gh release upload "$RELEASE_TAG" "${assets[@]}" --clobber
+          else
+            gh release create "$RELEASE_TAG" "${assets[@]}" \
+              --verify-tag --title "AvitoCode $RELEASE_TAG" --generate-notes --draft
+          fi
+          gh release edit "$RELEASE_TAG" --draft=false

@@ -307,3 +307,11 @@ curl -s -H "X-Buddy-Key: $BUDDY_SERVICE_KEY" "http://127.0.0.1:$BACKEND_PORT/api
 демо — в постоянном томе SQLite. По умолчанию история доступна 7 дней; пороги слайдов,
 слов и срок задаются через env. Картинки разрешены, проверяется только извлекаемый текст.
 Настройки и ручной сценарий: [H4_OPERATIONS.md](docs/H4_OPERATIONS.md).
+
+## Windows-клиент AvitoCode
+
+Дополнительный канал того же агента: React/Electron, трей, окно справа,
+уведомления и общая новая история Telegram/desktop. Включается на сервере
+переменной `CLIENT_API_ENABLED=true`; по умолчанию выключен.
+[Установка, вход через Telegram и запуск через ngrok](desktop/README.md).
+[Публичный API клиента](desktop/openapi.yaml).

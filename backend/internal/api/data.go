@@ -272,6 +272,7 @@ func decodeLimited(w http.ResponseWriter, r *http.Request, value any, limit int6
 // Application composes authenticated data and MCP routes without changing stage-0 health or identity.
 func Application(data *store.Store, key string) http.Handler {
 	root := http.NewServeMux()
+	root.Handle("/internal/client/", ChannelHandler(data, key))
 	identity := Handler(Identity{Store: data, ServiceKey: key})
 	root.Handle("/api/v1/auth/", identity)
 	traces := AgentTraceHandler(data, key)
