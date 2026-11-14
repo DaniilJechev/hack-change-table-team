@@ -16,11 +16,11 @@ import re
 import subprocess
 import time
 from collections import Counter
+from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
-
 from buddy.agent import Agent
 from buddy.agent.loop import SYSTEM
 from buddy.config import Settings
@@ -48,6 +48,10 @@ LEAK = re.compile(
     re.IGNORECASE,
 )
 CJK = re.compile(r"[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]")
+TECH_TERMS = re.compile(
+    r"\b(?:Go|PostgreSQL|Kafka|Python|GitHub|Jira|Miro|Google Calendar|Calendar|Telegram|"
+    r"AvitoTech|Playbook|PR|API|SQL|Redis|Docker)\b", re.IGNORECASE
+)
 INFRASTRUCTURE_ERRORS = {"ConnectError", "ConnectTimeout", "ProxyError", "ReadTimeout", "HTTPStatusError"}
 
 
@@ -92,7 +96,8 @@ def assess(
     for quote in quality.get("allowed_quotes", []):
         visible = visible.replace(quote, "")
     checks["no_internal_text"] = not LEAK.search(visible)
-    latin = re.findall(r"\b[A-Za-z]{2,}\b", visible)
+    checks["citation_labels"] = not re.search(r"\[S\d[^\]]*\]", visible)
+    latin = re.findall(r"\b[A-Za-z]{2,}\b", TECH_TERMS.sub("", visible))
     russian = re.findall(r"[А-Яа-яЁё]{2,}", visible)
     checks["language"] = not CJK.search(visible) and not (len(latin) > 8 and len(latin) > len(russian))
     checks["style"] = not TELLS.search(answer)
@@ -304,7 +309,7 @@ async def run_case(settings: Settings, recorder: Recorder, reasons: Reasons, row
         "answer": answer,
         "links": len(state["response"].links),
         "source_urls": state["response"].links,
-        "calls": recorder.call_details,
+        "calls": deepcopy(recorder.call_details),
         "executions": registry.executions,
         **verdict,
     }

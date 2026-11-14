@@ -57,7 +57,8 @@ def test_ev_01_wrong_source_with_correct_person_fails(ev):
 def test_ev_02_correct_refusal_and_invented_leave_policy(ev):
     row = next(r for r in ev.load() if r["id"] == "agent-025")
     row.pop("tools")
-    assert ev.assess(row, "В playbook этого нет.", [], [], [])["status"] == "pass"
+    good = "В playbook этого нет. Playbook публичный, может быть устаревшим."
+    assert ev.assess(row, good, [], [], [])["status"] == "pass"
     assert ev.assess(row, "В playbook этого нет. Положено 28 дней.", [], [], [])["status"] == "fail"
 
 
@@ -181,3 +182,83 @@ def test_ev_03_retry_log_is_not_fallback(ev):
     assert handler.items == []
     handler.emit(logging.LogRecord("test", logging.INFO, "", 1, "agent fallback: %s", ("label",), None))
     assert handler.items == ["label"]
+
+
+def test_ev_02_russian_technology_list_and_english_prose(ev):
+    row = {"quality": {"all": ["Go"]}}
+    answer = (
+        "Команда пишет на Go, с PostgreSQL и Kafka. Ещё использует Python, "
+        "GitHub, Jira, Miro, Google Calendar и Telegram."
+    )
+    assert ev.assess(row, answer, [], [], [])["checks"]["language"]
+    english = "The team uses Go and you should always ask your mentor before changing the system."
+    assert not ev.assess(row, english, [], [], [])["checks"]["language"]
+
+
+@pytest.mark.parametrize(
+    ("case_id", "good", "bad"),
+    [
+        (
+            "agent-019",
+            "Привет! Показываю, что нового по PR, задачам и встречам, доступы, команду и playbook.",
+            "Привет! Покажу доступы, команду и playbook.",
+        ),
+        ("agent-024", "Не получилось получить задачу PAY-999 из Jira.", "Для PAY-999 нужны все доступы."),
+        (
+            "agent-031",
+            "В ORD-121 инструменты явно не указаны.",
+            "Не удалось получить задачу ORD-121 из Jira.",
+        ),
+        ("agent-032", "У Даниила и Эмиля проверок ещё не было.", "У Даниила проверок ещё не было."),
+    ],
+)
+def test_ev_02_calibrated_wording_keeps_required_meaning(ev, case_id, good, bad):
+    row = next(r for r in ev.load() if r["id"] == case_id)
+    links = row["quality"].get("sources", [])
+    assert ev.assess(row, good, links, [], [])["checks"]["content"]
+    assert not ev.assess(row, bad, links, [], [])["checks"]["content"]
+
+
+async def test_ev_03_next_case_history_cannot_mutate_previous_calls(ev):
+    def handler(request):
+        messages = json.loads(request.content)["messages"]
+        last = messages[-1]
+        if last["role"] == "user" and last["content"] == "Кто мой наставник?":
+            message = {
+                "tool_calls": [
+                    {"id": "c1", "type": "function", "function": {"name": "team_q3", "arguments": "{}"}}
+                ]
+            }
+        else:
+            message = {"content": "Наставник — Анна [S1]." if last["role"] == "tool" else "Привет!"}
+        return httpx.Response(200, json={"choices": [{"message": message}]})
+
+    rows = [
+        {"id": "first", "kind": "open", "text": "Привет", "tools": [], "quality": {"all": ["Привет"]}},
+        {
+            "id": "second",
+            "kind": "open",
+            "before": ["Кто мой наставник?"],
+            "text": "Привет",
+            "tools": [],
+            "quality": {"all": ["Привет"]},
+        },
+    ]
+    results = await ev.run_model(live_settings("agent"), rows, httpx.MockTransport(handler))
+    assert results[0]["calls"] == []
+    assert results[0]["tools"] == [] and results[0]["tool_ok"]
+    assert results[1]["history_requests"] == 2
+
+
+def test_ev_01_unrendered_source_label_fails(ev):
+    row = {"quality": {"all": ["ценности"]}}
+    assert ev.assess(row, "Вот ценности [S1–S5].", [], [], [])["checks"]["citation_labels"] is False
+    assert ev.assess(row, "Вот ценности [1][2].", [], [], [])["checks"]["citation_labels"] is True
+
+
+@pytest.mark.parametrize("case_id", ["agent-013", "agent-014", "agent-025"])
+def test_ev_01_playbook_requires_freshness_warning(ev, case_id):
+    row = next(r for r in ev.load() if r["id"] == case_id)
+    missing = " ".join(row["quality"].get("all", []))
+    verdict = ev.assess(row, missing, row["quality"].get("sources", []), [], [])
+    assert not verdict["content_checks"]["patterns"]
