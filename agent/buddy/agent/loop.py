@@ -13,7 +13,7 @@ import re
 from buddy.data.base import DataError
 from buddy.executors.context import Context
 from buddy.rag.qa import NOTE as PLAYBOOK_NOTE
-from buddy.router.rules import TASK
+from buddy.router.rules import TASK, decide
 from buddy.router.service import PARAMS, normalize
 from buddy.schemas import ExecutorResponse, RouteDecision
 
@@ -287,6 +287,7 @@ class Agent:
                       and not (TASK.search(text) or mentioned_prs(text) or INSTRUMENT.search(text)))
         contact = bool(history and re.search(r"писать|написать", text, re.I)
                        and re.search(r"личк|напрямую", text, re.I))
+        lookup = not advice and not contact and decide(text).case == "playbook_qa"
         if advice:
             allowed = set()
         messages = [
@@ -308,6 +309,9 @@ class Agent:
             active = [tool for tool in tools if tool["function"]["name"] == "team_q4"]
             allowed = {"team_q4"}
             choice = {"tool_choice": "required"}
+        elif lookup:
+            active = [tool for tool in tools if tool["function"]["name"] == "playbook_qa"]
+            choice = {"tool_choice": "required"}
         try:
             async with asyncio.timeout(self.timeout):
                 for _ in range(MAX_STEPS):
@@ -315,6 +319,10 @@ class Agent:
                     active, choice = tools, {}
                     calls = reply["tool_calls"]
                     if not calls:
+                        if lookup and not any(decision.case == "playbook_qa" for decision, _ in done):
+                            raise Rejected("playbook")
+                        if len(done) == 1 and done[0][0].case == "playbook_qa":
+                            return self._compose("", sources, done)
                         if any(decision.case in VERBATIM_TOOLS for decision, _ in done):
                             return self._compose("", sources, done)
                         # FR-AG-09: with no tool this turn, a task key or PR (even from the question
@@ -370,6 +378,8 @@ class Agent:
                         }
                     )
                     decisions = [checked_call(call, allowed) for call in calls]
+                    if lookup and not done and not any(d.case == "playbook_qa" for d in decisions):
+                        raise Rejected("playbook")
                     # One step's tools run together: a brief with its LLM wording takes ~4 s per call.
                     responses = await asyncio.gather(
                         *(self.registry.execute(d.case, d.params, context, runtime, text) for d in decisions)
@@ -385,6 +395,10 @@ class Agent:
             # Only the rule name or exception type is logged: no user text, no model output.
             reason = error.args[0] if isinstance(error, Rejected) else type(error).__name__
             log.info("agent fallback: %s", reason)
+            if lookup and not done:
+                decision = RouteDecision(case="playbook_qa", params={"query": text})
+                response = await self.registry.execute("playbook_qa", decision.params, context, runtime, text)
+                return self._compose("", [], [(decision, response)])
             if advice:
                 return RouteDecision.model_construct(case=CHAT, params={}), ExecutorResponse(
                     result="Разбери, что мешает сдвинуться с задачей: запиши блокер и что уже пробовал. "
@@ -420,6 +434,11 @@ class Agent:
         # A single brief already owns its code-made numbering and source labels.
         if len(done) == 1 and done[0][0].case == "brief_now":
             return done[0]
+        if len(done) == 1 and done[0][0].case == "playbook_qa":
+            decision, response = done[0]
+            if PLAYBOOK_NOTE not in response.result:
+                response = response.model_copy(update={"result": response.result + "\n" + PLAYBOOK_NOTE})
+            return decision, response
         if any(decision.case in VERBATIM_TOOLS for decision, _ in done):
             # Preserve checked states and named contact permissions instead of rewriting them.
             sources = []

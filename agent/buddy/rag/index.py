@@ -35,7 +35,20 @@ K1, B = 1.4, 0.7
 MIN_COVERAGE = 0.4
 
 
+def search_query(text: str) -> str:
+    """Strip an introductory search request, never unknown words in the actual topic."""
+    return re.sub(
+        r"^\s*(?:пожалуйста[, ]+)?(?:поищи(?:те)?|найди(?:те)?|ищи(?:те)?|посмотри(?:те)?)\s+"
+        r"(?:мне\s+)?(?:что[- ](?:то|нибудь)\s+|информацию\s+|материалы\s+)?"
+        r"(?:(?:про|об?|по)(?:\s+|$))?",
+        "", text, flags=re.IGNORECASE,
+    ).strip()
+
+
 def stem(word: str) -> str:
+    # Abstract nouns must not lose the verb suffix «ти/ть»: ценности/ценность → ценност.
+    if word.endswith(("ность", "ности")):
+        return word[:-1]
     for ending in ENDINGS:
         if len(word) - len(ending) >= 3 and word.endswith(ending):
             return word[: -len(ending)]
@@ -77,7 +90,7 @@ class PlaybookIndex:
 
     def rank(self, query: str, limit: int = 20) -> list[tuple[int, float, float]]:
         """Best fragments as (chunk number, BM25 score, share of the query weight they cover)."""
-        terms = list(dict.fromkeys(tokens(query)))
+        terms = list(dict.fromkeys(tokens(search_query(query))))
         if not terms or not self.chunks:
             return []
         weight = {term: self.idf.get(term, self.unknown) for term in terms}
@@ -97,7 +110,7 @@ class PlaybookIndex:
         """False when the question has a word that the whole playbook never uses."""
         return all(
             term in self.idf or (len(term) >= 5 and term[: max(4, len(term) - 2)] in self.prefixes)
-            for term in tokens(query)
+            for term in tokens(search_query(query))
         )
 
     def hits(self, ranked: list[tuple[int, float, float]], limit: int = 3) -> list[Hit]:
