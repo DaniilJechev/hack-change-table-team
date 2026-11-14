@@ -337,3 +337,29 @@ class BackendData:
 
     async def set_brief_settings(self, user_id: str, **changes) -> dict:
         return await self._rest("PATCH", "/api/v1/brief-settings", user_id, changes)
+
+    async def equator_history(self, user_id: str) -> list[dict]:
+        return (await self._rest("GET", "/api/v1/equator/checks", user_id))["items"]
+
+    async def equator_save(self, user_id: str, record: dict) -> dict:
+        path = "/api/v1/equator/checks/" + quote(record["id"], safe="")
+        return await self._rest("PUT", path, user_id, record)
+
+    async def equator_invalidate(self, user_id: str) -> dict:
+        return await self._rest("POST", "/api/v1/equator/invalidate", user_id)
+
+    async def equator_clear(self, user_id: str) -> dict:
+        return await self._rest("DELETE", "/api/v1/equator/checks", user_id)
+
+    async def equator_claim(
+        self, user_id: str, check_id: str, part: str, retry_unknown: bool = False
+    ) -> dict:
+        path = "/api/v1/equator/checks/" + quote(check_id, safe="") + "/claim"
+        return await self._rest("POST", path, user_id, {"part": part, "retry_unknown": retry_unknown})
+
+    async def equator_delivery(self, user_id: str, check_id: str, part: str, state: str) -> dict:
+        path = "/api/v1/equator/checks/" + quote(check_id, safe="") + "/delivery"
+        return await self._rest("PATCH", path, user_id, {"part": part, "state": state})
+
+    async def mentor_chat(self, user_id: str) -> int | None:
+        return (await self._rest("GET", "/api/v1/equator/mentor-chat", user_id))["chat_id"]

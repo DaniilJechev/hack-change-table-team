@@ -9,7 +9,7 @@ COPY github_mcp.py /app/github_mcp.py
 # AGENT_EXTRAS="--extra rag" adds CPU-only torch and e5 for RAG_SEARCH_MODE=vector|rrf (about +1 GB).
 ARG AGENT_EXTRAS=""
 RUN pip install --no-cache-dir uv==0.9.5 && uv sync --frozen --no-dev --no-editable ${AGENT_EXTRAS}
-RUN useradd --system --uid 10001 buddy && mkdir -p /models && chown buddy /models
+RUN useradd --system --uid 10001 buddy && mkdir -p /models /h4 && chown buddy /models /h4
 USER buddy
 ENV PATH="/app/.venv/bin:$PATH" HF_HOME=/models
 EXPOSE 8081

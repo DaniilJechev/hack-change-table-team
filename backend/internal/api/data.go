@@ -18,6 +18,7 @@ func DataHandler(data *store.Store, key string) http.Handler {
 	actor := auth.Actor
 	stageFourRoutes(mux, data)
 	mockServicesRoutes(mux, data)
+	equatorRoutes(mux, data)
 	mux.HandleFunc("GET /api/v1/flags", func(w http.ResponseWriter, r *http.Request) {
 		v, e := data.Flags(r.Context(), actor(r.Context()))
 		result(w, v, e)
@@ -250,7 +251,10 @@ func result(w http.ResponseWriter, value any, err error) {
 	respond(w, 200, value)
 }
 func decode(w http.ResponseWriter, r *http.Request, value any) bool {
-	r.Body = http.MaxBytesReader(w, r.Body, 1<<20)
+	return decodeLimited(w, r, value, 1<<20)
+}
+func decodeLimited(w http.ResponseWriter, r *http.Request, value any, limit int64) bool {
+	r.Body = http.MaxBytesReader(w, r.Body, limit)
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	if err := decoder.Decode(value); err != nil {
@@ -270,6 +274,9 @@ func Application(data *store.Store, key string) http.Handler {
 	root := http.NewServeMux()
 	identity := Handler(Identity{Store: data, ServiceKey: key})
 	root.Handle("/api/v1/auth/", identity)
+	traces := AgentTraceHandler(data, key)
+	root.Handle("/api/v1/agent-traces", traces)
+	root.Handle("/api/v1/agent-traces/", traces)
 	root.Handle("/api/v1/", DataHandler(data, key))
 	root.Handle("/mcp", buddymcp.Handler(data, key))
 	root.HandleFunc("GET /r/{token}", func(w http.ResponseWriter, r *http.Request) {

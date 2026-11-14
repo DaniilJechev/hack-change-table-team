@@ -48,7 +48,7 @@ func (s *Store) ProvisionMetricsRole(ctx context.Context, password string) error
 		`ALTER ROLE buddy_metrics SET default_transaction_read_only=on`,
 		`ALTER ROLE buddy_metrics SET statement_timeout='5s'`,
 		`GRANT USAGE ON SCHEMA ` + quoted + ` TO buddy_metrics`,
-		`GRANT SELECT ON ` + quoted + `.metrics_briefs,` + quoted + `.metrics_helpful,` + quoted + `.metrics_access,` + quoted + `.metrics_mcp TO buddy_metrics`,
+		`GRANT SELECT ON ` + quoted + `.metrics_briefs,` + quoted + `.metrics_helpful,` + quoted + `.metrics_access,` + quoted + `.metrics_mcp,` + quoted + `.metrics_agent TO buddy_metrics`,
 	} {
 		if _, err = tx.ExecContext(ctx, stmt); err != nil {
 			return errors.New("metrics role provisioning failed")

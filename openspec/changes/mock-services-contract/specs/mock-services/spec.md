@@ -31,8 +31,8 @@ SHALL принимать completed (boolean). Ответ SHALL включать 
 completed_at, updated_at и simulated=true. Повторная отметка MUST сохранять completed_at.
 
 #### Scenario: Отметка H4
-- **WHEN** агент вызывает mark_progress(user_id, "equator_presentation") после проверки и отправки наставнику
-- **THEN** пункт отмечается; progress(user_id) возвращает его статус, повтор не меняет первое время завершения
+- **WHEN** стажёр явно подтверждает отправку актуальной презентации с пройденными обязательными критериями H4 и агент вызывает mark_progress(user_id, "equator_presentation")
+- **THEN** пункт означает «проверено AI-buddy»; progress(user_id) возвращает статус, повтор не меняет первое время завершения, доставка наставнику учитывается отдельно
 
 ### Requirement: MOCK-DEMO-1 Офлайн-паритет
 TeamData SHALL объявлять request_access, access_requests, resolve_access_request,

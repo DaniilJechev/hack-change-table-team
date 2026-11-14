@@ -148,7 +148,7 @@ async def test_fr_h0_03_fr_h0_04_brief_has_five_items_more_button_and_main_actio
     response = await service.now_brief(context, runtime)
     lines = response.result.splitlines()
     assert lines[1].startswith("▶ Главное сегодня: исправить замечания в PR #45")
-    assert lines[2].startswith("1. 🔴 Git: PR #45") and len(lines) == 7 and len(response.links) == 5
+    assert lines[2].startswith("1. Git: PR #45") and len(lines) == 7 and len(response.links) == 5
     assert response.actions[0].label == "Ещё 3" and response.actions[1].label == "👍"
     await service.delivered(response.brief_id, runtime, True)
     more = await service.signal("more", response.brief_id, context, runtime)
@@ -203,7 +203,7 @@ async def test_fr_h0_link_3_llm_rewords_by_item_id_and_never_touches_links():
     service.llm = FakeLLM("Вот бриф: " + json.dumps(good, ensure_ascii=False))
     worded = await service.now_brief(context, runtime)
     assert "▶ Главное сегодня: Поправить замечания Анны" in worded.result
-    assert "1. Анна просит правки в PR #45" in worded.result and "Выдуманный" not in worded.result
+    assert "1. Git: Анна просит правки в PR #45" in worded.result and "Выдуманный" not in worded.result
     assert worded.links == plain.links and ids is None
     assert "item_id" in service.llm.calls[0] and "https://" not in service.llm.calls[0]
 
@@ -221,7 +221,7 @@ async def test_fr_h0_link_3_untrusted_llm_answer_falls_back_to_template(raw):
     _, runtime, context = demo()
     service = BriefService(FakeLLM(raw))
     response = await service.now_brief(context, runtime)
-    assert "1. 🔴 Git: PR #45" in response.result and "исправить замечания" in response.result
+    assert "1. Git: PR #45" in response.result and "исправить замечания" in response.result
 
 
 async def test_fr_h0_link_3_llm_text_with_url_is_rejected():

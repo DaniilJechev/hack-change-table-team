@@ -373,6 +373,7 @@ def build(root: Path = ROOT) -> None:
                     {
                         "key": "ORD-100",
                         "issue_type": "Epic",
+                        "status": {"name": "In Progress"},
                         "summary": "Фильтры в новом API",
                         "team_id": "demo-orders",
                         "progress": {"done": 6, "total": 11},

@@ -21,6 +21,7 @@ type BriefItem struct {
 	Before        string    `json:"before,omitempty"`
 	After         string    `json:"after,omitempty"`
 	CreatedAt     time.Time `json:"created_at"`
+	RenderText    string    `json:"render_text,omitempty"`
 }
 type Brief struct {
 	ID        string            `json:"id"`
@@ -38,6 +39,9 @@ func (s *Store) SaveBrief(ctx context.Context, actor Profile, input Brief) (Brie
 	}
 	seen := map[string]bool{}
 	for _, item := range input.Items {
+		if len(item.RenderText) > 2000 {
+			return input, ErrInvalid
+		}
 		if !ValidID(item.ID) || seen[item.ID] || !validURL(item.URL) || !validText(item.Title, 2000) || !validText(item.Type, 128) || item.CreatedAt.IsZero() {
 			return input, ErrInvalid
 		}

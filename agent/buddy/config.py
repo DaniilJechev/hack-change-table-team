@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     memory_max_turns: int = Field(default=6, ge=1)
     memory_ttl_seconds: int = Field(default=30 * 60, ge=1)
     redis_url: str = ""
+    h4_recommended_max_slides: int = Field(default=10, gt=0)
+    h4_recommended_max_words_per_slide: int = Field(default=100, gt=0)
+    h4_history_ttl_days: int = Field(default=7, gt=0, le=36500)
+    h4_history_path: str = ""
 
     @model_validator(mode="after")
     def validate_live(self) -> "Settings":

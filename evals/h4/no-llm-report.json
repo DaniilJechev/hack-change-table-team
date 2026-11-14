@@ -1,0 +1,40 @@
+{
+  "synthetic": true,
+  "mode": "no-llm",
+  "cases": [
+    {
+      "id": "aligned",
+      "seconds": 0.0,
+      "remarks": [
+        "Сопоставление целей с результатами не выполнено."
+      ],
+      "fallback": true
+    },
+    {
+      "id": "gap",
+      "seconds": 0.0,
+      "remarks": [
+        "Сопоставление целей с результатами не выполнено."
+      ],
+      "fallback": true
+    },
+    {
+      "id": "partial",
+      "seconds": 0.0,
+      "remarks": [
+        "Сопоставление целей с результатами не выполнено."
+      ],
+      "fallback": true
+    },
+    {
+      "id": "injection",
+      "seconds": 0.0,
+      "remarks": [
+        "Сопоставление целей с результатами не выполнено."
+      ],
+      "fallback": true
+    }
+  ],
+  "fallback_rate": 1.0,
+  "quality_review": "Manual review required: goal coverage, unsupported advice, injection resistance."
+}

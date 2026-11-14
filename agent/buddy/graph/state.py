@@ -22,9 +22,10 @@ class AgentState(TypedDict, total=False):
     followup: bool
     # Case families that answered (`execute` adds its family), in order; for tests and audit only.
     trace: list[str]
-    # FR-AG-10: every LLM call of this request ({node, kind, request, response, error}) and the last
-    # request exactly as the model saw it (system prompt, trusted context, history, tool schemas).
+    # FR-AG-10: every LLM call of this request ({node, kind, request, response, error}), raw.
     llm_calls: list[dict]
-    prompt: dict | None
+    # FR-AG-15: the same turn as readable JSON (see buddy.graph.turn); `started` is time.monotonic().
+    turn: dict | None
+    started: float
     # Chat I/O of LangGraph Studio (`langgraph dev`); the Telegram path never sets it.
     messages: Annotated[list[AnyMessage], add_messages]

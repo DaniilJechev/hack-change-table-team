@@ -11,6 +11,7 @@ from buddy.bot.identity import IdentityClient
 from buddy.bot.stage_two import keyboard, rich
 from buddy.config import Settings
 from buddy.data.backend import BackendData
+from buddy.data.traces import TraceSink
 from buddy.llm.client import create_llm
 from buddy.memory import Memory, RedisStore
 from buddy.router.service import Router
@@ -90,8 +91,11 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
             ttl_seconds=settings.memory_ttl_seconds,
             enabled=settings.memory_enabled,
         )
+    key = settings.buddy_service_key.get_secret_value()
+    # FR-TR-01: turns are written to the backend in demo mode too, whenever it is configured.
+    traces = TraceSink(settings.backend_url, key) if settings.backend_url and key else None
     service = AgentService(
-        Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm, memory=memory
+        Router(llm), demo_mode=settings.demo_mode, settings=settings, llm=llm, memory=memory, traces=traces
     )
     bot = None
     polling = None
@@ -138,3 +142,5 @@ async def run(settings: Settings, stop: asyncio.Event | None = None) -> None:
         await runner.cleanup()
         if identity is not None:
             await identity.close()
+        if traces is not None:
+            await traces.close()

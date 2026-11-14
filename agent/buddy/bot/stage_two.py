@@ -188,7 +188,7 @@ async def demo(message: Message, agent_service: AgentService):
     action = arguments[1].strip() if len(arguments) == 2 else ""
     user = message.from_user.id
     if action in {"reset", "off", "mentor", "intern"} or (not action and not agent_service.demo.active(user)):
-        agent_service.clear_demo(user)
+        agent_service.clear_demo(user, clear_equator=action == "reset")
     before = None
     if action == "next" and agent_service.demo.active(user):
         # Baseline at the current step, so the next step reports only real changes (access_events).

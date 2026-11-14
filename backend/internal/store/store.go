@@ -22,6 +22,9 @@ type Store struct {
 	db           *sql.DB
 	flagDefaults map[string]bool
 	github       *githubSource
+	// traceRetentionDays is set by ConfigureAgentTraceRetention; 0 means the default.
+	traceRetentionDays int
+	equatorHistoryDays int
 }
 
 // Open never includes the DSN or driver error in its error messages.

@@ -222,8 +222,10 @@ async def test_fr_ag_04_links_are_added_by_code():
     )
     state = await ask("Что у меня сегодня?")
     response = state["response"]
-    assert response.result == "Главное — поправить PR #45 [1], потом посмотреть ревью PR #47 [2]."
-    assert response.links[0].endswith("/pull/45#pullrequestreview-9001") and response.links[1].endswith(
+    # A single brief preserves the executor's numbering and all per-item links.
+    assert "1. Git:" in response.result and "3. Git:" in response.result
+    assert "[1]" in response.result and "[3]" in response.result
+    assert response.links[0].endswith("/pull/45#pullrequestreview-9001") and response.links[2].endswith(
         "/pull/47"
     )
     assert response.brief_id and response.entities["pr"] == ["45", "47"]
@@ -610,3 +612,9 @@ def test_fr_ag_13_eval_flags_ai_text_tells():
     assert not run_agent.TELLS.search("✅ GitHub — orders-onboarding: доступ есть [S1]")
     row = next(row for row in run_agent.load() if row["id"] == "agent-003")
     assert row["expect"] == ["✅", "⬜", "⛔"]
+
+
+def test_fr_ag_13_system_prompt_keeps_one_fact_per_line():
+    from buddy.agent.loop import SYSTEM
+
+    assert "не сливай в абзац, каждый — с новой" in SYSTEM and "Главное — первой строкой" in SYSTEM

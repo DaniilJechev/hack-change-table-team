@@ -1,9 +1,10 @@
 import os
+import re
 
 from buddy.agent import Agent
 from buddy.demo.controller import DemoController
 from buddy.equator.service import EquatorService, local_pptx_gateway
-from buddy.executors.core import Context, Registry
+from buddy.executors.core import PERSONAL, Context, Registry
 from buddy.graph import build_graph
 from buddy.llm.client import CompatibleLLM
 from buddy.memory import Memory
@@ -25,8 +26,10 @@ class AgentService:
         settings=None,
         llm=None,
         memory: Memory | None = None,
+        traces=None,
     ):
         self.router = router
+        self.traces = traces  # FR-TR-01: TraceSink or None
         self.executors = Registry(llm=llm, settings=settings)
         engine = getattr(settings, "agent_engine", None) or os.environ.get("AGENT_ENGINE", "graph")
         if engine not in {"legacy", "graph"}:
@@ -52,11 +55,13 @@ class AgentService:
         self.known: dict[str, Context] = {}
         self.awaiting: dict[int, tuple[str, str, Context]] = {}
         self.awaiting_card: dict[int, Context] = {}
-        self.equator = EquatorService(pptx_gateway=local_pptx_gateway() if demo_mode else None)
+        self.equator = EquatorService(
+            settings=settings, llm=llm, pptx_gateway=local_pptx_gateway() if demo_mode else None
+        )
 
-    async def equator_check(self, name: str, data: bytes, context: Context):
+    async def equator_check(self, name: str, data: bytes, context: Context, *, file_id: str = ""):
         """H4: rules-only deck check; returns the report and the stored check (or None)."""
-        return await self.equator.check(name, data, context, self.runtime(context))
+        return await self.equator.check(name, data, context, self.runtime(context), file_id=file_id)
 
     async def equator_send(self, check_id: str, context: Context):
         return await self.equator.send(check_id, context, self.runtime(context))
@@ -78,10 +83,23 @@ class AgentService:
         return self.chats.get(user_id)
 
     async def handle(self, text: str, context: Context):
+        if (
+            not PERSONAL.search(text.casefold())
+            and re.search(r"презентац|экватор", text.casefold())
+            and re.search(r"как|провер|пришл|отправ|загруз", text.casefold())
+        ):
+            return RouteDecision(case="help"), ExecutorResponse(
+                result="Пришлите презентацию в PDF или PPTX (до 10 МиБ и 30 слайдов). "
+                "Проверю текст: структуру и задачи Jira, дам рекомендации и сравню версии. "
+                "Картинки и оформление не оцениваю, файл не редактирую. "
+                "После обязательных проверок появится кнопка «Отправить наставнику»."
+            )
         if self.graph is not None:
             state = await self.graph.ainvoke(
                 {"text": text, "context": context, "runtime": self.runtime(context)}
             )
+            if self.traces is not None:
+                self.traces.send(state)
             return state["decision"], state["response"]
         decision = await self.router.route(text, context=context)
         response = await self.executors.execute(
@@ -96,6 +114,8 @@ class AgentService:
             state = await self.graph.ainvoke(
                 {"context": context, "runtime": self.runtime(context), "decision": decision}
             )
+            if self.traces is not None:
+                self.traces.send(state)
             return state["response"]
         return await self.executors.trigger(case, context, self.runtime(context))
 
@@ -128,11 +148,12 @@ class AgentService:
         await self.memory.clear(context)
         return ExecutorResponse(result="Контекст диалога очищен. Следующий вопрос начнём с чистого листа.")
 
-    def clear_demo(self, telegram_user: int) -> None:
+    def clear_demo(self, telegram_user: int, *, clear_equator: bool = True) -> None:
         self.memory.clear_demo(telegram_user)
         self.awaiting.pop(telegram_user, None)
         self.awaiting_card.pop(telegram_user, None)
-        self.equator.clear(telegram_user)
+        if clear_equator:
+            self.equator.clear(telegram_user)
         for cache in (
             self.executors.access.previous,
             self.executors.team.pending,

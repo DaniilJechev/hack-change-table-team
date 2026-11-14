@@ -33,6 +33,7 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+.pytest-h4*/
 .coverage
 .coverage.*
 *.egg-info/

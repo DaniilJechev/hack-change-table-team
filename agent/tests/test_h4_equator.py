@@ -48,7 +48,7 @@ def deck(*slides: tuple[str, str]) -> list[Slide]:
     return [Slide(number, title, title + "\n" + body) for number, (title, body) in enumerate(slides, 1)]
 
 
-TITLE = ("Экваторная встреча", "Стажёр команды «Заказы»\nНаставник: Анна\nСентябрь – ноябрь 2026")
+TITLE = ("Экваторная встреча", "Даниил, стажёр команды «Заказы»\nНаставник: Анна\nСентябрь – ноябрь 2026")
 
 
 # FR-H4-01 ---------------------------------------------------------------------------------------
@@ -205,9 +205,15 @@ async def test_fr_h4_01_too_large_and_too_many_slides():
 
 def test_fr_h4_02_all_six_sections_with_synonyms():
     slides = deck(
-        TITLE, ("Цели", ""), ("Что сделано", ""), ("Итоги", ""), ("Трудности", ""), ("Что дальше", "")
+        TITLE,
+        ("Цели", "Разобраться"),
+        ("Что сделано", "ORD-115"),
+        ("Итоги", "Ускорение"),
+        ("Трудности", "Вывод"),
+        ("Что дальше", "Развитие"),
     )
-    sections = structure(slides)
+    _, runtime = demo()
+    sections = structure(slides, runtime.data.users["demo-daniil"], runtime.data.card)
     assert [section.slides for section in sections] == [[1], [2], [3], [4], [5], [6]]
 
 
@@ -233,7 +239,11 @@ def test_fr_h4_02_numbering_and_case_are_ignored(heading, section):
 
 def test_fr_h4_02_incomplete_title_names_missing_markers():
     slide = Slide(1, "Привет", "Привет\nДаниил\nКоманда «Заказы»")
-    assert title_markers(slide) == ["наставник", "стажёр или стажировка", "период"]
+    _, runtime = demo()
+    assert title_markers(slide, runtime.data.users["demo-daniil"], runtime.data.card) == [
+        "наставник",
+        "период",
+    ]
     title = structure([slide])[0]
     assert title.slides == [] and "наставник" in title.missing
 
@@ -258,7 +268,7 @@ async def test_fr_h4_03_status_match_mismatch_and_missing_issue():
 def test_fr_h4_03_status_words_are_read_from_the_key_line():
     slides = deck(("Выполненные задачи", "ORD-1 — на ревью\nORD-2 сделано, теперь в работе ORD-3\nORD-4"))
     said = [(item.key, item.said) for item in mentions(slides)]
-    assert said == [("ORD-1", "review"), ("ORD-2", "done"), ("ORD-3", "done"), ("ORD-4", None)]
+    assert said == [("ORD-1", "review"), ("ORD-2", "ambiguous"), ("ORD-3", "done"), ("ORD-4", "done")]
 
 
 async def test_fr_h4_03_jira_unavailable_is_not_checked_and_has_no_button():
@@ -269,7 +279,7 @@ async def test_fr_h4_03_jira_unavailable_is_not_checked_and_has_no_button():
             raise SourceUnavailable("down")
 
     _, response, record = await run("good.pdf", runtime=dataclasses.replace(runtime, gateway=Down()))
-    assert "Jira недоступна, не проверено" in response.result
+    assert "не проверено" in response.result
     assert record is not None and not record.passed and not response.actions
 
 
