@@ -21,6 +21,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
+
 from buddy.agent import Agent
 from buddy.agent.loop import SYSTEM
 from buddy.config import Settings
