@@ -7,3 +7,12 @@
 .tools
 .cache
 reports
+
+**/.ruff_cache
+**/.pytest-h4*
+**/.coverage*
+**/*.log
+.tmp
+.presentation-draft
+output
+.langgraph_api
