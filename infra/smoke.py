@@ -10,6 +10,8 @@ from urllib.error import URLError
 from urllib.request import urlopen
 
 COMPOSE_COMMAND = None
+CORE_SERVICES = {"backend", "agent", "postgres", "redis", "grafana"}
+OPTIONAL_SERVICES = {"mcp-atlassian", "google-calendar-mcp", "powerpoint-mcp"}
 
 
 def compose(*arguments: str) -> str:
@@ -22,6 +24,21 @@ def compose(*arguments: str) -> str:
 def check(condition: bool, message: str) -> None:
     if not condition:
         raise RuntimeError(message)
+
+
+def check_services(rows: list[dict]) -> None:
+    names = {row["Service"] for row in rows}
+    check(
+        CORE_SERVICES <= names <= CORE_SERVICES | OPTIONAL_SERVICES,
+        "Expected five core containers and only configured optional MCP servers",
+    )
+    for row in rows:
+        if row["Service"] not in CORE_SERVICES | {"powerpoint-mcp"}:
+            continue  # Jira/Calendar MCP have a separate make mcp-list check.
+        check(
+            row["State"] == "running" and row.get("Health") == "healthy",
+            f"Service {row['Service']} is not running and healthy",
+        )
 
 
 def main() -> None:
@@ -38,20 +55,8 @@ def main() -> None:
         if output.startswith("[")
         else [json.loads(line) for line in output.splitlines() if line.strip()]
     )
-    expected = {"backend", "agent", "postgres", "redis", "grafana"}
-    names = {row["Service"] for row in rows}
-    check(
-        expected <= names <= expected | {"mcp-atlassian", "google-calendar-mcp"},
-        "Expected five core containers and only configured optional MCP servers",
-    )
-    for row in rows:
-        if row["Service"] not in expected:
-            continue  # Optional MCP servers have a separate make mcp-list check.
-        check(
-            row["State"] == "running" and row.get("Health") == "healthy",
-            f"Service {row['Service']} is not running and healthy",
-        )
-    print("NFR-BOOT-1: all five containers are running and healthy")
+    check_services(rows)
+    print("NFR-BOOT-1: core containers and any present PowerPoint MCP are running and healthy")
 
     address = compose("port", "backend", "8080")
     with urlopen(f"http://{address}/health", timeout=5) as response:
