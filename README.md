@@ -315,3 +315,11 @@ curl -s -H "X-Buddy-Key: $BUDDY_SERVICE_KEY" "http://127.0.0.1:$BACKEND_PORT/api
 переменной `CLIENT_API_ENABLED=true`; по умолчанию выключен.
 [Установка, вход через Telegram и запуск через ngrok](desktop/README.md).
 [Публичный API клиента](desktop/openapi.yaml).
+
+## Лицензия
+
+Оригинальный код команды — [MIT](LICENSE). Сторонние зависимости, модели и тексты
+сохраняют свои условия: [уведомления и ограничения](THIRD_PARTY_NOTICES.md),
+[реестр зависимостей](third_party/dependency-licenses.json). В частности, корпус
+AvitoTech Playbook не включён в MIT проекта; права на его распространение требуют
+отдельного подтверждения.

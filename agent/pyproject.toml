@@ -6,6 +6,7 @@ build-backend = "hatchling.build"
 name = "ai-buddy-agent"
 version = "0.1.0"
 description = "AI-buddy stage-0 scaffold"
+license = "MIT"
 requires-python = ">=3.12"
 dependencies = [
   "aiogram>=3.22,<4",
