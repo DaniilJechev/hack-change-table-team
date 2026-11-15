@@ -4,6 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 COPY pyproject.toml uv.lock ./
 COPY buddy ./buddy
+COPY third_party ./third_party
 COPY --from=github-mcp /server/github-mcp-server /usr/local/bin/github-mcp-server
 COPY github_mcp.py /app/github_mcp.py
 # AGENT_EXTRAS="--extra rag" adds CPU-only torch and e5 for RAG_SEARCH_MODE=vector|rrf (about +1 GB).
