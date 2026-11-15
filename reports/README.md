@@ -10,7 +10,7 @@
 - [Актуализация документов и очистка: было → стало](DOCUMENTATION_CLEANUP_REPORT.md).
 - [Структурный рефакторинг агента](AGENT_STRUCTURE_REFACTOR.md).
 - [Каталог метрик и ограничения измерения](../docs/METRICS.md).
-- [Состояние активных OpenSpec-изменений](../docs/OPENSPEC_STATUS.md).
+- [Закрытие OpenSpec-изменений и отложенные проверки](../docs/OPENSPEC_STATUS.md).
 
 ## Качество и агент
 
@@ -24,7 +24,7 @@
 
 - [Завершение H4](H4_COMPLETION_REPORT.md), [backend истории H4](H4_BACKEND_COMPLETION.md).
 - [Windows-клиент](WINDOWS_DESKTOP_CLIENT.md); [инструкция](../desktop/README.md).
-- [Ручной сценарий H4](../docs/H4_OPERATIONS.md).
+- [Ручной сценарий H4](../docs/archive/2026-11-15/H4_OPERATIONS.md).
 
 ## История этапов
 

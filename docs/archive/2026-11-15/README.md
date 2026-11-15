@@ -308,7 +308,7 @@ curl -s -H "X-Buddy-Key: $BUDDY_SERVICE_KEY" "http://127.0.0.1:$BACKEND_PORT/api
 статусы проверки и доставки наставнику. Live-история хранится через REST в PostgreSQL,
 демо — в постоянном томе SQLite. По умолчанию история доступна 7 дней; пороги слайдов,
 слов и срок задаются через env. Картинки разрешены, проверяется только извлекаемый текст.
-Настройки и ручной сценарий: [H4_OPERATIONS.md](../../H4_OPERATIONS.md).
+Настройки и ручной сценарий: [H4_OPERATIONS.md](H4_OPERATIONS.md).
 
 ## Windows-клиент AvitoCode
 

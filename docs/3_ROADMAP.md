@@ -10,7 +10,7 @@
 |---|---|---|
 | H0–H3 | Сервисы, фикстуры, источники, fallback, данные backend | [Индекс отчётов](../reports/README.md), спецификации и agent/tests |
 | H1: заявка | Программная имитация и постоянные backend-данные | [MOCK_SERVICES.md](../backend/MOCK_SERVICES.md), тесты mock/access |
-| H4 | PDF/PPTX, факты, версии, история, отдельная доставка | [H4_OPERATIONS.md](H4_OPERATIONS.md), тесты equator |
+| H4 | PDF/PPTX, факты, версии, история, отдельная доставка | [архив сценария H4](archive/2026-11-15/H4_OPERATIONS.md), тесты equator |
 | Агентный цикл и память | LangGraph, инструменты по ролям, Router fallback, свежие источники | [agent/README.md](../agent/README.md) |
 | Понятная структура | Каталог, разделённый Telegram, prompts/scheduler/observability | [Отчёт рефакторинга](../reports/AGENT_STRUCTURE_REFACTOR.md) |
 | Диалог | Обычный текст, /ask совместимость, справка команд | [conversational-interface](../openspec/specs/conversational-interface/spec.md) |
@@ -56,7 +56,7 @@ Go-пакеты с временной PostgreSQL прошли, покрытие 
 синтетические наборы, приёмка, материалы пилота и презентации.
 
 Правила работы: [AGENTS.md](../AGENTS.md). Обнаруженный дрейф требований оформляется
-в OpenSpec перед изменением поведения. Оставшиеся активные дельты и зависимости:
+в OpenSpec перед изменением поведения. Закрытие OpenSpec-изменений и отложенные проверки:
 [OPENSPEC_STATUS.md](OPENSPEC_STATUS.md).
 
 ## 5. Эксплуатация

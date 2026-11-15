@@ -103,7 +103,7 @@ Grafana Viewer создаётся скриптом настройки; лока�
 5. «Что делает /settings?» объясняет команду; `/settings brief 09:00` меняет время,
    `/settings quiet on|off` — тихий режим. При quiet on в день без изменений бриф не приходит.
 6. Отправьте PDF/PPTX: бот проверяет текст до 10 МиБ и 30 слайдов. Учебные файлы:
-   [fixtures/equator](fixtures/equator), сценарий — [H4_OPERATIONS.md](docs/H4_OPERATIONS.md).
+   [fixtures/equator](fixtures/equator), сценарий — [H4_OPERATIONS.md](docs/archive/2026-11-15/H4_OPERATIONS.md).
 7. `/demo mentor` и `/demo intern` переключают учебные роли; `/demo off` выходит из демо.
 
 Для реального профиля импортируйте синтетический seed и выдайте приглашение:
