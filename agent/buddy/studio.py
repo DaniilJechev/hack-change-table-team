@@ -7,11 +7,11 @@ one, and then the Router prompts are still recorded. The persona is chosen per a
 """
 
 from buddy.config import Settings
-from buddy.executors.context import Context
-from buddy.graph import build_graph
+from buddy.contracts import Context
 from buddy.llm.client import create_llm
-from buddy.router.service import Router
-from buddy.service import AgentService
+from buddy.orchestration.graph import build_graph
+from buddy.orchestration.router.service import Router
+from buddy.orchestration.service import AgentService
 
 # One synthetic demo session per persona (the demo controller keys sessions by an integer).
 PERSONAS = {"intern": 1, "mentor": 2}

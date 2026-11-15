@@ -7,13 +7,12 @@ from io import BytesIO
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 from aiogram.types import Message
 
-from buddy.bot.stage_two import keyboard, prefix, send
-from buddy.data.base import DataError
+from buddy.bot.rendering import keyboard, prefix, send
+from buddy.contracts import Action, Context
+from buddy.data.contracts import DataError
 from buddy.equator.slides import MAX_BYTES
-from buddy.executors.context import Context
+from buddy.orchestration.service import AgentService
 from buddy.render import _inline, cite
-from buddy.schemas import Action
-from buddy.service import AgentService
 
 
 class LimitedDeck(BytesIO):

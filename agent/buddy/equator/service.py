@@ -10,17 +10,16 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
-from buddy.data.base import DataError
+from buddy.contracts import Action, Context, ExecutorResponse
+from buddy.data.contracts import DataError
 from buddy.data.mock_services import EQUATOR_ITEM
 from buddy.equator.checks import Fact, group_label, judge, mentions, structure
 from buddy.equator.history import DemoHistory
 from buddy.equator.recommendations import recommend
 from buddy.equator.slides import DeckError, Slide, detect, opened, pdf_slides, pptx_slides
-from buddy.executors.context import Context
 from buddy.mcp_hub.errors import FixtureMissing, MCPError
 from buddy.mcp_hub.policy import permitted
 from buddy.runtime import Runtime
-from buddy.schemas import Action, ExecutorResponse
 
 CASE = "equator_check"
 log = logging.getLogger(__name__)

@@ -3,8 +3,8 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import KeyboardButton, Message, ReplyKeyboardMarkup
 
 from buddy.bot.identity import IdentityClient, IdentityError
-from buddy.bot.stage_two import register
-from buddy.service import AgentService
+from buddy.bot.registration import register
+from buddy.orchestration.service import AgentService
 
 WELCOME = (
     "Привет! Я AI-buddy — помощник стажёра.\n"

@@ -5,8 +5,8 @@ from datetime import datetime
 from pathlib import Path
 
 from buddy.access.checker import FixtureTelegram
+from buddy.contracts import Context
 from buddy.data.seed import SeedData, load_bundle
-from buddy.executors.context import Context
 from buddy.mcp_hub.config import SERVERS, ServerConfig
 from buddy.mcp_hub.fixtures import FixtureStore
 from buddy.mcp_hub.hub import Hub

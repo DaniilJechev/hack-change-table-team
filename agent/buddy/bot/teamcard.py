@@ -6,8 +6,8 @@ from io import BytesIO
 from aiogram.types import Message
 
 from buddy.bot.identity import IdentityClient
-from buddy.bot.stage_two import context
-from buddy.service import AgentService
+from buddy.bot.session import context
+from buddy.orchestration.service import AgentService
 
 MAX_BYTES = 1 << 20
 

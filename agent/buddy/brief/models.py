@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from pydantic import Field
 
-from buddy.schemas import Contract
+from buddy.contracts import Contract
 
 Source = Literal["github", "jira", "calendar"]
 PriorityClass = Literal["blocker", "people", "deadline", "info"]

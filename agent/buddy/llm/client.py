@@ -5,7 +5,7 @@ from typing import Protocol
 import httpx
 
 from buddy.config import Settings
-from buddy.llm.trace import recorded
+from buddy.observability.llm_trace import recorded
 
 
 class LLM(Protocol):

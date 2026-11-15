@@ -1,1 +1,1 @@
-"""Reserved for the corresponding roadmap stage."""
+"""Background jobs; process lifecycle is managed in app.py."""

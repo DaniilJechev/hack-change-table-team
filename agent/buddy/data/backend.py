@@ -10,7 +10,7 @@ import httpx
 from mcp import ClientSession
 from mcp.client.streamable_http import streamable_http_client
 
-from buddy.data.base import DataError
+from buddy.data.contracts import DataError
 
 TIMEOUT = 5
 STATUS = {400: "invalid", 401: "unauthorized", 403: "forbidden", 404: "not_found", 409: "conflict"}
