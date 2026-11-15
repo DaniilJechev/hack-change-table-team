@@ -59,6 +59,7 @@ Telegram пустым. Существующий `.env` с настоящим т�
 
 ```sh
 npm ci
+npx install-electron --no
 npm test
 npm run build
 npm run pack:win
@@ -114,6 +115,11 @@ GitHub Release с установщиком и `SHA256SUMS`. Скачайте EXE
 версию. Сбой любой обязательной проверки не допускает публикацию. До создания
 тега релиз не появляется. Это публикация установщика; автоматическое обновление
 уже установленного приложения и цифровая подпись пока отсутствуют.
+
+Перед первым запуском разработки выполните `npm ci` и `npx install-electron --no`:
+в Electron 45 бинарник загружается отдельно, а electron-vite ожидает его заранее.
+Иначе возможна ошибка `Electron uninstall`. Загрузка требует доступа к GitHub Releases.
+[Официальная инструкция](https://www.electronjs.org/docs/latest/tutorial/installation#binary-download-step).
 
 Разработка: `npm run dev`. Только development допускает HTTP loopback,
 например `http://127.0.0.1:8081`. Production требует HTTPS.

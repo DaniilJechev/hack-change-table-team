@@ -6,6 +6,11 @@
 
 ## Начать отсюда
 
+- Подготовка сдачи: [выступление](SUBMISSION_PRESENTATION_SCRIPT.md),
+  [демовидео](SUBMISSION_VIDEO_SCRIPT.md), [комплект](SUBMISSION_CHECKLIST.md),
+  [аудит метрик](SUBMISSION_METRICS_REVIEW.md). Это планы материалов и проверки,
+  не подтверждение записи ролика или проведения пилота.
+
 - [Текущее состояние и следующие работы](../docs/3_ROADMAP.md).
 - [Актуализация документов и очистка: было → стало](DOCUMENTATION_CLEANUP_REPORT.md).
 - [Структурный рефакторинг агента](AGENT_STRUCTURE_REFACTOR.md).

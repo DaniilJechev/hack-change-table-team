@@ -8,6 +8,7 @@ from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 from aiogram.types import Message
 
 from buddy.bot.rendering import keyboard, prefix, send
+from buddy.bot.waiting import typing
 from buddy.contracts import Action, Context
 from buddy.data.contracts import DataError
 from buddy.equator.slides import MAX_BYTES
@@ -71,6 +72,12 @@ async def report(method, response, head="", **kwargs):
 
 
 async def deck(message: Message, agent_service: AgentService, profile: Context) -> None:
+    await message.answer("Презентация получена. Подготавливаю проверку…")
+    async with typing(message):
+        await _check_deck(message, agent_service, profile)
+
+
+async def _check_deck(message: Message, agent_service: AgentService, profile: Context) -> None:
     document = message.document
     if (document.file_name or "").lower().endswith((".pdf", ".pptx")):
         runtime = agent_service.runtime(profile)

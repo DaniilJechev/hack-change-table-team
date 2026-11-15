@@ -35,6 +35,8 @@ jobs:
         with:
           version: '0.9.5'
       - run: uv sync --project agent --frozen --extra dev
+      - name: Compose smoke regression checks (offline)
+        run: python -m unittest infra.test_smoke
       - name: Desktop release publication contract (offline)
         run: uv run --project agent --frozen python infra/test_desktop_release.py
       - name: Go format and vet

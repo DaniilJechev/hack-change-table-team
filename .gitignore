@@ -60,3 +60,7 @@ coverage*.out
 
 # Reproducible local scratch space
 .tmp/
+
+# Local presentation drafts and generated exports
+/.presentation-draft/
+/output/

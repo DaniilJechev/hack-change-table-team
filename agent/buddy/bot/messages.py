@@ -1,8 +1,11 @@
+from contextlib import nullcontext
+
 from aiogram.types import Message
 
 from buddy.bot.identity import IdentityClient
 from buddy.bot.rendering import deliver, send
 from buddy.bot.session import context
+from buddy.bot.waiting import typing
 from buddy.orchestration.service import AgentService
 
 
@@ -32,7 +35,6 @@ async def route_text(
     if message.reply_to_message is not None:
         # FR-H0-08: a reply to the brief message is a read signal.
         await agent_service.brief_reply(message.chat.id, message.reply_to_message.message_id, profile)
-    if agent_service.router.llm is not None:
-        await message.bot.send_chat_action(message.chat.id, "typing")
-    decision, response = await agent_service.handle(message.text or "", profile)
-    await send(message, profile, response, decision.case, agent_service)
+    async with typing(message) if agent_service.router.llm is not None else nullcontext():
+        decision, response = await agent_service.handle(message.text or "", profile)
+        await send(message, profile, response, decision.case, agent_service)
