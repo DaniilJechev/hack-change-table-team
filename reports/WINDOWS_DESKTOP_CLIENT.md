@@ -2,7 +2,7 @@
 
 Дата: 14 ноября 2026. Ветка: `feat/desktop-windows-client`.
 Основа: `main` обновлён через `git pull --ff-only`, коммит `6c53235`.
-Согласованный план: [windows-desktop-client.md](../plans/windows-desktop-client.md).
+Согласованный план: [windows-desktop-client.md](https://github.com/DaniilJechev/hack-change-table-team/blob/6f6e150ab6ee2e4529d89a58d5eee86c7d56bef7/plans/windows-desktop-client.md).
 
 ## Что реализовано
 

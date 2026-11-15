@@ -28,4 +28,4 @@
 
 ## Интеграция PR №3
 
-Объединённая версия проверена отдельно: [принятые и отклонённые изменения](PR_3_INTEGRATION_REPORT.md). После переноса серверного жизненного цикла покрытие Go — 86.7%; Python — 99.4%. Новый smoke проверяет также Redis PONG и реальный SQL с типом vector.
+Объединённая версия проверена отдельно: [принятые и отклонённые изменения](https://github.com/DaniilJechev/hack-change-table-team/blob/6f6e150ab6ee2e4529d89a58d5eee86c7d56bef7/reports/PR_3_INTEGRATION_REPORT.md). После переноса серверного жизненного цикла покрытие Go — 86.7%; Python — 99.4%. Новый smoke проверяет также Redis PONG и реальный SQL с типом vector.

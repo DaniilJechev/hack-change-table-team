@@ -14,7 +14,7 @@
 | закрывающий | Даниил | архив `stage-four-backend`, назначение новых спецификаций, статус этапа в roadmap |
 
 Подробные доклады: [агент](STAGE_4_EMIL_DANIIL_REPORT.md), [backend](STAGE_4_BACKEND_REPORT.md),
-[протокол демо](STAGE_4_DEMO_TRANSCRIPT.md), [сценарий видео](STAGE_4_VIDEO_SCRIPT.md).
+[протокол демо](STAGE_4_DEMO_TRANSCRIPT.md), [сценарий видео](https://github.com/DaniilJechev/hack-change-table-team/blob/6f6e150ab6ee2e4529d89a58d5eee86c7d56bef7/reports/STAGE_4_VIDEO_SCRIPT.md).
 
 ## Сведение спецификаций
 

@@ -284,7 +284,7 @@ Go SDK-клиентом, включая смену пользователя/ро
 
 ## Этап 4: H0/H3, состояние и метрики
 
-Согласованные решения и проверки сохраняются в `plans/ilya-backend-infra.md`.
+Согласованные решения и проверки сохраняются в [историческом плане backend](https://github.com/DaniilJechev/hack-change-table-team/blob/6f6e150ab6ee2e4529d89a58d5eee86c7d56bef7/plans/ilya-backend-infra.md).
 Техническая дельта: `openspec/changes/stage-four-backend`; основные спецификации
 не менялись и изменение ещё не архивировано.
 

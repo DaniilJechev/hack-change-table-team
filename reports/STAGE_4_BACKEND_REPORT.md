@@ -2,7 +2,7 @@
 
 Дата: 11.11.2026. Основание — актуальный main `a945627`, отдельная ветка
 `feat/backend-stage-4`. Важные решения согласованы с Ильёй до реализации и сохранены
-в `plans/ilya-backend-infra.md`. Изменение OpenSpec — `stage-four-backend`;
+в [историческом плане backend](https://github.com/DaniilJechev/hack-change-table-team/blob/6f6e150ab6ee2e4529d89a58d5eee86c7d56bef7/plans/ilya-backend-infra.md). Изменение OpenSpec — `stage-four-backend`;
 оно проверено, но не архивировано до командного ревью. Действующие docs/ и
 openspec/specs/ сохранены. Бот не запускался.
 
