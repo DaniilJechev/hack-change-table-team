@@ -12,6 +12,7 @@ from buddy.mcp_hub.errors import ToolDenied
 from buddy.mcp_hub.policy import READ_TOOLS, permitted
 from buddy.orchestration.catalog import SCENARIOS
 from buddy.orchestration.router.rules import MENU_CHOICES
+from buddy.prompts.commands import COMMANDS
 from buddy.render import to_plain
 
 TEAM_MENU = (
@@ -92,8 +93,12 @@ class ToolScope:
 
 def template(case: str, params: dict | None = None, text: str = "") -> ExecutorResponse:
     if case == "help":
+        command = (params or {}).get("menu", "").removeprefix("command:")
+        if command in COMMANDS:
+            return ExecutorResponse(result=f"/{command}: {COMMANDS[command]}")
         text = (
-            "Могу помочь с брифом, доступами, вопросами о команде и playbook. /ask — типы вопросов. "
+            "Могу помочь с брифом, доступами, вопросами о команде и playbook. Напишите "
+            "вопрос обычным текстом. "
             "Для проверки презентации к экватору пришлите PDF/PPTX: проверю текст и задачи Jira, "
             "сравню версии. Файл не редактирую, картинки и оформление не оцениваю. "
             "После обязательных проверок можно отправить файл наставнику с отчётом."
@@ -112,7 +117,8 @@ def template(case: str, params: dict | None = None, text: str = "") -> ExecutorR
         text = OUT_OF_SCOPE_HR if PERSONAL.search(text.casefold()) else OUT_OF_SCOPE
     elif case.startswith("team_q"):
         text = (
-            "Тип вопроса распознан. Ответы по данным команды пока не подключены. /ask — выбрать тип вопроса."
+            "Тип вопроса распознан. Ответы по данным команды пока не подключены. "
+            "Задайте вопрос обычным текстом."
         )
     elif case in {"access_status", "access_task_analysis", "interns_status", "access_events"}:
         text = "Запрос о доступах распознан. Проверки доступов пока не подключены."

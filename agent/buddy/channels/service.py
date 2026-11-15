@@ -266,7 +266,8 @@ class ChatService:
             )
         if command in {"/help", "/start"}:
             return ExecutorResponse(
-                result="AvitoCode: /brief — бриф, /access — доступы, /ask — команда, "
+                result="AvitoCode: /brief — бриф, /access — доступы; "
+                "вопросы о команде пишите обычным текстом. "
                 "/stats — статистика, /settings — настройки, /reset — забыть контекст. "
                 "Пришлите PDF/PPTX для проверки к экватору."
             )

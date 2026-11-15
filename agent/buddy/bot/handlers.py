@@ -30,7 +30,8 @@ async def start(
         await message.answer(
             WELCOME
             if agent_service is None
-            else "Привет! Я AI-buddy. /demo — синтетический сценарий, /ask — вопросы о команде. "
+            else "Привет! Я AI-buddy. /demo — синтетический сценарий. Вопросы о команде "
+                 "пишите обычным текстом. "
             "Для реального профиля нужен настроенный backend и персональный код приглашения.",
             reply_markup=menu(),
         )
@@ -53,7 +54,7 @@ async def start(
         await message.answer(
             f"Аккаунт подключён. Роль: {roles[profile.role]}.\n"
             f"Команда: {profile.team_id}.\n"
-            "Доступно: /start — профиль, /help — помощь. Бриф и H0–H3 появятся позже.",
+            "Напишите вопрос о команде, доступах или playbook. /brief — бриф, /help — помощь.",
             reply_markup=menu(),
             parse_mode=None,
         )
@@ -79,7 +80,7 @@ async def help_command(
     )
     if agent_service is not None:
         text = (
-            "/start — профиль, /ask — восемь типов вопросов, /demo — синтетический сценарий, "
+            "/start — профиль, /demo — синтетический сценарий, "
             "/demo next — следующий шаг, /demo reset — сначала, /demo off — выход. "
             "/brief — бриф изменений, /stats — статистика брифов, /settings — время и тихий режим, "
             "/reset — забыть контекст диалога. "

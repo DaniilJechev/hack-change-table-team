@@ -7,6 +7,7 @@ from buddy.contracts import RouteDecision
 from buddy.llm.client import LLM
 from buddy.orchestration.catalog import PARAMS, ROUTER_CASES
 from buddy.orchestration.router.rules import TEAM_CHOICES, clarify, decide
+from buddy.prompts.commands import referenced_command
 from buddy.prompts.router import SYSTEM
 
 CASES = ROUTER_CASES
@@ -67,6 +68,9 @@ class Router:
     async def _classify(
         self, text: str, *, context: RoutingContext | None, memory: str = ""
     ) -> RouteDecision:
+        command_help = referenced_command(text)
+        if command_help:
+            return RouteDecision(case="help", params={"menu": "command:" + command_help})
         fallback = decide(text)
         if self.llm is None or not text.strip() or text.lstrip().startswith("/") or len(text) > 4000:
             return fallback

@@ -69,7 +69,7 @@ def response_menu(case: str, response: ExecutorResponse | None = None):
                 [InlineKeyboardButton(text="Спросить наставника", callback_data="mentor:contact")],
             ]
         )
-    return team_menu() if case == "help" else None
+    return None
 
 
 def prefix(profile: Context) -> str:

@@ -74,7 +74,8 @@ class DemoController:
             "реальная привязка не создаётся.\n"
             f"Шаг {step + 1}/{len(self.steps)}: {self.scenario['steps'][self.steps[step]]}.\n"
             + ("Это последний шаг. /demo reset — начать сначала.\n" if at_end else "")
-            + "/brief — бриф, /access — доступы, /ask — вопросы; /demo mentor и /demo intern — учебные роли. "
+            + "/brief — бриф, /access — доступы; вопросы пишите обычным текстом; /demo "
+              "mentor и /demo intern — учебные роли. "
             "/demo next — следующий шаг; /demo off — выйти."
         )
 

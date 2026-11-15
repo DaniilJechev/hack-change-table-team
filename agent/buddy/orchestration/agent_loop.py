@@ -16,6 +16,7 @@ from buddy.orchestration.catalog import SCENARIOS, TOOLS
 from buddy.orchestration.router.rules import TASK, decide
 from buddy.orchestration.router.service import PARAMS, normalize
 from buddy.prompts.agent import SYSTEM
+from buddy.prompts.commands import COMMANDS, referenced_command
 from buddy.rag.qa import NOTE as PLAYBOOK_NOTE
 
 # Case of a turn the agent answered without tools («привет», general onboarding advice).
@@ -173,6 +174,7 @@ class ToolCallingAgent:
         self, text: str, context: Context, runtime=None, history: list[dict] | None = None
     ) -> tuple[RouteDecision, ExecutorResponse] | None:
         """None means no tool ran and the model failed: the caller routes the text with the Router."""
+        command_help = referenced_command(text)
         if GRANT.search(text.strip()):
             return RouteDecision.model_construct(case=CHAT, params={}), ExecutorResponse(
                 result="Я не выдаю доступы и не назначаю роли администратора. "
@@ -187,7 +189,9 @@ class ToolCallingAgent:
             history and re.search(r"писать|написать", text, re.I) and re.search(r"личк|напрямую", text, re.I)
         )
         lookup = not advice and not contact and decide(text).case == "playbook_qa"
-        if advice:
+        if command_help:
+            advice, contact, lookup = False, False, False
+        if advice or command_help:
             allowed = set()
         messages = [
             {"role": "system", "content": SYSTEM},
@@ -202,7 +206,7 @@ class ToolCallingAgent:
         done: list[tuple[RouteDecision, ExecutorResponse]] = []
         observed = [text]
         active, choice, retried = tools, {}, False
-        if advice:
+        if advice or command_help:
             choice = {"tool_choice": "none"}
         elif contact:
             active = [tool for tool in tools if tool["function"]["name"] == "team_q4"]
@@ -248,7 +252,11 @@ class ToolCallingAgent:
                             continue
                         answer = verify(reply["content"], sources, "\n".join(observed) if done else "")
                         wanted = frozenset()
-                        if not done and mentions(answer, await people_names(context, runtime)):
+                        if (
+                            not done
+                            and not command_help
+                            and mentions(answer, await people_names(context, runtime))
+                        ):
                             wanted |= TEAM_TOOLS
                         if not done and access_claim(answer):
                             wanted |= ACCESS_TOOLS
@@ -301,6 +309,10 @@ class ToolCallingAgent:
             # Only the rule name or exception type is logged: no user text, no model output.
             reason = error.args[0] if isinstance(error, Rejected) else type(error).__name__
             log.info("agent fallback: %s", reason)
+            if command_help:
+                return RouteDecision(case="help"), ExecutorResponse(
+                    result=f"/{command_help}: {COMMANDS[command_help]}"
+                )
             if lookup and not done:
                 decision = RouteDecision(case="playbook_qa", params={"query": text})
                 response = await self.registry.execute("playbook_qa", decision.params, context, runtime, text)
