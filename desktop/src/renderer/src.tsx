@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { cite, remarkCitations } from "./citations";
 import {
   ArrowUp,
   Bell,
@@ -461,7 +462,9 @@ function App() {
             )}
             {view.messages.map((message: any) => {
               const p = message.payload,
-                r = p.response;
+                r = p.response,
+                content =
+                  p.role === "user" ? r : cite(r.result, r.folded, r.links);
               return (
                 <article
                   id={"message-" + message.id}
@@ -478,7 +481,13 @@ function App() {
                   </div>
                   <div className="bubble">
                     <Markdown
-                      remarkPlugins={[remarkGfm]}
+                      remarkPlugins={[
+                        remarkGfm,
+                        [
+                          remarkCitations,
+                          { links: p.role === "user" ? [] : content.links },
+                        ],
+                      ]}
                       components={{
                         a: ({ href, children }) => (
                           <a
@@ -495,32 +504,8 @@ function App() {
                         img: () => null,
                       }}
                     >
-                      {r.result}
+                      {[content.result, ...(content.folded || [])].join("\n\n")}
                     </Markdown>
-                    {r.folded?.length > 0 && (
-                      <details>
-                        <summary>Подробнее</summary>
-                        {r.folded.map((t: string, i: number) => (
-                          <p key={i}>{t}</p>
-                        ))}
-                      </details>
-                    )}
-                    {r.links?.length > 0 && (
-                      <details className="sources">
-                        <summary>Источники · {r.links.length}</summary>
-                        {r.links.map((link: string, i: number) => (
-                          <button
-                            key={link}
-                            onClick={() =>
-                              run(() => client.call("external", link))
-                            }
-                          >
-                            [{i + 1}] {link}
-                            <ExternalLink size={12} />
-                          </button>
-                        ))}
-                      </details>
-                    )}
                     {p.attachments?.map((a: any) => (
                       <button
                         className="attachment"
