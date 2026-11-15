@@ -4,5 +4,6 @@
   "version": "0.0.0",
   "dependencies": {
     "@cocal/google-calendar-mcp": "2.8.1"
-  }
+  },
+  "license": "MIT"
 }
