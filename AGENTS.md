@@ -28,8 +28,8 @@ H0 — основа продукта (привычка заходить в бо�
 ## Команда и зоны
 | Кто | Роль | Зона |
 |---|---|---|
-| Илья | Backend / DevOps | `backend/` (Go), `infra/`, `docker-compose.yml`, CI, запуск готовых MCP-серверов |
-| Эмиль | ML / frontend | `agent/` (Python): бот/desktop, LangGraph и агентный цикл, Router fallback, MCP, RAG и evals |
+| Илья | Backend / DevOps / desktop | `backend/` (Go), `desktop/` (Windows-приложение), `infra/`, `docker-compose.yml`, CI, запуск готовых MCP-серверов |
+| Эмиль | ML / агент | `agent/` (Python): бот, LangGraph и агентный цикл, Router fallback, MCP, RAG и evals |
 | Даниил | PM / team lead | `docs/`, `openspec/`, `seed/`, `fixtures/`, `evals/` (наборы), README |
 
 ## Структура и актуальный статус
