@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 
 from buddy.access.checker import Gateway, TelegramMembers
-from buddy.data.base import TeamData
+from buddy.data.contracts import TeamData
 
 
 @dataclass

@@ -8,9 +8,8 @@ import uuid
 from contextlib import suppress
 
 from buddy.channels.repository import ChannelError
-from buddy.executors.context import Context
-from buddy.executors.core import TEAM_MENU
-from buddy.schemas import Action, ExecutorResponse
+from buddy.contracts import Action, Context, ExecutorResponse
+from buddy.orchestration.registry import TEAM_MENU
 
 
 def owner(profile):
@@ -49,7 +48,7 @@ class ChatService:
         if not chat:
             return False
         from buddy.bot.equator import report
-        from buddy.bot.stage_two import keyboard, rich
+        from buddy.bot.rendering import keyboard, rich
 
         sent = None
 
@@ -161,7 +160,7 @@ class ChatService:
                             and self.bot
                             and payload.get("telegram_message_id")
                         ):
-                            from buddy.bot.stage_two import keyboard
+                            from buddy.bot.rendering import keyboard
 
                             with suppress(Exception):
                                 await self.bot.edit_message_reply_markup(
@@ -267,7 +266,8 @@ class ChatService:
             )
         if command in {"/help", "/start"}:
             return ExecutorResponse(
-                result="AvitoCode: /brief — бриф, /access — доступы, /ask — команда, "
+                result="AvitoCode: /brief — бриф, /access — доступы; "
+                "вопросы о команде пишите обычным текстом. "
                 "/stats — статистика, /settings — настройки, /reset — забыть контекст. "
                 "Пришлите PDF/PPTX для проверки к экватору."
             )

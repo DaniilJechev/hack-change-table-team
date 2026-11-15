@@ -9,7 +9,7 @@ from typing import Protocol
 
 from pydantic import BaseModel, Field, ValidationError
 
-from buddy.executors.context import Context
+from buddy.contracts import Context
 
 # Defaults; live values come from MEMORY_MAX_TURNS / MEMORY_TTL_SECONDS (see config.py).
 # A "turn" is one handled request: the user's text plus the answer (two chat messages).

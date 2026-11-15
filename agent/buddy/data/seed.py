@@ -10,8 +10,8 @@ from urllib.parse import quote
 import yaml
 from pydantic import ValidationError
 
-from buddy.data.base import DataError
 from buddy.data.briefs import BriefState
+from buddy.data.contracts import DataError
 from buddy.data.mock_services import MockServicesState
 from buddy.demo.contracts import TeamCard
 

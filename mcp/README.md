@@ -2,8 +2,9 @@
 
 Персональные изменения Jira в брифе: [настройка, проверка и ограничения](JIRA_BRIEF.md).
 
-Этап 1: конфигурация и инфраструктура. Секреты задаются только в корневом `.env`.
-Основные `make up` и `make demo` не запускают внешние MCP и не требуют аккаунтов.
+Конфигурация готовых серверов и ограничения интеграций. Секреты задаются только в корневом `.env`.
+Базовый Compose не поднимает отдельные Jira/Calendar/Miro MCP. В демо аккаунты
+не нужны; Telegram и настоящая LLM используются только при соответствующей настройке `.env`.
 
 ## Запуск
 
@@ -30,7 +31,7 @@
 
 URL также переданы в `MCP_ATLASSIAN_URL` и `MCP_CALENDAR_URL`. Docker socket в
 agent не нужен. Все имена — в `tools.json`; это серверный набор, отдельные белые
-списки по кейсам и вызовы инструментов реализует Эмиль.
+списки сценариев и проверки вызовов реализованы в `agent/buddy/mcp_hub/policy.py` и Hub.
 Atlassian 0.24.1 требует `Authorization: Basic base64(JIRA_USERNAME:JIRA_API_TOKEN)`
 на каждом HTTP-запросе; обе переменные и `JIRA_URL` переданы агенту. Fallback на
 глобальные credentials без авторизации отключён. Скрипт tools/list читает значения
@@ -62,3 +63,6 @@ CI подставляет явно синтетические, неработа�
 Исходники: [GitHub](https://github.com/github/github-mcp-server/tree/v2.1.0),
 [Atlassian](https://github.com/sooperset/mcp-atlassian/tree/v0.24.1),
 [Calendar](https://github.com/nspady/google-calendar-mcp/tree/v2.8.1).
+
+
+PowerPoint можно запустить независимо от Jira/Calendar: `make pptx-up`. Остановка `make mcp-down` затрагивает также PowerPoint. [Общая инструкция запуска](../README.md).

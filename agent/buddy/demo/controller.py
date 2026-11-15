@@ -5,8 +5,8 @@ from datetime import datetime
 from pathlib import Path
 
 from buddy.access.checker import FixtureTelegram
+from buddy.contracts import Context
 from buddy.data.seed import SeedData, load_bundle
-from buddy.executors.context import Context
 from buddy.mcp_hub.config import SERVERS, ServerConfig
 from buddy.mcp_hub.fixtures import FixtureStore
 from buddy.mcp_hub.hub import Hub
@@ -74,7 +74,8 @@ class DemoController:
             "реальная привязка не создаётся.\n"
             f"Шаг {step + 1}/{len(self.steps)}: {self.scenario['steps'][self.steps[step]]}.\n"
             + ("Это последний шаг. /demo reset — начать сначала.\n" if at_end else "")
-            + "/brief — бриф, /access — доступы, /ask — вопросы; /demo mentor и /demo intern — учебные роли. "
+            + "/brief — бриф, /access — доступы; вопросы пишите обычным текстом; /demo "
+              "mentor и /demo intern — учебные роли. "
             "/demo next — следующий шаг; /demo off — выйти."
         )
 

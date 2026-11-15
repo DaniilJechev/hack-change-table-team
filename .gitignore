@@ -57,3 +57,6 @@ coverage*.out
 
 # LangGraph dev server state (make studio)
 .langgraph_api/
+
+# Reproducible local scratch space
+.tmp/

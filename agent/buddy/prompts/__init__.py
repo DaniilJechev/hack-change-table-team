@@ -1,1 +1,1 @@
-"""Reserved for the corresponding roadmap stage."""
+"""Versioned system prompts used by orchestration."""

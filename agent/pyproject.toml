@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "ai-buddy-agent"
 version = "0.1.0"
-description = "AI-buddy stage-0 scaffold"
+description = "AI-buddy onboarding assistant: briefs, access, team, playbook and presentation review"
 license = "MIT"
 requires-python = ">=3.12"
 dependencies = [

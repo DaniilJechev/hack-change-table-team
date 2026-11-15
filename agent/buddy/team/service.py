@@ -8,11 +8,10 @@ import uuid
 
 from buddy.access.checker import payload
 from buddy.access.service import TITLES, AccessService
-from buddy.data.base import DataError
-from buddy.executors.context import Context
+from buddy.contracts import Action, Context, ExecutorResponse
+from buddy.data.contracts import DataError
 from buddy.mcp_hub.errors import MCPError
 from buddy.runtime import Runtime
-from buddy.schemas import Action, ExecutorResponse
 
 NOT_FOUND = "В карточке и FAQ команды ответа нет."
 FOLD_PEOPLE = 3

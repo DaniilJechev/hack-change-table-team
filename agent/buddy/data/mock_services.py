@@ -4,7 +4,7 @@ import re
 import uuid
 from copy import deepcopy
 
-from buddy.data.base import DataError
+from buddy.data.contracts import DataError
 
 EQUATOR_ITEM = "equator_presentation"
 EQUATOR_TITLE = "Презентация к экватору"

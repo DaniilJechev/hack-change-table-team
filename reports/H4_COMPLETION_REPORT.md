@@ -30,7 +30,7 @@
   Одиночный ответ-бриф не переформулируется вторым агентным проходом.
 
 Спецификации H4, REST-истории и формата брифа опубликованы через OpenSpec.
-Эксплуатация и параметры: `docs/H4_OPERATIONS.md`. Подробности backend: `H4_BACKEND_COMPLETION.md`.
+Эксплуатация и параметры: [архив H4_OPERATIONS.md](../docs/archive/2026-11-15/H4_OPERATIONS.md). Подробности backend: `H4_BACKEND_COMPLETION.md`.
 
 ## Проверки
 

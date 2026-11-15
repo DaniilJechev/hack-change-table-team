@@ -6,7 +6,7 @@ import sqlite3
 from datetime import UTC, datetime
 from pathlib import Path
 
-from buddy.data.base import DataError
+from buddy.data.contracts import DataError
 
 
 def safe_sql(method):

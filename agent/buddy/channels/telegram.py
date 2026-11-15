@@ -4,7 +4,7 @@ from aiogram import F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from buddy.bot.stage_two import context, private
+from buddy.bot.session import context, private
 from buddy.channels.repository import ChannelError
 from buddy.channels.service import owner
 

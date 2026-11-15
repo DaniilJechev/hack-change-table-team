@@ -8,9 +8,9 @@ import asyncio
 import json
 import re
 
+from buddy.contracts import RouteDecision
 from buddy.memory.store import Turn
-from buddy.router.rules import TASK, brief_source
-from buddy.schemas import RouteDecision
+from buddy.orchestration.router.rules import TASK, brief_source
 
 MAX_FOLLOWUP = 80
 ORDINALS = {

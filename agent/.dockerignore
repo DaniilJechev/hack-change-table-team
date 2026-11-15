@@ -3,3 +3,8 @@
 .pytest_cache
 .coverage*
 htmlcov
+
+**/.ruff_cache
+**/.pytest-h4*
+**/.coverage*
+**/*.log

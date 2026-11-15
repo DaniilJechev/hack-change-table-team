@@ -6,7 +6,7 @@ state from PostgreSQL through REST; it does not inherit this in-memory implement
 
 from copy import deepcopy
 
-from buddy.data.base import DataError
+from buddy.data.contracts import DataError
 
 READ_KINDS = {"read", "click", "positive", "negative", "reply"}
 EVENT_KINDS = READ_KINDS

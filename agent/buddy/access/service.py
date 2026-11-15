@@ -6,11 +6,10 @@ from dataclasses import replace
 from datetime import datetime
 
 from buddy.access.checker import AccessChecker, AccessItem, payload
-from buddy.data.base import DataError
-from buddy.executors.context import Context
+from buddy.contracts import Action, Context, ExecutorResponse
+from buddy.data.contracts import DataError
 from buddy.mcp_hub.errors import MCPError
 from buddy.runtime import Runtime
-from buddy.schemas import Action, ExecutorResponse
 
 TITLES = {
     "github": "GitHub",
